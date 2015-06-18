@@ -38,6 +38,7 @@ var channelList = [
 	{dName: 'Animal Planet', sName: 'Animal Planet|Animаl Planеt', flags: 'hd req'},
 	{dName: 'Моя Планета', sName: 'Моя Планета', flags: 'req'},
 	{dName: 'Техно 24', sName: 'Техно 24', flags: ''},
+	{dName: 'НЛО ТВ', sName: 'НЛО ТВ', flags: ''},
 	{dName: 'Travel channel', sName: 'Travel channel', flags: ''},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ', flags: ''},
 	{dName: 'Extreme Sports', sName: 'Extreme Sports', flags: ''},

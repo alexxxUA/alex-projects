@@ -309,5 +309,5 @@ app.listen(port, ip, function(err){
 	if(err) throw error;
 
 	console.log('Server started on: '+ ip +':'+ port);
-	//open('http://'+ ip +':'+ port);
+	open('http://'+ ip +':'+ port);
 });
