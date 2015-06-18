@@ -1,0 +1,475 @@
+/*Fonts*/
+@font-face {
+    font-family: 'leaguegothic-regular';
+    src: url('fonts/leaguegothic-regular-webfont.eot');
+    src: url('fonts/leaguegothic-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/leaguegothic-regular-webfont.woff') format('woff'),
+         url('fonts/leaguegothic-regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'OpenSans-CondBold';
+    src: url('fonts/OpenSans-CondBold-webfont.eot');
+    src: url('fonts/OpenSans-CondBold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/OpenSans-CondBold-webfont.woff') format('woff'),
+         url('fonts/OpenSans-CondBold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'OpenSans-Regular';
+    src: url('fonts/OpenSans-Regular-webfont.eot');
+    src: url('fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/OpenSans-Regular-webfont.woff') format('woff'),
+         url('fonts/OpenSans-Regular-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/*EO Fonts*/
+
+/*Main styles*/
+.clearfix:after {
+        visibility: hidden;
+        display: block;
+        content: "";
+        clear: both;
+        height: 0;
+        }
+*:first-child+html .clearfix { zoom: 1; }
+body{
+  position: relative;
+}
+html,
+body{
+  min-height: 100%;
+  height: 100%;
+}
+.container{
+  width: 1280px;
+  margin: 0 auto;
+  position: relative;
+}
+a{
+  text-decoration: none;
+}
+a:hover{
+  text-decoration: underline;
+}
+/*EO Main styles*/
+
+/*Header Section*/
+header{
+  position: relative;
+  z-index: 2;
+}
+.nav-group{
+  position: relative;
+  overflow: hidden;
+}
+.nav-group,
+#nav a{
+  color: #fff;
+  font: 13px arial;}
+  
+.nav-group-bg{
+  font-size: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: #014a9d;
+  opacity: 0.7;
+  filter: alpha(opacity=70);
+}
+.nav-group-wrap{
+  position: relative;
+  z-index: 2; 
+  padding: 15px 90px;
+}
+.nav-group-wrap li{
+  display: inline-block;
+  margin-right: 20px;
+}
+.acc-settings,
+.logo-img,
+.nav-btn,
+.m-logo,
+.nav-close-btn{
+  display: none;
+}
+.nav-group-wrap nav {
+    float: right;
+}
+.main-logo {
+    float: left;
+}
+.nav-info{
+  border-right: 1px solid #759cbe;
+}
+.nav-info a{
+  margin-right: 30px;
+  padding-right: 30px;
+  background: url(../img/dest/sprite.png) right -188px no-repeat;
+}
+.nav-login{
+  padding-right: 21px;
+  background: url(../img/dest/sprite.png) right -98px no-repeat;  
+}
+.search-container{
+  background: #fff;
+  padding: 0 90px;
+  text-align: center; 
+  overflow: hidden;
+  color: #094798;
+  font-size: 13px;
+}
+.search-list{
+  font-size: 0;
+}
+.search-list .val,
+.search-btn input{
+  font: 35px 'leaguegothic-regular';
+  display: inline-block;
+}
+.search-list .course{
+  font-family: 'OpenSans-Regular';
+  margin: 5px 0;
+}
+.search-item{
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+.list-item-wrap{
+  padding: 5000px 0;
+  margin: -5000px 0;
+  border-right: 1px solid #bfd2e2;  
+}
+.search-item:first-child .list-item-wrap{
+  border-left: 1px solid #bfd2e2;
+}
+.search-item.logo a{
+  display: block;
+  padding: 20px;
+}
+.search-item.to{ width: 230px; }
+.search-item.from{ width: 230px; }
+.search-item.date{ width: 140px; }
+.search-item.durat{ width: 140px; }
+.search-item.memb{ width: 125px; }
+.search-btn{ width: 134px; }
+.search-item.memb .val{
+  display: block;
+}
+#datepicker{
+  width: 100%;
+  border: none;
+  background: none;
+  color: #094798;
+  text-align: center;
+}
+.search-item.from .val{
+  background: url(../img/dest/sprite.png) left 5px no-repeat; 
+  padding-left: 35px;
+}
+.search-item.to .val{
+  background: url(../img/dest/sprite.png) left -44px no-repeat; 
+  padding-left: 35px;
+}
+.search-btn input{
+  background: #094798;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  cursor: pointer;
+}
+.search-item-wrap{
+  background: url(../img/dest/arrow-down.png) center bottom no-repeat;
+  padding-bottom: 5px; 
+}
+.custom-select {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+.custom-select select {
+    padding: 0 8px;
+    width: 100%;
+    height: 100%;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    text-transform: uppercase;
+    color: #094798;
+    cursor: pointer;
+}
+select:focus,
+input:focus { outline: none; }
+/*EO Header Section*/
+
+/*Main Section*/
+.touchslider{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.bx-wrapper{
+  position: relative;
+}
+.bx-pager{
+  position: absolute;
+  bottom: 25px;
+  right: 85px;
+  font-size: 0; 
+}
+.bx-pager-item{
+  display: inline-block;
+    vertical-align: middle;
+}
+.bx-pager-item .bx-pager-link{  
+  display: inline-block;
+  vertical-align: middle;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  margin: 0 6px;  
+}
+.bx-pager-item .bx-pager-link.active{
+  width: 18px;
+  height: 18px;
+  background: #ffb900;
+  margin: 0 2px;  
+}
+.bx-controls-direction{
+  display: none;
+}
+.bxslider img{
+  width: 100%;
+}
+.slide-description{
+  text-align: center;
+  color: #FFF;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.slide-description h3{
+  font: 69px 'OpenSans-CondBold';
+  margin-bottom: 15px;
+}
+.slide-description p{
+  margin-bottom: 15px;
+  font: 16px 'OpenSans-Regular';
+}
+.slide-description .btn{
+  font: 24px 'OpenSans-CondBold';
+  display: inline-block;
+  padding: 12px 20px;
+  background: #febc11 url(../img/dest/sprite.png) right -119px no-repeat;
+  border-right: 10px solid #febc11;
+  padding-right: 20px;
+}
+.bxslider .slide-bg{
+  font-size: 0;
+  content: ' ';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+  position: absolute;
+
+}
+/*EO Main Section*/
+
+/*Mobile view*/
+@media only screen and (min-device-width : 320px) and (max-device-width : 800px), only screen and (max-width: 320px) {
+  .container{
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .search-item.logo,
+  .search-list .from .course,
+  .search-list .to .course,
+  .nav-group-bg,
+  .main-logo .d-logo,
+  .slide-description p{
+    display: none;
+  }
+  .m-logo{
+    display: inline-block;
+  }
+  .nav-group-wrap{
+    padding: 0;
+  }
+  #nav,
+  #nav a{
+    color: #fff;
+    padding: 0;
+    margin: 0;
+    background: none;
+    display: block;
+  }
+  #nav{
+    position: fixed;
+    height: 100%;
+    z-index: 3;
+    right: -220px;
+    top: 0;
+    width: 200px;
+    background: #094798;
+    text-align: right;
+    padding: 10px;
+    border-top: 44px solid #5B5E5D;
+  }
+  #nav .nav-acc{
+    position: absolute;
+    top: -28px;
+    right: 10px;
+  }
+  .nav-login{
+    background: none;
+    padding: 0;
+  }
+  .nav-info{
+    border: none;
+  }
+  #nav li{
+    display: block;
+    margin-bottom: 5px;
+  }
+  .logo-img,
+  .nav-group-wrap nav,
+  .main-logo{
+    padding: 5000px 0;
+    margin: -5000px 0;
+  }
+  .main-logo,
+  .logo-img{
+    border-right: 1px solid #f3f3f3;
+    margin-right: -1px;    
+  }
+  .main-logo .m-logo{
+    padding-top: 10px;
+  }
+  .logo-img{
+    display: block;
+    float: left;  
+  }
+  .nav-group-wrap nav{
+    float: left;  
+    text-align: center;
+  }
+  .logo-img img{
+    width: 60%;
+    padding: 8px;
+  }
+  .logo-img,
+  .nav-group-wrap nav{
+    width: 15%;
+  }
+  .main-logo{
+    width: 70%;  
+    text-align: center;
+  }  
+  a.nav-btn{
+    display: inline-block;
+    font-size: 0;
+    background: url(../img/dest/sprite.png) -5px -226px no-repeat;
+    width: 40px;
+    height: 30px;
+  }  
+  .nav-group,
+  .nav-group a{
+    color: #094798;
+  }
+  .search-item-wrap{
+    background: none;
+  }
+  .search-container{
+    padding: 0;
+  }
+  .search-item.from,
+  .search-item.to{
+    width: 50%;
+  }
+  .search-item.date,
+  .search-item.durat,
+  .search-item.memb,
+  .search-item.search-btn{
+    width: 25%;
+  }
+  .search-item{
+    vertical-align: top;
+    border-top: 1px solid #bfd2e2;
+    font-size: 11px;
+    text-transform: none;
+    overflow: hidden;
+  }
+  .search-item .val img{ vertical-align: top; }
+  .search-item .val{
+    margin-top: 5px;
+  }
+  .search-list .course{
+    margin-bottom: 0;
+  }
+  .search-list .val,
+  .val-wrap,
+  .search-btn input{
+    font-size: 28px;
+  }
+  .search-btn input{
+    padding: 13px 20px;
+  }
+  .search-item.from .val{
+    background-position: left 2px;
+  }
+  .search-item.to .val{
+    background-position: left -47px;
+  }
+  .touchslider{
+    position: relative;
+  }
+  .bx-pager{
+    right: 15px;
+    bottom: 15px;
+  }
+  .slide-description{
+    top: auto;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    height: auto;
+    text-align: left;
+  }
+  .slide-description h3{
+    font-size: 35px;
+    margin: 0;
+  }
+  .slide-description .btn{
+    background: none;
+    border: none;
+    padding: 0;
+    color: #FEBC11;
+    font: 17px 'OpenSans-Regular';
+  }
+}
+/*EO Mobile view*/

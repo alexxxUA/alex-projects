@@ -1,0 +1,198 @@
+.videoWrapper.fullSreen{
+	position: fixed;
+	top: 0;
+	left:  0;
+	width: 100% !important;
+	height: 100% !important;
+	background: #171724;
+}
+.fullSreen video{
+	width: 100%;
+	height: 100%;
+}
+.videoWrapper{
+    position: relative;
+	overflow: hidden;
+    font-size: 0;
+    margin: 0 auto;
+}
+.unselectable{
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.videoWrapper:hover .vControls{
+	bottom: 0;
+	opacity: 1;
+}
+.videoWrapper:hover .vFullScreen{
+	right: 0;
+	opacity: 1;
+	top: 0;
+}
+.vControls{
+    position: absolute;	
+    padding: 8px 0;
+    bottom: -40px;
+    text-align: center;
+    width: 100%;
+    opacity: 1;
+}
+.vControls:before{
+	display: block;
+	content: ' ';
+	background: #5C5C5C;	
+	height: 100%;
+	opacity: 0.4;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+.vControls > div{
+	display: inline-block;
+	vertical-align: middle;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+.vPlayPause{
+	cursor: pointer;
+	width: 30px;
+	height: 25px;
+	position: relative;
+}
+.vPlay:before{
+    border: 13px solid transparent;
+    border-left: 30px solid #368AB9;
+    border-right: 0;
+    border-radius: 3px;   
+	content: ' ';
+    top: -1px;
+    position: absolute;
+    left: 0;
+}
+.vPause:after,
+.vPause:before{
+	display: inline-block;
+	margin: 2px;
+	width: 5px;
+	height: 20px;
+	background: #FFFFFF;
+	border-radius: 30%;
+	content: ' ';
+}
+.vStreamContainer{
+    width: 40%;
+    height: 8px;
+    background: #E2FEFF;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 2px 0 #FFF;
+    position: relative;
+}
+.vStream{
+	position: absolute;
+	left: 0;
+	width: 0;
+	height: 8px;
+	background: #65A9DF;
+	border-radius: inherit;
+}
+.vStreamPoint,
+.vVolSlidderPoint{
+	background: -moz-linear-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: -moz-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: -webkit-linear-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: -webkit-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: -ms-linear-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: -o-linear-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+	background: linear-gradient(left , #487BA3 20%, #92BEE0 50%, #86B3D4 69%, #23507A 100%);
+}
+.vStreamPoint{
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    margin-top: -8px;
+    margin-left: -8px;
+    left: 0;
+    opacity: 1;
+    box-shadow: 0 0 2px 1px #E8F6FF;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.vVolBtn{
+    width: 25px;	
+    height: 25px;
+    background-size: 100%;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    z-index: 2;
+}
+.vVolOn{
+	background-image: url(../img/volumeOn.png);
+}
+.vVolOff{
+	background-image: url(../img/volumeOff.png);
+}
+.vVolSlidderContainer{
+	width: 70px;
+	height: 6px;
+	border-radius: 5px;
+	background: #F5FDFF;
+	box-shadow: 0 0 1px 1px #9FDAEC;
+	cursor: pointer;
+	display: inline-block;
+	vertical-align: middle;
+	z-index: 2;
+	position: relative;
+	margin: 1px 0 0 10px;
+}
+.vStreamContainer.vAnimation div,
+.vVolSlidderContainer.vAnimation,
+.vVolSlidderContainer.vAnimation div,
+.vPlayPause,
+.vVolBtn,
+.vControls,
+.vFullScreen{	
+	 -webkit-transition: all 0.2s ease-in-out; 
+		-moz-transition: all 0.2s ease-in-out;
+		   -o-transition: all 0.2s ease-in-out;
+			 transition: all 0.2s ease-in-out; 
+}
+.vVolSlidder{
+    height: 6px;
+    border-radius: inherit;
+    position: absolute;
+    bottom: 0;
+    background: #65A9DF;
+}
+.vVolSlidderPoint{
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    border-radius: 50%;
+    margin: -2px 0 0 -5px;
+    left: 0;
+    box-shadow: 0 0 1px 1px #fff;
+}
+.vFullScreen{
+	width: 30px;
+	height: 30px;
+	background: url(../img/fullScreen.png);
+	cursor: pointer;
+	position: absolute;
+	top: -30px;
+	right: -30px;
+	opacity: 0;
+}
+.vTime{	
+    font: bold 13px arial;    
+    color: #C0E4EB;
+    text-shadow: 1px 0 2px #000831;
+    position: relative;
+    z-index: 2;
+}

@@ -1,0 +1,6 @@
+@function sprite-x($sprite, $image){
+	@return nth(sprite-position($sprite, $image), 1);
+}
+@function sprite-y($sprite, $image){
+	@return nth(sprite-position($sprite, $image), 2);
+}

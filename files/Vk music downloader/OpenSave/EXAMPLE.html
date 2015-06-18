@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+   "http://www.w3.org/TR/html4/loose.dtd">
+
+<html lang="en">
+<head>
+	<!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
+	<title>OpenSave Examples</title>
+	
+	<!-- OpenSave Javascript reference -->
+	<script src="opensave.js" type="text/javascript"></script>
+	
+</head>
+<body>
+<p><b>OpenSave - </b><a href="http://www.gieson.com/Library/projects/utilities/opensave/">Click here for documentation.</a></p>
+
+<p>&nbsp;</p>
+
+  <!-- Text Area to load data into and save data from -->
+  <textarea rows="4" cols="20" id="textFieldData">This is the data to save.</textarea>
+  <br />
+  
+  <!-- Buttons for textarea manipulation -->
+  
+  <!-- "Open" button place holder-->
+
+<div id="openTextFieldButton"> Open Text Field Button Target Div</div>
+
+<!-- "Save As..." button place holder -->
+<div id="saveTextFieldButton"> Save Text Field Button Target Div</div>
+
+
+<p>&nbsp;</p>
+
+<!-- "MP3 Download" button place holder -->
+<div id="mp3downloadButton"> MP3 download place holder</div>
+
+<p>&nbsp;</p>
+
+<!-- "Save Image" button place holder -->
+<div id="saveImageButton"> Save Image place holder</div>
+
+<p>&nbsp;  </p>
+
+<!-- "Save Script" place holder -->
+<div id="saveScriptButton"> Save Script placeholder</div>
+
+<p>&nbsp;  </p>
+
+<!-- "Download OpenSave" place holder -->
+<div id="downloadOpenSaveButton"> Download OpenSave placeholder</div>
+
+
+<script language="javascript" id="thisScript">
+
+
+// -------------------------------------------------------------------
+// Open textfield button 
+// -------------------------------------------------------------------
+// Loads a local text-based file into the textfield box on the page.
+opensave.make({ kind: 		"open", 
+				width: 		105,
+				height: 	24,
+				buttonDiv: 	"openTextFieldButton",
+				dataID: 	"textFieldData"
+				}
+			);
+
+// -------------------------------------------------------------------	
+// Save textfield button
+// -------------------------------------------------------------------
+// Saves the text in the textarea to a local file on the users's PC.
+
+// NOTE: Buttons default to "save", so you only 
+// need to set "kind" if you're making an "open" button.
+// As you can see here (and remaining buttons), 
+// we don't include the "kind" option.
+opensave.make({ width: 		105,
+				height: 	24,
+				filename: 	"My Textarea Data.txt", 
+				buttonDiv: 	"saveTextFieldButton",
+				dataID: 	"textFieldData"
+				}
+			);
+
+			
+			
+
+// -------------------------------------------------------------------	
+// MP3 Download button
+// -------------------------------------------------------------------
+// Saves a file based on a URL to the local computer.			
+opensave.make({ width: 		210,
+				height: 	40,
+				bold: 		true,
+				//textSize: 	18,
+				textColor: 	"#466ca7",
+				label: 		"MP3 Download",
+				url: 		"http://www.gieson.com/Library/projects/mp3/Blue.mp3",
+				buttonDiv: 	"mp3downloadButton"
+				}
+			);
+
+// -------------------------------------------------------------------	
+//  Save Image button
+// -------------------------------------------------------------------
+// Saves a file based on a URL to the local computer.		
+opensave.make({ width: 		210,
+				height: 	50,
+				label: 		"Save Image",
+				textColor: 	"#FFFFFF",
+				textSize: 	16,
+				image_up: 	"b_up.png",
+				image_down: "b_down.png",
+				image_over: "b_over.png",
+				filename: 	"Different Name From Source.jpg", 
+				url: 		"http://www.gieson.com/photos/111203-snow/images/DSC_2725.jpg",
+				buttonDiv: 	"saveImageButton"
+				}
+			);
+
+
+	
+// -------------------------------------------------------------------	
+//  Save the <script> in this page
+// -------------------------------------------------------------------
+// Saves a file based on a URL to the local computer.		
+opensave.make({ width: 		210,
+				height: 	50,
+				filename: 	"Page Script.js", 
+				label: 		"Save Page JavaScript",
+				buttonDiv: 	"saveScriptButton", 
+				dataID: 	"thisScript"
+				}
+			);
+
+// -------------------------------------------------------------------	
+//  Download OpenSave
+// -------------------------------------------------------------------
+// Saves a file based on a URL to the local computer.		
+opensave.make({ width: 		210,
+				height: 	50,
+				bold: 		true, 
+				label: 		"Download OpenSave !!",
+				buttonDiv: 	"downloadOpenSaveButton", 
+				url: 		"http://www.gieson.com/Library/projects/utilities/opensave/opensave.zip"
+				}
+			);
+			
+
+
+</script>
+
+
+
+
+
+<p>&nbsp; </p>
+<p>&nbsp;</p>
+<p><a href="www.gieson.com">Copyright 2012 Mike Gieson.</a></p>
+</body>
+</html>

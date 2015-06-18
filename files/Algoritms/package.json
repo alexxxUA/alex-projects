@@ -1,0 +1,20 @@
+{
+  "name": "DEFAULT",
+  "storecode": "grunt",
+  "version": "0.1.0",
+  "description": "DEFAULT",
+  "main": "Gruntfile.js",
+  "author": "Alexey Vasin",
+  "dependencies": {
+    "matchdep": "~0.3.0",
+    "grunt-lib-contrib": "~0.6.1",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-watch": "~0.5.3"
+  },
+  "peerDependencies": {
+    "grunt-lib-contrib": "~0.6.1"
+  }
+}

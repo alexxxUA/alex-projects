@@ -1,0 +1,6 @@
+{
+	"important": false,
+	"box-model": false,
+	"adjoining-classes": false,
+	"ids": false
+}

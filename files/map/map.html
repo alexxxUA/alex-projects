@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Map</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/jquery.Storage.js"></script>
+	<script type="text/javascript" src="js/map.js"></script>
+	<style>
+	body{
+		background: #0D0D1A;
+	}
+	.map-area{
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+	.areaElement{
+		stroke: blue;
+		fill: #4AC4F3;
+		stroke-width: 1px;
+		opacity: 0.6;
+		cursor: pointer;
+	}
+	.areaElement:hover{
+		fill: #F4FF6F;
+	}
+	.areaElement.areaDrag{
+		fill: #FF6C6C;
+	}
+	.tempPoly{
+		stroke: blue;
+		fill: #4AC4F3;
+		stroke-width: 1px;
+		opacity: 0.6;
+	}
+	.helperBox{
+		fill: #F60;
+	}
+	.helperBox:hover{
+		fill: #0FC;
+	}
+	#generateMap,
+	#loadImage{
+		background: rgb(100, 208, 213);
+		border: 1px solid rgb(0, 255, 10);
+		padding: 5px 20px;
+		color: #fff;
+		cursor: pointer;
+	}
+	.code{margin: 15px 0 0;}
+	.code div{
+		padding-left: 25px;
+	}
+	#drawTypes ul{
+		text-align: center;
+		margin: 0;
+		padding: 0;
+	}
+	#drawTypes li{
+		display: inline-block;
+		padding: 5px 15px;
+		background: #0E7068;
+		margin: 5px 10px;
+		color: #fff;
+		font-size: 12px;
+		cursor: pointer;
+		border: 1px solid transparent;
+		border-width: 0 2px;
+
+		-webkit-transition: all .1s ease-in;
+		-o-transition: all .1s ease-in;
+		-moz-transition: all .1s ease-in;
+		-ms-transition: all .1s ease-in;
+	}
+	#modalBG{
+		background: #000;
+		opacity: 0.4;
+		position: fixed;
+		width: 100%;
+		height: 100%;
+		z-index: 90;
+		top: 0;
+		left: 0;
+		display: none;
+	}
+	#showDomain{
+		display: inline-block;
+		border-right: 10px solid #00E0FF;
+		border-bottom: 10px solid transparent;
+		border-top: 10px solid transparent;
+		text-indent: -99999px;
+		width: 0;
+		height: 0;
+		vertical-align: middle;
+		cursor: pointer;
+	}
+	#showDomain.rightBorder{
+		border-right: 0;
+		border-left: 10px solid #00E0FF;
+	}
+	#domain{width: 200px}
+	#imgUrl{width: 300px}
+	#clearUrl{
+		background: #FF5F5F;
+		border-radius: 50%;
+		color: white;
+		width: 21px;
+		line-height: 21px;
+		height: 21px;
+		display: inline-block;
+		cursor: pointer;
+	}
+	#drawTypes #clearSVG{
+		background: red;
+	}
+	#drawTypes .prevMap{
+		margin-left: 60px;
+		background: #26568A;
+		border: 1px solid transparent;
+		border-width: 0 2px;
+
+		-webkit-transition: all .1s ease-in;
+		-o-transition: all .1s ease-in;
+		-moz-transition: all .1s ease-in;
+		-ms-transition: all .1s ease-in;
+	}
+	#drawTypes .prevMap.hide,
+	#drawTypes li.activeType{
+		border-color: #F5FF00;
+	}
+	</style>
+</head>
+<body style="font-family: arial;">
+	<div class="choseImage" style="text-align: center;">
+		<h3 style="color: #61C7E0">Load image</h3>
+		<span id="showDomain" title="Domain (optional)">Domain</span>
+		<input id="domain" type="text" placeholder="Please enter image domain" style="display: none; border: 1px solid transparent">
+		<input style="border: 1px solid transparent" id="imgUrl" type="text" name="imgUrl" placeholder="Please enter image url" >
+		<span id="clearUrl">X</span>
+		<div style="text-align: center; margin: 10px 0;">
+			<input id="loadImage" type="submit" value="Load">
+		</div>
+	</div>
+	<div class="imageMapping" style="display: none;">
+		<div id="drawTypes" style="text-align: center; margin: 10px 0;">
+			<ul>
+				<li data-draw-type="rect">Rectangle</li>
+				<li data-draw-type="poly">Polygon</li>
+				<li data-draw-type="circle">Circle</li>
+				<li class="prevMap show">Preview</li>
+				<li id="clearSVG">Clear</li>
+			</ul>
+		</div>
+		<div class="map-area-wrapper" style="overflow: hidden; position: relative; margin: 0 auto; border: 1px solid #3F0;">
+			<img style="display: block;" src="">
+			<svg class="map-area"></svg>
+		</div>
+		<div style="text-align: center; margin: 10px 0;">
+			<input style="border: 1px solid transparent" id="mapName" type="text" name="usemapName" placeholder="Enter map name">
+		</div>
+		<div style="text-align: center; margin: 10px 0;">
+			<input id="generateMap" type="submit" value="Get HTML">
+		</div>
+	</div>
+	<div id="modalBG"></div>
+</body>
+</html>

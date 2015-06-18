@@ -1,0 +1,14 @@
+/* line 1, ../scss/_global.scss */
+html, body {
+  min-height: 100%;
+  height: 100%;
+  background: #EBF0A6;
+  color: #FFF;
+  margin: 0; }
+
+/* line 9, ../scss/_global.scss */
+canvas {
+  display: block;
+  margin: 0 auto; }
+
+/*# sourceMappingURL=base.css.map */

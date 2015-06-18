@@ -1,0 +1,24 @@
+doctype
+html
+	head
+		title AlexxxUA projects files
+		meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+		link(type='text/css', rel='stylesheet', href='/css/reset.css')
+		link(type='text/css', rel='stylesheet', href='/css/bootstrap.min.css')
+		link(type='text/css', rel='stylesheet', href='/css/style.css')
+	body
+		#section-container
+			#header
+				h1 File Explorer
+			#content(class='clearfix')
+				#dynamicContent
+					block explorer
+				block error404
+		include uploadSection
+		include contextMenu
+		#loading
+			img(src="/img/ajax-loader1.gif", width="32", height="32", alt="loader")
+		script(src='/js/jquery-1.11.2.min.js')
+		script(src='/js/underscore-min.js')
+		//script(src='/js/bootstrap.min.js')
+		script(src='/js/app.js')

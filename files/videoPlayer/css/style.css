@@ -1,0 +1,28 @@
+html{
+	height: 100%;
+}
+body{
+	background: #BDE7FF;
+	height: 100%;	
+}
+#container{
+	width: 650px;
+	margin: 0 auto;
+	background: #FFF;
+	min-height: 100%;
+}
+h1{
+    text-align: center;	
+    padding: 20px 0 0;
+    font: bold 31px arial;
+    color: #76CADF;
+    text-shadow: 3px 0px 2px #68797C;
+}
+.video-container{
+	text-align: center;
+	padding: 50px 0;
+}
+video{
+	width: 550px;
+	height: 310px;
+}

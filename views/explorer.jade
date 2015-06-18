@@ -1,0 +1,24 @@
+#explorerWrapper
+	#dirTree
+		ul
+			-for(var i=0; i< dirTree.length; i++)
+				li.dir
+					-if(dirTree.length-1 !== i)
+						a.js-dynamicReload(href="#{dirTree[i].link}" title="#{dirTree[i].title}") #{dirTree[i].title}
+							span.glyphicon.glyphicon-cloud-upload
+					-else
+						span #{dirTree[i].title}
+							span.glyphicon.glyphicon-cloud-upload
+	#fileTree.js-context-area
+		ul
+			each item in dirs
+				li.dir
+					a.js-dynamicReload.js-link-operations(href="#{item.link}" title="#{item.title}" data-type="dir" data-action-types="create rename delete")
+						div.glyphicon.glyphicon-cloud-upload
+						img(src="/img/fileTypes/folder.png")
+						span.js-file-name #{item.title}
+			each file in files
+				li.file
+					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete" target="_blank")
+						img(src="/img/fileTypes/#{file.imageName}.png")
+						span.js-file-name #{file.title}
