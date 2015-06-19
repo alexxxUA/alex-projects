@@ -99,6 +99,9 @@ var Channel = {
 		}
 		this.channels = channelListObj;
 	},
+	getTimeOnZone: function(time, tZone){
+		return curTime = new Date(time.getMonth() +' '+ time.getDate() +', '+ time.getYear() +' '+ time.getHours() +':'+ time.getMinutes() +':01 GMT+'+ tZone +'00');
+	},
 	getOffsetNextHour: function(){
 		var now = new Date,
 			nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()+1, 0, 0, 0);
@@ -106,7 +109,9 @@ var Channel = {
 		return nextHour - now;
 	},
 	getformatedDate: function(date){
-		return date.getDate() +'.'+ (date.getMonth()+1) +'.'+ date.getFullYear() +' '+ date.getHours() +':'+ ((date.getMinutes() < 10 ? '0' : '') + date.getMinutes());
+		var now = this.getTimeOnZone(date, 2);
+
+		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
 	getValidPlaylist: function(reqType, url){
 		var that = this,

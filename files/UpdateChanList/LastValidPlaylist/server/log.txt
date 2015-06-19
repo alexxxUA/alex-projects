@@ -20,3 +20,17 @@ Required count: 0
 Failed count: 1
 Failed channel list:
 	1. Discovery HD Showcase
+
+[INFO - 19.6.2015 17:32] Playlist updated.
+Updated count: 55
+Required count: 0
+Failed count: 1
+Failed channel list:
+	1. Discovery HD Showcase
+
+[INFO - 19.5.115 17:37] Playlist updated.
+Updated count: 55
+Required count: 0
+Failed count: 1
+Failed channel list:
+	1. Discovery HD Showcase
