@@ -100,7 +100,7 @@ var Channel = {
 		this.channels = channelListObj;
 	},
 	getTimeOnZone: function(time, tZone){
-		return curTime = new Date(time.getMonth() +' '+ time.getDate() +', '+ time.getYear() +' '+ time.getHours() +':'+ time.getMinutes() +':01 GMT+'+ tZone +'00');
+		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
 	getOffsetNextHour: function(){
 		var now = new Date,
