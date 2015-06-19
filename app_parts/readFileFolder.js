@@ -68,7 +68,7 @@ function readFolder(req, res){
 				dom.files.push({
 					link: path.join(req.path, file),
 					title: file,
-					imageName: fileType.get(file)
+					imageName: fileTypeIcon.get(file)
 				});
 			}
 			if(files.length-1 == i)

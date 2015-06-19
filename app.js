@@ -2,10 +2,15 @@
 	app			= express(),
 	path 		= require('path'),
 	open		= require('open'),
-	ip 			= require('ip'),
-	routes		= require('./app_parts/routes.js');
+	ip 			= require('ip');
 
+//Store global variables
 global.filesP = path.join(__dirname, 'files');
+
+//Load custom files
+var	routes		= require('./app_parts/routes.js'),
+	playlist	= require('./app_parts/playListUpdater.js');
+
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8888,
 	ip = process.env.OPENSHIFT_NODEJS_IP || ip.address(),
@@ -25,6 +30,9 @@ app.use(express.bodyParser());
 
 //Init Explorer app and routes
 routes.init(app);
+
+//Init playlist updater
+playlist.channel.init();
 
 //listen server
 app.listen(port, ip, function(err){

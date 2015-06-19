@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist version="1" xmlns="http://xspf.org/ns/0/">
+	<title>TV playlist: 19.6.2015 17:13; failed channels: 1</title>
+	<creator>Vasin Oleksiy</creator>
+	<trackList>
+		<track>
+			<title>1+1</title>
+			<location>b252c79b6e9399e7c016f4ad79b81e1ac619c150</location>
+		</track>
+		<track>
+			<title>СТБ</title>
+			<location>075b9e30c3b668fa4130bab783c8266c2943eb2f</location>
+		</track>
+		<track>
+			<title>Новый канал</title>
+			<location>3e99e8f6000ab9c171a2b34066b705f4934d6ae6</location>
+		</track>
+		<track>
+			<title>ICTV</title>
+			<location>173ce6c66c439915ee6a953d015c3776cde7f369</location>
+		</track>
+		<track>
+			<title>2+2</title>
+			<location>d8b34810b58761037f509334c4c394e5f7e38cf6</location>
+		</track>
+		<track>
+			<title>ТЕТ</title>
+			<location>339928aa78b57668442d33d0abc484cf5c395157</location>
+		</track>
+		<track>
+			<title>Интер</title>
+			<location>b90df9b2480467fe2c1b7ae59feb48fc69c9dd0b</location>
+		</track>
+		<track>
+			<title>ТРК Украина</title>
+			<location>90a01442376ffd39884b398f5134ddf6e83959c7</location>
+		</track>
+		<track>
+			<title>К1</title>
+			<location>b346d23fbf139a4b99291688b08f72edf5817b4c</location>
+		</track>
+		<track>
+			<title>К2</title>
+			<location>0f92d995975b1fc2758e76f0001eef1411073d95</location>
+		</track>
+		<track>
+			<title>2x2</title>
+			<location>5a53af36ef20edd665ca1ae2455309e116b65eb2</location>
+		</track>
+		<track>
+			<title>СТС</title>
+			<location>edf20efa8e0a8cac0236de8c148b5c72fb39dbc4</location>
+		</track>
+		<track>
+			<title>ТНТ</title>
+			<location>d50baedbe56963eea0bb8773ebd6b8e92ab49d8d</location>
+		</track>
+		<track>
+			<title>Перец</title>
+			<location>716fe576ddfb2514c65eb9e402186c90af22258c</location>
+		</track>
+		<track>
+			<title>Мега</title>
+			<location>7cef7dcdd1609b056feece91373914e90c2cfe97</location>
+		</track>
+		<track>
+			<title>QTV</title>
+			<location>7d5a7bef96460e5991da56b1833a6ae441e80d51</location>
+		</track>
+		<track>
+			<title>Viasat Explore HD</title>
+			<location>974d377cda43904ef8a226ca39b89dba763681a0</location>
+		</track>
+		<track>
+			<title>Discovery Investigation</title>
+			<location>dbb231d89bed2a272c0c89d0e19f7a083fbfc6f9</location>
+		</track>
+		<track>
+			<title>Discovery World</title>
+			<location>337984497cd3a438349cc7ec9445fcf58f9b9b62</location>
+		</track>
+		<track>
+			<title>Discovery Science</title>
+			<location>613c7b8f816eed2b58ac028ff3ab65440ec6e576</location>
+		</track>
+		<track>
+			<title>Discovery Channel HD</title>
+			<location>98d7d1f4265d0ad2024f3073f48b9f825b8a261e</location>
+		</track>
+		<track>
+			<title>National Geographic</title>
+			<location>dc9ddf859a78942169a3f42db9ac87d6fdd37135</location>
+		</track>
+		<track>
+			<title>National Geographic HD</title>
+			<location>3f1af95e9d98c8edb03ff7f2ad23699114341490</location>
+		</track>
+		<track>
+			<title>Nat Geo Wild HD</title>
+			<location>cc57c272d67ff0134290f107a4eb4ab03acfdaf8</location>
+		</track>
+		<track>
+			<title>Animal Planet HD</title>
+			<location>085e36016a05ca1fba8b144ee6fde551e300124c</location>
+		</track>
+		<track>
+			<title>Моя Планета</title>
+			<location>283a65240083c7859c7c0fc2bbdbe1bbc8bed7b5</location>
+		</track>
+		<track>
+			<title>Техно 24</title>
+			<location>03cf3a06630d53204987d0e0e52094bb4c270aeb</location>
+		</track>
+		<track>
+			<title>НЛО ТВ</title>
+			<location>4f8b40752a45c005e70e007cea02778bcb41d9a2</location>
+		</track>
+		<track>
+			<title>Travel channel</title>
+			<location>b48fbd5eb05fca52369fc0e04a3c4ff9178523ea</location>
+		</track>
+		<track>
+			<title>Драйв ТВ</title>
+			<location>f5722c928bf6acf7c5a2f9c12d26891b58581b0b</location>
+		</track>
+		<track>
+			<title>Extreme Sports</title>
+			<location>c732dea4a0def910af584f690d47fbbac9af1108</location>
+		</track>
+		<track>
+			<title>English Club TV</title>
+			<location>ee82381172121b039172b79a9979d0214b3d1ca4</location>
+		</track>
+		<track>
+			<title>Fox Life HD</title>
+			<location>fb884cc75740504f800ecd488ff153f532a94c9e</location>
+		</track>
+		<track>
+			<title>TV1000</title>
+			<location>fa4332a08438af6c4d06929132cabb1a0796e48c</location>
+		</track>
+		<track>
+			<title>TV1000 ACTION</title>
+			<location>8732136ce510c4d052ca5c8c5074d2c1d9146f70</location>
+		</track>
+		<track>
+			<title>TV1000 Comedy HD</title>
+			<location>7e4a7d0d9e7e86dc56624c734a7c14c5ceabf374</location>
+		</track>
+		<track>
+			<title>TV1000 Megahit HD</title>
+			<location>553319060e530f81c17b136d1d8950104c6a6539</location>
+		</track>
+		<track>
+			<title>TV1000 Premium HD</title>
+			<location>a1e91632d24e7abbc4949f657241d4e2f9ae75b6</location>
+		</track>
+		<track>
+			<title>Amedia 1</title>
+			<location>c4df86bc2be3fa04796e791adbeb4d4f55d3fbd4</location>
+		</track>
+		<track>
+			<title>Amedia 2</title>
+			<location>36051d46ab8f988f51ead25caae0c1b2ce3eef6a</location>
+		</track>
+		<track>
+			<title>Amedia Premium HD</title>
+			<location>21ed894284a1f83be20bbde41f6ee60a142af123</location>
+		</track>
+		<track>
+			<title>SET HD</title>
+			<location>9705443908be013abed52438a9d7e44509baa880</location>
+		</track>
+		<track>
+			<title>HD Кино 2</title>
+			<location>c6d1ad642d2d5fdc9d48a7298e5d6dce3c4fb897</location>
+		</track>
+		<track>
+			<title>MTV Hits</title>
+			<location>d57c38aeff5b317bd2f97492afad8dac54b93a75</location>
+		</track>
+		<track>
+			<title>MTV Dance</title>
+			<location>ea24438fa829b0d1385515e067a46078d4d043ef</location>
+		</track>
+		<track>
+			<title>Music Box UA</title>
+			<location>568c15a5997cdcf7be2cf134af1558b3c46cdf73</location>
+		</track>
+		<track>
+			<title>М1</title>
+			<location>f882bb62f2303256267747dd0c8adba9753f109c</location>
+		</track>
+		<track>
+			<title>М2</title>
+			<location>d4c2a44867533619e7419235968f6f2fe8e50d73</location>
+		</track>
+		<track>
+			<title>O-TV</title>
+			<location>4dbe78816fdc3290a0a72d094a3c6a772ba45779</location>
+		</track>
+		<track>
+			<title>A-ONE</title>
+			<location>37d082fb9084358eecafcfd27e90b36a3b1d23f5</location>
+		</track>
+		<track>
+			<title>Cartoon Network</title>
+			<location>b1bb6fa20bc4deeb38ec2ad6f947b50195ead228</location>
+		</track>
+		<track>
+			<title>Disney Channel</title>
+			<location>784e7b49c508f2d86710ab7d18252cb994efd19a</location>
+		</track>
+		<track>
+			<title>Nickelodeon HD</title>
+			<location>97bafbaa860006aaa93bd34e48c0234477e4d398</location>
+		</track>
+		<track>
+			<title>Детский</title>
+			<location>125594ce6fa7e5ce1f5b82837cda787e1ca6dd86</location>
+		</track>
+		<track>
+			<title>Мультимания</title>
+			<location>e15ab3abc3bd3ce2c883fa88f290340891b75759</location>
+		</track>
+	</trackList>
+</playlist>

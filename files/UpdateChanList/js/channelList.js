@@ -72,4 +72,9 @@ var channelList = [
 	{dName: 'Nickelodeon', sName: 'Nickelodeon', flags: 'hd req'},
 	{dName: 'Детский', sName: 'Детский', flags: ''},
 	{dName: 'Мультимания', sName: 'Мультимания', flags: ''}
-]
+];
+
+
+//Export channel list for server side
+if(typeof module != 'undefined')
+	module.exports.channelList = channelList;
