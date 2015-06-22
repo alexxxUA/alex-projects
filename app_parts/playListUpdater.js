@@ -1,6 +1,7 @@
 var needle = require('needle'),
 	path = require('path'),
 	fs = require('fs'),
+	prependFile = require('prepend-file'),
 	_ = require('underscore'),
 	channels = require('./../files/UpdateChanList/js/channelList.js').channelList;
 
@@ -21,10 +22,10 @@ var Channel = {
 	playlistPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/TV_List.xspf'),
 	logPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/log.txt'),
 	playlistUrl: 'http://www.trambroid.com/playlist.xspf',
-	_report: _.template('Playlist updated.'+
-		'\nUpdated count: <%= updatedList.length %>'+
-		'\nRequired count: <%= reqFailedList.length %>'+
-		'\nFailed count: <%= failedList.length %>'+
+	_report: _.template('Playlist (<%= date %>) - updated.'+
+		'\nUpdated: <%= updatedList.length %>'+
+		'\nRequired failed: <%= reqFailedList.length %>'+
+		'\nFailed: <%= failedList.length %>'+
 		'\nFailed channel list:'+
 		'<% _.each(failedList, function(item, index) { '+
 			'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
@@ -35,19 +36,13 @@ var Channel = {
 		reqFailedList: [],
 		failedList: []
 	},
-	createLogStream: function(){
-		this.logStream = fs.createWriteStream(this.logPath, {
-			flags: 'a'
-		});
-	},
 	logInfo: function(msg){
-		this.logStream.write('\n\n[INFO - '+ this.getformatedDate(new Date) +'] '+ msg);
+		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	logErr: function(msg){
-		this.logStream.write('\n\n[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg);
+		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function() {
-		this.createLogStream();
 		this.setChannelListConfig(channels);
 		this.getValidPlaylist('GET', this.playlistUrl);
 
@@ -192,7 +187,7 @@ var Channel = {
 			'\n</playlist>';
 	},
 	getReport: function(){
-		var report = this._report(this.extendObj(this.report, {date: this.getformatedDate(new Date())} ));
+		var report = this._report(this.extendObj(this.report, {date: this.getformatedDate(new Date(this.validList.lModified))} ));
 
 		this.logInfo(report);
 	},

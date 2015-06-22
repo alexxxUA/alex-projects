@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <playlist version="1" xmlns="http://xspf.org/ns/0/">
-	<title>TV playlist: 19.6.2015 18:02; failed channels: 1</title>
+	<title>TV playlist: 22.6.2015 10:22; failed channels: 9</title>
 	<creator>Vasin Oleksiy</creator>
 	<trackList>
 		<track>
@@ -70,38 +70,6 @@
 		<track>
 			<title>Viasat Explore HD</title>
 			<location>974d377cda43904ef8a226ca39b89dba763681a0</location>
-		</track>
-		<track>
-			<title>Discovery Investigation</title>
-			<location>dbb231d89bed2a272c0c89d0e19f7a083fbfc6f9</location>
-		</track>
-		<track>
-			<title>Discovery World</title>
-			<location>337984497cd3a438349cc7ec9445fcf58f9b9b62</location>
-		</track>
-		<track>
-			<title>Discovery Science</title>
-			<location>613c7b8f816eed2b58ac028ff3ab65440ec6e576</location>
-		</track>
-		<track>
-			<title>Discovery Channel HD</title>
-			<location>98d7d1f4265d0ad2024f3073f48b9f825b8a261e</location>
-		</track>
-		<track>
-			<title>National Geographic</title>
-			<location>dc9ddf859a78942169a3f42db9ac87d6fdd37135</location>
-		</track>
-		<track>
-			<title>National Geographic HD</title>
-			<location>3f1af95e9d98c8edb03ff7f2ad23699114341490</location>
-		</track>
-		<track>
-			<title>Nat Geo Wild HD</title>
-			<location>cc57c272d67ff0134290f107a4eb4ab03acfdaf8</location>
-		</track>
-		<track>
-			<title>Animal Planet HD</title>
-			<location>085e36016a05ca1fba8b144ee6fde551e300124c</location>
 		</track>
 		<track>
 			<title>Моя Планета</title>
