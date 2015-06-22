@@ -16,8 +16,11 @@ function init(app){
 			body = '';
 
 		req.pipe( wStream );
-		wStream.on('close', function(){
+		wStream.on('finish', function(){
 			res.send("Success!");
+		});
+		wStream.on('error', function(){
+			res.status(500).send("Error in saving file.");
 		});
 	});
 

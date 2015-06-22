@@ -97,6 +97,7 @@ function FileExplorer(param){
 			contextActionList: '.js-context-action-list',
 			contextActionListItem: '.js-context-action',
 			cancelActionLink: '.js-action-cancel',
+			hideUploadWindow: '.js-hide-upload',
 			downloadActionLink: '.js-download'
 		};
 	param = param ? param : defaults;
@@ -163,9 +164,8 @@ FileExplorer.prototype.registerEvents = function(){
 		that.cancelAction();
 	});
 
-	$(document).on('click', that.downloadActionLink, function(e){
-		that.hideContextMenu();
-	});
+	$(document).on('click', that.downloadActionLink, $.proxy(that.hideContextMenu, that));
+	$(document).on('click', that.hideUploadWindow, $.proxy(that.hideUploadSection, that));
 }
 FileExplorer.prototype.onDragMove = function(e){
 	var $link = this.getNodeByE(e, this.rLink);
@@ -210,7 +210,13 @@ FileExplorer.prototype.fileDroped = function(e){
 	}
 
 	$(that.dropZone).removeClass('file-hover').addClass('file-drop');
-	$(that.uploadSection).removeClass('panel-hide');
+	that.showUploadSection();
+}
+FileExplorer.prototype.showUploadSection = function(){
+	$(this.uploadSection).removeClass('panel-hide');
+}
+FileExplorer.prototype.hideUploadSection = function(){
+	$(this.uploadSection).addClass('panel-hide');
 }
 FileExplorer.prototype.appendObject2Array = function(array, object){
 	for(var i=0; array.length > i; i++){
@@ -285,6 +291,9 @@ FileExplorer.prototype.readyFileStatus = function(file, $file, e){
 
 		//Update upload size
 		this.uploadedSize += file.size;
+
+		//Refresh page
+		navigation.refreshPage();
 
 		//Upload next
 		if(nextFile){

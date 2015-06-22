@@ -343,3 +343,17 @@ to { color: #92F099; }
 		padding: 0 10px 10px;
 	}
 }
+.js-upload-section .panel{
+	position: relative;
+}
+.js-hide-upload{
+	position: absolute;
+	right: 15px;
+	top: 10px;
+	width: 0;
+	height: 0;
+	cursor: pointer;
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid #20668D;
+}
