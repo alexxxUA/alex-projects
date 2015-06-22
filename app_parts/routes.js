@@ -11,11 +11,14 @@ function init(app){
 		var fName = req.header('x-file-name'),
 			fPath = req.header('x-file-path'),
 			fRelativePath = path.join(fPath, fName),
-			fFullPath = decodeURI(path.join(filesP, fRelativePath));
+			fFullPath = decodeURI(path.join(filesP, fRelativePath)),
+			wStream = fs.createWriteStream(fFullPath),
 			body = '';
 
-		req.pipe( fs.createWriteStream(fFullPath) );
-		res.send("Success!");
+		req.pipe( wStream );
+		wStream.on('close', function(){
+			res.send("Success!");
+		});
 	});
 
 	app.get('/create', function(req, res){

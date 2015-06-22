@@ -250,23 +250,23 @@ FileExplorer.prototype.setFiles2Template = function(files){
 }
 FileExplorer.prototype.uploadFile = function(file){
 	var that = this,
-		$file = $($(that.fileItem)[that.allFiles.indexOf(file)]);
+		$file = $($(that.fileItem)[that.allFiles.indexOf(file)]),
+		xhr = new XMLHttpRequest();
 
-	var xhr = new XMLHttpRequest();
-		xhr.upload.addEventListener('progress', function(e){
-			var percent = e.loaded / e.total * 100,
-				$progBar = $file.find(that.fileItemProg);
+	xhr.upload.addEventListener('progress', function(e){
+		var percent = e.loaded / e.total * 100,
+			$progBar = $file.find(that.fileItemProg);
 
-			that.updateProg($progBar, percent);
-		}, false);
+		that.updateProg($progBar, percent);
+	}, false);
 
-		xhr.onreadystatechange = function(e){
-			that.readyFileStatus(file, $file, e);
-		};
-		xhr.open('POST', '/upload');
-        xhr.setRequestHeader('X-FILE-NAME', encodeURIComponent(file.name));
-        xhr.setRequestHeader('X-FILE-PATH', file.path);
-		xhr.send(file);
+	xhr.onreadystatechange = function(e){
+		that.readyFileStatus(file, $file, e);
+	};
+	xhr.open('POST', '/upload');
+	xhr.setRequestHeader('X-FILE-NAME', encodeURIComponent(file.name));
+	xhr.setRequestHeader('X-FILE-PATH', file.path);
+	xhr.send(file);
 }
 FileExplorer.prototype.updateProg = function($progBar, percent){
 	 var percent = parseInt(percent);
