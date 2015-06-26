@@ -242,7 +242,10 @@ var Channel = {
 			that.getList();
 		},
 		function(err){
-			that.showErrorModal('Playlist not found at: '+ data.url +'.');
+            var isNotFound = err.responseText == data.url,
+                errMsg = isNotFound ? 'Playlist not found at: '+ data.url +'.' : 'Error in geting playlist: ' + data.url +'.<br> Server is not responding.';
+			
+            that.showErrorModal(errMsg);
 		});
 	},
 	getSearchChannelUrl: function(channelName) {
@@ -404,7 +407,6 @@ var Channel = {
 				if(onSuccess) onSuccess.call(that, response);
 			},
 			error: function(err){
-				if(err.responseText) err.responseText = JSON.parse(err.responseText);
 				if(onError) onError.call(that, err);
 			}
 		});

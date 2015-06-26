@@ -1,4 +1,4 @@
-﻿var mime 		= require('mime'),
+var mime 		= require('mime'),
 	fs 			= require('fs'),
 	needle		= require('needle'),
 	mkdirp 		= require('mkdirp'),
@@ -69,7 +69,7 @@ function init(app){
 
 		needle.request(req.query.type, req.query.url, req.query.data, reqOptions, function(err, resp) {
 			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				res.status(500).send({url: req.query.url});
+				res.status(500).send(req.query.url);
 				return;
 			}
 			var data = {
