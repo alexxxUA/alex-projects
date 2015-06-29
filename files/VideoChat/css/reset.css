@@ -8,7 +8,7 @@ small, strong, sub, sup, var,
 b, i, ruby, dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure, 
+article, aside, canvas, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section, summary,
 time, mark, audio, video {
     margin:0;
@@ -28,7 +28,7 @@ body {
 }
 
 article,aside,details,figcaption,figure,
-footer,header,hgroup,menu,nav,section { 
+footer,header,hgroup,menu,nav,section {
     display:block;
 }
 
@@ -63,7 +63,7 @@ ins {
 
 mark {
     background-color:#ff9;
-    color:#000; 
+    color:#000;
     font-style:italic;
     font-weight:bold;
 }
@@ -86,7 +86,7 @@ table {
 hr {
     display:block;
     height:1px;
-    border:0;   
+    border:0;
     border-top:1px solid #cccccc;
     margin:1em 0;
     padding:0;
@@ -97,24 +97,5 @@ hr {
 input, select {
     vertical-align:middle;
     padding: 0;
-    margin: 0; 
-}
-
-/* When it's printed it won't show the text in the Href but it will show the Link it-self<br />
-
-Eg: <a href="http://example.com">This is a Link</a>
-    When you print it you get the Text Node in the Link.
-    
-    This fixes it.
-    
-    And gives you the actual link if it was for Print. 
-    
-    Remember to change #main-content to the main content of your page (where you have the main content)
-    
-    YadaYadaYada........
- */
- 
- @media print  {
-    #main-content a[href]:after  {
-     " (" attr(href) ") ";
+    margin: 0;
 }

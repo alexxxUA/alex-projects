@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html ng-app="videoChat">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Video chat</title>
+    <!-- <link rel="stylesheet" href="css/base_min.css"> -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/bootstrap_3.2.0.min.css">
+    <link rel="stylesheet" href="css/base.css">
+</head>
+
+<body ng-controller="ChatController as chat">
+    <header class="container">
+        <div class="connect-bar">
+            <input type="button" class="btn btn-info" value="Connect" ng-click="connect()">
+        </div>
+    </header>
+    <div class="container">
+        {{ text }}
+    </div>
+    <footer></footer>
+    <div class="script-section">
+        <script src="app/librarys/icecomm.js"></script>
+        <script src="app/librarys/angular1.3.14.min.js"></script>
+        <script src="app/app.js"></script>
+        <script src="app/controllers/mainController.js"></script>
+        <script src="app/directives/mainDirective.js"></script>
+        <!-- <script type="text/javascript" src="js/app_min.js"></script> -->
+        <script src="http://localhost:12345/livereload.js"></script>
+    </div>
+</body>
+
+</html>

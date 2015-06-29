@@ -1,0 +1,3 @@
+/files/**/node_modules/
+/files/**/.sass-cache/
+*/.sass-cache/
