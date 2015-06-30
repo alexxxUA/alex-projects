@@ -1,16 +1,18 @@
 /* line 1, ../scss/_global.scss */
 html, body {
-  min-height: 100%;
   height: 100%;
-  margin: 0; }
+  min-height: 100%;
+  margin: 0;
+  color: #FFF; }
 
 /* line 8, ../scss/_global.scss */
-body {
-  background-size: cover;
-  color: #FFF;
-  position: relative; }
-/* line 13, ../scss/_global.scss */
-body:before {
+.main-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  background-size: cover; }
+/* line 15, ../scss/_global.scss */
+.main-wrap:before {
   content: '';
   position: absolute;
   width: 100%;
@@ -18,18 +20,12 @@ body:before {
   background: #000;
   opacity: .4; }
 
-/* line 23, ../scss/_global.scss */
-.main-wrap {
-  position: relative;
-  z-index: 1;
-  height: 100%; }
-
-/* line 29, ../scss/_global.scss */
+/* line 25, ../scss/_global.scss */
 .connect-bar {
   position: relative;
   text-align: center;
   padding: 10px 0; }
-/* line 33, ../scss/_global.scss */
+/* line 29, ../scss/_global.scss */
 .connect-bar:before {
   content: '';
   position: absolute;
@@ -39,59 +35,80 @@ body:before {
   height: 100%;
   background: #000;
   opacity: 0.3; }
-/* line 43, ../scss/_global.scss */
+/* line 39, ../scss/_global.scss */
 .connect-bar .btn {
   position: relative;
   z-index: 1; }
-/* line 47, ../scss/_global.scss */
+/* line 43, ../scss/_global.scss */
 .connect-bar .btn-danger {
   display: none; }
 
-/* line 52, ../scss/_global.scss */
+/* line 48, ../scss/_global.scss */
 .my-stream-container {
-  height: 70%;
   padding: 65px 0 10px;
   text-align: center;
-  box-sizing: border-box; }
-/* line 57, ../scss/_global.scss */
+  height: 70%; }
+/* line 52, ../scss/_global.scss */
 .my-stream-container video {
   height: 100%; }
 
-/* line 62, ../scss/_global.scss */
+/* line 57, ../scss/_global.scss */
 .main-container {
   display: none;
-  height: 100%;
-  width: 100%;
-  position: absolute;
   top: 0;
-  left: 0; }
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%; }
 
-/* line 71, ../scss/_global.scss */
-.pears-container {
-  position: fixed;
+/* line 66, ../scss/_global.scss */
+.peers-container {
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 30%;
-  text-align: center; }
-/* line 78, ../scss/_global.scss */
-.pears-container video {
+  text-align: center;
+  font-size: 0; }
+/* line 74, ../scss/_global.scss */
+.peers-container video {
   height: 100%;
   margin: 0 5px; }
 
-/* line 85, ../scss/_global.scss */
+/* line 81, ../scss/_global.scss */
 .main-wrap.connected .main-container {
   display: block; }
-/* line 89, ../scss/_global.scss */
+/* line 85, ../scss/_global.scss */
 .main-wrap.connected .connect-bar .btn-danger {
   display: inline-block; }
-/* line 92, ../scss/_global.scss */
+/* line 88, ../scss/_global.scss */
 .main-wrap.connected .connect-bar .btn-info {
   display: none; }
 
 @media (max-width: 991px) {
-  /* line 99, ../scss/_global.scss */
+  /* line 95, ../scss/_global.scss */
+  .main-container {
+    position: static; }
+
+  /* line 98, ../scss/_global.scss */
   video {
-    max-width: 100%; } }
+    max-width: 100%; }
+
+  /* line 101, ../scss/_global.scss */
+  .my-stream-container {
+    padding: 10px; }
+  /* line 103, ../scss/_global.scss */
+  .my-stream-container video {
+    height: auto; }
+
+  /* line 107, ../scss/_global.scss */
+  .peers-container {
+    height: auto;
+    position: static; }
+  /* line 111, ../scss/_global.scss */
+  .peers-container video {
+    height: 110px;
+    max-width: 45%;
+    margin: 0 5px 5px; } }
 
 /*# sourceMappingURL=base.css.map */

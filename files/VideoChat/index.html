@@ -21,13 +21,12 @@
             <div class="my-stream-container">
                 <video autoplay ng-src="{{local.trustStream}}"></video>
             </div>
-            <div class="pears-container">
-                <video ng-repeat="peer in peers" autoplay ng-src="{{peer.trustStream}}"></video>
-            </div>
+            <div class="peers-container"></div>
         </div>
     </div>
     <div class="script-section">
-        <script src="app/librarys/icecomm.js"></script> 
+        <script src="app/librarys/icecomm.js"></script>
+        <script src="app/librarys/jquery-2.1.4.min.js"></script>
         <script src="app/librarys/angular1.3.16.min.js"></script>
         <script src="app/app.js"></script>
         <script src="app/controllers/mainController.js"></script>

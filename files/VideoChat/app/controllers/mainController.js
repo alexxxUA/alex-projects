@@ -2,10 +2,25 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
     $scope.room = $location.hash();
     $scope.local = null;
     $scope.peers = [];
+    $scope.peerCont = $('.peers-container');
+    $scope.getVideo = function(data){
+        return '<video autoplay src="'+ data.trustStream +'" id="'+ data.ID +'"></video>';
+    };
+    $scope.appendVideo = function($cont, data){
+        $cont.append($scope.getVideo(data));
+    };
+    $scope.removeVideo = function(ID){
+        $('#'+ ID).remove();
+    };
     $scope.connect = function () {
         comm.connect($scope.room, {
             audio: false
         });
+    };
+    $scope.leave = function () {
+        comm.leave();
+        $scope.peers = [];
+        $scope.local = null;
     };
     $scope.getTrustStream = function (peerArray){
         angular.forEach(peerArray, function(val, key) {
@@ -45,25 +60,22 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
                 break;
         }
     };
-    $scope.leave = function () {
-        comm.leave();
-        $scope.local = null;
+    $scope.addPeer = function(peer){
+        
     };
+    comm.on('data', $scope.routeData);
     comm.on('local', function (peer) {
         $scope.local = $scope.getTrustStream([peer])[0];
 
         $scope.$apply();
     });
     comm.on('connected', function(peer){
-        $timeout(function() {
-            $scope.peers.push($scope.getTrustStream([peer])[0]);            
-        });
+        $scope.peers.push($scope.getTrustStream([peer])[0]);
+        $scope.appendVideo($scope.peerCont, peer);
     });
-    comm.on('data', $scope.routeData);
-
     comm.on('disconnect', function (peer) {
-        $timeout(function() {
-            $scope.peers.splice($scope.peers.indexOf(peer), 1);            
-        });
+        $scope.peers.splice($scope.peers.indexOf(peer), 1);
+        
+        $scope.removeVideo(peer.ID);
     });
 });
