@@ -23,6 +23,20 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
         
         comm.send(sendData);
     };
+    $scope.peerConnected = function (peer) {
+        var sendPeers = $scope.peers.concat($scope.local);
+        if( comm.isHost() )
+            $scope.sendData(sendPeers, 'setPeers', peer.ID);
+
+        peer.trustStream = $sce.trustAsResourceUrl(peer.stream);
+        $scope.peers.push(peer);
+
+        $scope.$apply();
+    };
+    $scope.setPeers = function (peers) {
+        $scope.peers = $scope.getTrustStream(peers);
+        $scope.$apply();
+    };
     $scope.routeData = function (res) {
         var dataType = res.data.type,
             forID = res.data.forID,
@@ -49,21 +63,26 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
         comm.leave();
         $scope.local = null;
     };
+    $scope.sendOnLocalConnect = function (peer) {
+        $scope.sendData(peer, 'connected');
+        $log.debug(peer.ID);
+    };
+
     comm.on('local', function (peer) {
         $scope.local = $scope.getTrustStream([peer])[0];
+        $timeout(function () {
+            $scope.sendOnLocalConnect(peer);
+        }, 1000);
 
-        $scope.$apply();
+        //$scope.$apply();
     });
-    comm.on('connected', function(peer){
-        $timeout(function() {
-            $scope.peers.push($scope.getTrustStream([peer])[0]);            
-        });
-    });
+
     comm.on('data', $scope.routeData);
 
     comm.on('disconnect', function (peer) {
         $timeout(function() {
             $scope.peers.splice($scope.peers.indexOf(peer), 1);            
         });
+        //$scope.$apply();
     });
 });
