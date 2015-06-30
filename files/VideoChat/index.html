@@ -22,12 +22,12 @@
                 <video autoplay ng-src="{{local.trustStream}}"></video>
             </div>
             <div class="pears-container">
-                <video ng-repeat="peer in peers track by $index" autoplay ng-src="{{peer.trustStream}}"></video>
+                <video ng-repeat="peer in peers" autoplay ng-src="{{peer.trustStream}}"></video>
             </div>
         </div>
     </div>
     <div class="script-section">
-        <script type="text/javascript" src="http://cdn.icecomm.io/icecomm.js"></script> 
+        <script src="app/librarys/icecomm.js"></script> 
         <script src="app/librarys/angular1.3.16.min.js"></script>
         <script src="app/app.js"></script>
         <script src="app/controllers/mainController.js"></script>
