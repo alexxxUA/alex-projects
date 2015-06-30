@@ -72,7 +72,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
         $scope.local = $scope.getTrustStream([peer])[0];
         $timeout(function () {
             $scope.sendOnLocalConnect(peer);
-        }, 500);
+        }, 1000);
 
         //$scope.$apply();
     });
