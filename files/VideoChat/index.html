@@ -2,39 +2,39 @@
 <html ng-app="videoChat">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-	<title>Video chat</title>
-	<!-- <link rel="stylesheet" href="css/base_min.css"> -->
-	<link rel="stylesheet" href="css/reset.css">
-	<link rel="stylesheet" href="css/bootstrap_3.2.0.min.css">
-	<link rel="stylesheet" href="css/base.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Video chat</title>
+    <!-- <link rel="stylesheet" href="css/base_min.css"> -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/bootstrap_3.2.0.min.css">
+    <link rel="stylesheet" href="css/base.css">
 </head>
 
 <body ng-controller="ChatController as chat">
-	<div class="container" ng-class="{'connected': local.stream}">
-		<header class="connect-bar">
-			<input type="button" class="btn btn-info" value="Connect" ng-click="connect()">
-			<input type="button" class="btn btn-danger" value="Leave" ng-click="leave()">
-		</header>
-		<div class="main-container">
-			<div class="my-stream-container">
-				<video autoplay ng-src="{{local.stream}}"></video>
-			</div>
-			<div class="pears-container" ng-repeat="peer in peers">
-				<video autoplay ng-src="{{peer.stream}}"></video>
-			</div>
-		</div>
-	</div>
-	<div class="script-section">
-		<script src="app/librarys/icecomm.js"></script>
-		<script src="app/librarys/angular1.3.16.min.js"></script>
-		<script src="app/app.js"></script>
-		<script src="app/controllers/mainController.js"></script>
-		<script src="app/directives/mainDirective.js"></script>
-		<!-- <script type="text/javascript" src="js/app_min.js"></script> -->
-		<script src="http://localhost:12345/livereload.js"></script>
-	</div>
+    <div class="main-wrap" ng-class="{'connected': local.trustStream}">
+        <header class="connect-bar">
+            <input type="button" class="btn btn-info" value="Connect" ng-click="connect()">
+            <input type="button" class="btn btn-danger" value="Leave" ng-click="leave()">
+        </header>
+        <div class="main-container">
+            <div class="my-stream-container">
+                <video autoplay ng-src="{{local.trustStream}}"></video>
+            </div>
+            <div class="pears-container">
+                <video ng-repeat="peer in peers track by $index" autoplay ng-src="{{peer.trustStream}}"></video>
+            </div>
+        </div>
+    </div>
+    <div class="script-section">
+        <script type="text/javascript" src="http://cdn.icecomm.io/icecomm.js"></script> 
+        <script src="app/librarys/angular1.3.16.min.js"></script>
+        <script src="app/app.js"></script>
+        <script src="app/controllers/mainController.js"></script>
+        <script src="app/directives/mainDirective.js"></script>
+        <!-- <script type="text/javascript" src="js/app_min.js"></script> -->
+        <script src="http://localhost:12345/livereload.js"></script>
+    </div>
 </body>
 
 </html>
