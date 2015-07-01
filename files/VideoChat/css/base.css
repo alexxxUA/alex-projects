@@ -93,7 +93,7 @@ video {
   padding: 65px 0 0;
   text-align: center;
   font-size: 0;
-  height: 70%; }
+  height: 65%; }
 /* line 104, ../scss/_global.scss */
 .peers-container video {
   height: 100%; }
@@ -156,7 +156,7 @@ video {
 /* line 130, ../scss/_global.scss */
 .chat-stream-container {
   width: 990px;
-  height: 30%;
+  height: 35%;
   margin: 0 auto;
   padding-bottom: 10px; }
 
@@ -191,8 +191,8 @@ video {
 /* line 166, ../scss/_global.scss */
 .chat-msgs {
   position: absolute;
-  top: 42px;
-  bottom: 80px;
+  top: 40px;
+  bottom: 70px;
   left: 0;
   width: 100%;
   overflow-y: auto;
@@ -200,17 +200,16 @@ video {
 
 /* line 175, ../scss/_global.scss */
 .chat-send-msg {
-  height: 80px;
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%; }
-/* line 182, ../scss/_global.scss */
+/* line 181, ../scss/_global.scss */
 .chat-send-msg textarea {
-  height: 80px;
+  height: 70px;
   resize: none;
   border-radius: 0; }
-/* line 187, ../scss/_global.scss */
+/* line 186, ../scss/_global.scss */
 .chat-send-msg .btn {
   height: 100%;
   padding: 0 12px;
@@ -218,58 +217,58 @@ video {
   border-radius: 0; }
 
 @media (max-width: 991px) {
-  /* line 196, ../scss/_global.scss */
+  /* line 195, ../scss/_global.scss */
   .chat-stream-container, .my-stream-container {
     width: auto; }
 
-  /* line 200, ../scss/_global.scss */
+  /* line 199, ../scss/_global.scss */
   .my-stream-container {
     padding: 10px; }
 
-  /* line 204, ../scss/_global.scss */
+  /* line 203, ../scss/_global.scss */
   .peers-container .video-wrap {
     height: auto; }
-  /* line 207, ../scss/_global.scss */
+  /* line 206, ../scss/_global.scss */
   .peers-container video {
     height: auto; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-1 .video-wrap {
     width: 100%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-2 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-3 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-4 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-5 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-6 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-7 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-8 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-9 .video-wrap {
     width: 50%; }
 
-  /* line 220, ../scss/_global.scss */
+  /* line 219, ../scss/_global.scss */
   .peers-10 .video-wrap {
     width: 50%; } }
 
