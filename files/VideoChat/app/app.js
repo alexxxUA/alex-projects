@@ -7,4 +7,8 @@ app.config(function ($locationProvider) {
 		requireBase: false,
 		rewriteLinks: false
 	});
+}).run(function($rootScope){
+    $rootScope.objectSize = function(obj){
+        return Object.keys(obj).length;
+    };
 });

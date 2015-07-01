@@ -5,13 +5,13 @@ html, body {
   margin: 0;
   color: #FFF; }
 
-/* line 8, ../scss/_global.scss */
+/* line 13, ../scss/_global.scss */
 .main-wrap {
   position: relative;
   z-index: 1;
   min-height: 100%;
   background-size: cover; }
-/* line 15, ../scss/_global.scss */
+/* line 20, ../scss/_global.scss */
 .main-wrap:before {
   content: '';
   position: absolute;
@@ -20,12 +20,52 @@ html, body {
   background: #000;
   opacity: .4; }
 
-/* line 25, ../scss/_global.scss */
+/* line 38, ../scss/_global.scss */
+.peers-1 video {
+  width: 100%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-2 video {
+  width: 50%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-3 video {
+  width: 33.33333%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-4 video {
+  width: 25%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-5 video {
+  width: 20%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-6 video {
+  width: 20%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-7 video {
+  width: 20%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-8 video {
+  width: 20%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-9 video {
+  width: 20%; }
+
+/* line 38, ../scss/_global.scss */
+.peers-10 video {
+  width: 20%; }
+
+/* line 42, ../scss/_global.scss */
 .connect-bar {
   position: relative;
   text-align: center;
   padding: 10px 0; }
-/* line 29, ../scss/_global.scss */
+/* line 46, ../scss/_global.scss */
 .connect-bar:before {
   content: '';
   position: absolute;
@@ -35,24 +75,15 @@ html, body {
   height: 100%;
   background: #000;
   opacity: 0.3; }
-/* line 39, ../scss/_global.scss */
+/* line 56, ../scss/_global.scss */
 .connect-bar .btn {
   position: relative;
   z-index: 1; }
-/* line 43, ../scss/_global.scss */
+/* line 60, ../scss/_global.scss */
 .connect-bar .btn-danger {
   display: none; }
 
-/* line 48, ../scss/_global.scss */
-.my-stream-container {
-  padding: 65px 0 10px;
-  text-align: center;
-  height: 70%; }
-/* line 52, ../scss/_global.scss */
-.my-stream-container video {
-  height: 100%; }
-
-/* line 57, ../scss/_global.scss */
+/* line 64, ../scss/_global.scss */
 .main-container {
   display: none;
   top: 0;
@@ -61,54 +92,100 @@ html, body {
   width: 100%;
   height: 100%; }
 
-/* line 66, ../scss/_global.scss */
-.peers-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+/* line 72, ../scss/_global.scss */
+.chat-stream-container {
+  width: 990px;
   height: 30%;
-  text-align: center;
-  font-size: 0; }
-/* line 74, ../scss/_global.scss */
-.peers-container video {
-  height: 100%;
-  margin: 0 5px; }
+  margin: 0 auto; }
 
-/* line 81, ../scss/_global.scss */
+/* line 77, ../scss/_global.scss */
+.my-stream-container {
+  width: 40%;
+  float: left;
+  height: 100%;
+  display: flex;
+  align-items: center; }
+/* line 83, ../scss/_global.scss */
+.my-stream-container video {
+  height: 100%; }
+
+/* line 87, ../scss/_global.scss */
+.peers-container {
+  padding: 65px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  height: 70%; }
+/* line 94, ../scss/_global.scss */
+.peers-container video {
+  max-height: 100%;
+  padding: 10px; }
+
+/* line 101, ../scss/_global.scss */
 .main-wrap.connected .main-container {
   display: block; }
-/* line 85, ../scss/_global.scss */
+/* line 105, ../scss/_global.scss */
 .main-wrap.connected .connect-bar .btn-danger {
   display: inline-block; }
-/* line 88, ../scss/_global.scss */
+/* line 108, ../scss/_global.scss */
 .main-wrap.connected .connect-bar .btn-info {
   display: none; }
 
 @media (max-width: 991px) {
-  /* line 95, ../scss/_global.scss */
-  .main-container {
-    position: static; }
+  /* line 115, ../scss/_global.scss */
+  .chat-stream-container, .my-stream-container {
+    width: auto; }
 
-  /* line 98, ../scss/_global.scss */
+  /* line 119, ../scss/_global.scss */
   video {
     max-width: 100%; }
 
-  /* line 101, ../scss/_global.scss */
+  /* line 123, ../scss/_global.scss */
+  .peers-container video {
+    max-height: 100%; }
+
+  /* line 127, ../scss/_global.scss */
   .my-stream-container {
     padding: 10px; }
-  /* line 103, ../scss/_global.scss */
-  .my-stream-container video {
-    height: auto; }
 
-  /* line 107, ../scss/_global.scss */
-  .peers-container {
-    height: auto;
-    position: static; }
-  /* line 111, ../scss/_global.scss */
-  .peers-container video {
-    height: 110px;
-    max-width: 45%;
-    margin: 0 5px 5px; } }
+  /* line 139, ../scss/_global.scss */
+  .peers-1 video {
+    width: 100%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-2 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-3 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-4 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-5 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-6 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-7 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-8 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-9 video {
+    width: 50%; }
+
+  /* line 139, ../scss/_global.scss */
+  .peers-10 video {
+    width: 50%; } }
 
 /*# sourceMappingURL=base.css.map */

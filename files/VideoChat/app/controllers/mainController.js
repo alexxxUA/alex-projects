@@ -5,7 +5,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
 	$scope.connect = function () {
 		comm.connect($scope.room, {
-			audio: true
+			audio: false
 		});
 	};
 	$scope.leave = function () {

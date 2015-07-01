@@ -18,11 +18,14 @@
 			<input type="button" class="btn btn-danger" value="Leave" ng-click="leave()">
 		</header>
 		<div class="main-container">
-			<div class="my-stream-container">
-				<video autoplay ng-src="{{local.trustStream}}"></video>
-			</div>
-			<div class="peers-container">
+            <div class="peers-container peers-{{objectSize(peers)}}">
 				<video autoplay ng-repeat="(key, value) in peers" src="{{peers[key].trustStream}}"></video>
+			</div>
+			<div class="chat-stream-container clearfix">
+                <div class="my-stream-container">
+                    <video autoplay ng-src="{{local.trustStream}}"></video>
+                </div>
+			    <div class="chat-container"></div>
 			</div>
 		</div>
 	</div>

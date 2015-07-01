@@ -5,6 +5,11 @@ body {
     margin: 0;
     color: #FFF;
 }
+$maxPeers: 10;
+$maxPeersPerRow: 5;
+$maxPeersM: 10;
+$maxPeersPerRowM: 2;
+
 .main-wrap {
     position: relative;
     z-index: 1;
@@ -21,7 +26,19 @@ body {
         opacity: .4;
     }
 }
-
+//Peers grid
+@for $i from 1 through $maxPeers {
+    $width: 0;
+    @if($i >= $maxPeersPerRow){
+        $width: percentage(1 / $maxPeersPerRow);
+    }
+    @else{
+        $width: percentage(1 / $i);
+    }
+    .peers-#{$i} video{
+        width: $width;
+    }
+}
 .connect-bar {
     position: relative;
     text-align: center;
@@ -44,16 +61,6 @@ body {
         display: none;
     }
 }
-
-.my-stream-container {
-    padding: 65px 0 10px;
-    text-align: center;
-    height: 70%;
-    video {
-        height: 100%;
-    }
-}
-
 .main-container {
     display: none;
     top: 0;
@@ -62,18 +69,31 @@ body {
     width: 100%;
     height: 100%;
 }
-
-.peers-container {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+.chat-stream-container {
+    width: 990px;
     height: 30%;
-    text-align: center;
-    font-size: 0;
+    margin: 0 auto;
+}
+.my-stream-container {
+    width: 40%;
+    float: left;
+    height: 100%;
+    display: flex;
+    align-items: center;
     video {
         height: 100%;
-        margin: 0 5px;
+    }
+}
+.peers-container {
+    padding: 65px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    height: 70%;
+
+    video {
+        max-height: 100%;
+        padding: 10px;
     }
 }
 
@@ -92,27 +112,32 @@ body {
 }
 
 @media (max-width: 991px) {
-    .main-container {
-        position: static;
+    .chat-stream-container,
+    .my-stream-container{
+        width: auto;
     }
     video {
         max-width: 100%
     }
+    .peers-container {
+        video {
+            max-height: 100%;
+        }
+    }
     .my-stream-container{
         padding: 10px;
-        video {
-            height: auto;    
+    }
+    //Peers grid
+    @for $i from 1 through $maxPeersM {
+        $width: 0;
+        @if($i >= $maxPeersPerRowM){
+            $width: percentage(1 / $maxPeersPerRowM);
+        }
+        @else{
+            $width: percentage(1 / $i);
+        }
+        .peers-#{$i} video{
+            width: $width;
         }
     }
-    .peers-container {
-        height: auto;
-        position: static;
-        
-        video {
-            height: 110px;
-            max-width: 45%;
-            margin: 0 5px 5px;
-        }
-    }
-    
 }
