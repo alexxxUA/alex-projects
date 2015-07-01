@@ -12,27 +12,46 @@
 </head>
 
 <body ng-controller="ChatController as chat">
-	<div class="main-wrap" ng-class="{'connected': local.trustStream}">
+    <div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget}">
 		<header class="connect-bar">
-			<input type="button" class="btn btn-info" value="Connect" ng-click="connect()">
-			<input type="button" class="btn btn-danger" value="Leave" ng-click="leave()">
+			<input type="button" class="btn btn-info btn-connect" value="Connect" ng-click="connect()">
+            <input type="button" class="btn btn-danger btn-leave" value="Leave" ng-click="leave()">
+            <form name="chatForm" class="chat-login input-group" ng-submit="login()">
+				<input type="text" class="form-control" placeholder="Your name for chat" ng-model="myName" required>
+                <span class="input-group-btn">
+                    <button class="btn btn-info" type="submit">Login</button>
+                </span>
+            </form>
 		</header>
 		<div class="main-container">
             <div class="peers-container peers-{{objectSize(peers)}}">
-				<video autoplay ng-repeat="(key, value) in peers" src="{{peers[key].trustStream}}"></video>
+                <div class="video-wrap" ng-repeat="(key, value) in peers">
+				    <video autoplay src="{{peers[key].trustStream}}"></video>
+				</div>
 			</div>
 			<div class="chat-stream-container clearfix">
                 <div class="my-stream-container">
                     <video autoplay ng-src="{{local.trustStream}}"></video>
                 </div>
-			    <div class="chat-container"></div>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <h4>Chat</h4>
+                    </div>
+                    <div class="chat-msgs"></div>
+                    <form name="sendMsgForm" class="chat-send-msg input-group" ng-submit="sendMsg()">
+						<textarea type="text" class="form-control" placeholder="Dear {{myName}}, type your message here..." ng-model="msg" required></textarea>
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="submit">Send</button>
+                        </span>
+                    </form>
+                </div>
 			</div>
 		</div>
 	</div>
 	<div class="script-section">
 		<script src="app/librarys/icecomm.js"></script>
-		<script src="app/librarys/jquery-2.1.4.min.js"></script>
 		<script src="app/librarys/angular1.3.16.min.js"></script>
+        <script src="app/librarys/angular-cookies1.3.16.min.js"></script>
 		<script src="app/app.js"></script>
 		<script src="app/controllers/mainController.js"></script>
 		<script src="app/directives/mainDirective.js"></script>

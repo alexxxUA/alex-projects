@@ -4,7 +4,7 @@ var P = {
         target: ['css/!(reset.css)*.css'],
         report: 'css/lint/csslint.txt'
     },
-    lReload: ['css/*.css', 'js/*.js', '*.html'],
+    lReload: ['css/*.css', 'js/*.js'],
     compass: ['scss/*.scss']
 }
 

@@ -3,18 +3,21 @@ body {
     height: 100%;
     min-height: 100%;
     margin: 0;
-    color: #FFF;
 }
 $maxPeers: 10;
 $maxPeersPerRow: 5;
 $maxPeersM: 10;
 $maxPeersPerRowM: 2;
 
+video {
+    max-height: 100%;
+    max-width: 100%;
+}
 .main-wrap {
     position: relative;
     z-index: 1;
     min-height: 100%;
-    //background: url(./../img/min/background.jpg);
+    background: url(./../img/min/background1.jpg);
     background-size: cover;
     
     &:before {
@@ -23,20 +26,44 @@ $maxPeersPerRowM: 2;
         width: 100%;
         height: 100%;
         background: #000;
-        opacity: .4;
+        opacity: 0;
+    }
+    &.connected {
+        .main-container {
+            display: block;
+        }
+        .chat-login {
+            display: inline-block;
+        }
+        .connect-bar {
+            .btn-leave {
+                display: inline-block;
+            }
+            .btn-connect {
+                display: none;
+            }
+        }
+    }
+    &.logged {
+        .chat-login {
+            display: none;
+        }
+        .chat-container {
+            display: block;
+        }
     }
 }
-//Peers grid
-@for $i from 1 through $maxPeers {
-    $width: 0;
-    @if($i >= $maxPeersPerRow){
-        $width: percentage(1 / $maxPeersPerRow);
+.chat-login {
+    display: none;
+    vertical-align: middle;
+    margin-left: 10px;
+    
+    .input-group-btn {
+        float: left;
     }
-    @else{
-        $width: percentage(1 / $i);
-    }
-    .peers-#{$i} video{
-        width: $width;
+    .form-control {
+        float: left;
+        width: 170px;
     }
 }
 .connect-bar {
@@ -51,13 +78,13 @@ $maxPeersPerRowM: 2;
         width: 100%;
         height: 100%;
         background: #000;
-        opacity: 0.3;
+        opacity: .3;
     }
     .btn {
         position: relative;
         z-index: 1;
     }
-    .btn-danger {
+    .btn-leave {
         display: none;
     }
 }
@@ -69,10 +96,42 @@ $maxPeersPerRowM: 2;
     width: 100%;
     height: 100%;
 }
+.peers-container {
+    padding: 65px 0 0;
+    text-align: center;
+    font-size: 0;
+    height: 70%;
+    video{
+        height: 100%;
+    }
+    .video-wrap {
+        display: inline-block;
+        text-align: center;    
+        padding: 0 10px 10px;
+    }
+}
+//Peers grid
+@for $i from 1 through $maxPeers {
+    $width: 0;
+    $height: 0;
+    @if($i >= $maxPeersPerRow){
+        $width: percentage(1 / $maxPeersPerRow);
+        $height: 50%;
+    }
+    @else{
+        $width: percentage(1 / $i);
+        $height: 100%;
+    }
+    .peers-#{$i} .video-wrap {
+        width: $width;
+        height: $height;
+    }
+}
 .chat-stream-container {
     width: 990px;
     height: 30%;
     margin: 0 auto;
+    padding-bottom: 10px;
 }
 .my-stream-container {
     width: 40%;
@@ -80,34 +139,56 @@ $maxPeersPerRowM: 2;
     height: 100%;
     display: flex;
     align-items: center;
+
     video {
+//        box-shadow: 0 0 4px 1px #E8E8E8;
+//        border-radius: 5px;
+    }
+}
+.chat-container {
+    display: none;
+    position: relative;
+    float: left;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #FFF;
+    height: 100%;
+    width: 60%;
+}
+.chat-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 0 1px 0px #545454;
+    text-align: center;
+}
+.chat-msgs {
+    position: absolute;
+    top: 42px;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    overflow-y: auto;
+    padding: 5px 5px 5px 10px;
+}
+.chat-send-msg {
+    height: 80px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    
+    textarea {
+        height: 80px;
+        resize: none;
+        border-radius: 0;
+    }
+    .btn {
         height: 100%;
-    }
-}
-.peers-container {
-    padding: 65px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    height: 70%;
-
-    video {
-        max-height: 100%;
-        padding: 10px;
-    }
-}
-
-.main-wrap.connected {
-    .main-container {
-        display: block;
-    }
-    .connect-bar {
-        .btn-danger {
-            display: inline-block;
-        }
-        .btn-info {
-            display: none;
-        }
+        padding: 0 12px;
+        border: 0;
+        border-radius: 0;
     }
 }
 
@@ -116,16 +197,16 @@ $maxPeersPerRowM: 2;
     .my-stream-container{
         width: auto;
     }
-    video {
-        max-width: 100%
-    }
-    .peers-container {
-        video {
-            max-height: 100%;
-        }
-    }
     .my-stream-container{
         padding: 10px;
+    }
+    .peers-container {
+        .video-wrap {
+            height: auto;        
+        }
+        video {
+            height: auto;
+        }
     }
     //Peers grid
     @for $i from 1 through $maxPeersM {
@@ -136,7 +217,7 @@ $maxPeersPerRowM: 2;
         @else{
             $width: percentage(1 / $i);
         }
-        .peers-#{$i} video{
+        .peers-#{$i} .video-wrap{
             width: $width;
         }
     }

@@ -1,5 +1,7 @@
-app.controller('ChatController', function ($scope, $location, $sce, $log, $timeout, $compile) {
+app.controller('ChatController', function ($cookies, $scope, $location, $sce, $log, $timeout) {
 	$scope.room = $location.hash();
+    $scope.myName = $cookies['myName'] || '';
+	$scope.isLogget = $scope.myName ? true : false;
 	$scope.local = null;
 	$scope.peers = {};
 	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
@@ -8,6 +10,12 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 			audio: false
 		});
 	};
+    $scope.login = function(e){
+		if($scope.chatForm.$valid){
+            $scope.isLogget = true;
+            $cookies['myName'] = $scope.myName; 
+        }
+    };
 	$scope.leave = function () {
 		comm.leave();
 		$scope.peers = {};
@@ -37,6 +45,13 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		});
 
 		comm.send(sendData);
+	};
+	$scope.sendMsg = function (){
+		if($scope.sendMsgForm.$valid){
+			$log.log($scope.msg);
+			
+			$scope.msg = '';
+		}
 	};
 	$scope.routeData = function (res) {
 		var dataType = res.data.type,

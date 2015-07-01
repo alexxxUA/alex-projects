@@ -2,70 +2,66 @@
 html, body {
   height: 100%;
   min-height: 100%;
-  margin: 0;
-  color: #FFF; }
+  margin: 0; }
 
-/* line 13, ../scss/_global.scss */
+/* line 12, ../scss/_global.scss */
+video {
+  max-height: 100%;
+  max-width: 100%; }
+
+/* line 16, ../scss/_global.scss */
 .main-wrap {
   position: relative;
   z-index: 1;
   min-height: 100%;
+  background: url(./../img/min/background1.jpg);
   background-size: cover; }
-/* line 20, ../scss/_global.scss */
+/* line 23, ../scss/_global.scss */
 .main-wrap:before {
   content: '';
   position: absolute;
   width: 100%;
   height: 100%;
   background: #000;
-  opacity: .4; }
-
-/* line 38, ../scss/_global.scss */
-.peers-1 video {
-  width: 100%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-2 video {
-  width: 50%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-3 video {
-  width: 33.33333%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-4 video {
-  width: 25%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-5 video {
-  width: 20%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-6 video {
-  width: 20%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-7 video {
-  width: 20%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-8 video {
-  width: 20%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-9 video {
-  width: 20%; }
-
-/* line 38, ../scss/_global.scss */
-.peers-10 video {
-  width: 20%; }
-
+  opacity: 0; }
+/* line 32, ../scss/_global.scss */
+.main-wrap.connected .main-container {
+  display: block; }
+/* line 35, ../scss/_global.scss */
+.main-wrap.connected .chat-login {
+  display: inline-block; }
+/* line 39, ../scss/_global.scss */
+.main-wrap.connected .connect-bar .btn-leave {
+  display: inline-block; }
 /* line 42, ../scss/_global.scss */
+.main-wrap.connected .connect-bar .btn-connect {
+  display: none; }
+/* line 48, ../scss/_global.scss */
+.main-wrap.logged .chat-login {
+  display: none; }
+/* line 51, ../scss/_global.scss */
+.main-wrap.logged .chat-container {
+  display: block; }
+
+/* line 56, ../scss/_global.scss */
+.chat-login {
+  display: none;
+  vertical-align: middle;
+  margin-left: 10px; }
+/* line 61, ../scss/_global.scss */
+.chat-login .input-group-btn {
+  float: left; }
+/* line 64, ../scss/_global.scss */
+.chat-login .form-control {
+  float: left;
+  width: 170px; }
+
+/* line 69, ../scss/_global.scss */
 .connect-bar {
   position: relative;
   text-align: center;
   padding: 10px 0; }
-/* line 46, ../scss/_global.scss */
+/* line 73, ../scss/_global.scss */
 .connect-bar:before {
   content: '';
   position: absolute;
@@ -74,16 +70,16 @@ html, body {
   width: 100%;
   height: 100%;
   background: #000;
-  opacity: 0.3; }
-/* line 56, ../scss/_global.scss */
+  opacity: .3; }
+/* line 83, ../scss/_global.scss */
 .connect-bar .btn {
   position: relative;
   z-index: 1; }
-/* line 60, ../scss/_global.scss */
-.connect-bar .btn-danger {
+/* line 87, ../scss/_global.scss */
+.connect-bar .btn-leave {
   display: none; }
 
-/* line 64, ../scss/_global.scss */
+/* line 91, ../scss/_global.scss */
 .main-container {
   display: none;
   top: 0;
@@ -92,100 +88,189 @@ html, body {
   width: 100%;
   height: 100%; }
 
-/* line 72, ../scss/_global.scss */
+/* line 99, ../scss/_global.scss */
+.peers-container {
+  padding: 65px 0 0;
+  text-align: center;
+  font-size: 0;
+  height: 70%; }
+/* line 104, ../scss/_global.scss */
+.peers-container video {
+  height: 100%; }
+/* line 107, ../scss/_global.scss */
+.peers-container .video-wrap {
+  display: inline-block;
+  text-align: center;
+  padding: 0 10px 10px; }
+
+/* line 125, ../scss/_global.scss */
+.peers-1 .video-wrap {
+  width: 100%;
+  height: 100%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-2 .video-wrap {
+  width: 50%;
+  height: 100%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-3 .video-wrap {
+  width: 33.33333%;
+  height: 100%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-4 .video-wrap {
+  width: 25%;
+  height: 100%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-5 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-6 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-7 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-8 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-9 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 125, ../scss/_global.scss */
+.peers-10 .video-wrap {
+  width: 20%;
+  height: 50%; }
+
+/* line 130, ../scss/_global.scss */
 .chat-stream-container {
   width: 990px;
   height: 30%;
-  margin: 0 auto; }
+  margin: 0 auto;
+  padding-bottom: 10px; }
 
-/* line 77, ../scss/_global.scss */
+/* line 136, ../scss/_global.scss */
 .my-stream-container {
   width: 40%;
   float: left;
   height: 100%;
   display: flex;
   align-items: center; }
-/* line 83, ../scss/_global.scss */
-.my-stream-container video {
-  height: 100%; }
 
-/* line 87, ../scss/_global.scss */
-.peers-container {
-  padding: 65px 0 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  height: 70%; }
-/* line 94, ../scss/_global.scss */
-.peers-container video {
-  max-height: 100%;
-  padding: 10px; }
+/* line 148, ../scss/_global.scss */
+.chat-container {
+  display: none;
+  position: relative;
+  float: left;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #FFF;
+  height: 100%;
+  width: 60%; }
 
-/* line 101, ../scss/_global.scss */
-.main-wrap.connected .main-container {
-  display: block; }
-/* line 105, ../scss/_global.scss */
-.main-wrap.connected .connect-bar .btn-danger {
-  display: inline-block; }
-/* line 108, ../scss/_global.scss */
-.main-wrap.connected .connect-bar .btn-info {
-  display: none; }
+/* line 158, ../scss/_global.scss */
+.chat-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 0 1px 0px #545454;
+  text-align: center; }
+
+/* line 166, ../scss/_global.scss */
+.chat-msgs {
+  position: absolute;
+  top: 42px;
+  bottom: 80px;
+  left: 0;
+  width: 100%;
+  overflow-y: auto;
+  padding: 5px 5px 5px 10px; }
+
+/* line 175, ../scss/_global.scss */
+.chat-send-msg {
+  height: 80px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; }
+/* line 182, ../scss/_global.scss */
+.chat-send-msg textarea {
+  height: 80px;
+  resize: none;
+  border-radius: 0; }
+/* line 187, ../scss/_global.scss */
+.chat-send-msg .btn {
+  height: 100%;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 0; }
 
 @media (max-width: 991px) {
-  /* line 115, ../scss/_global.scss */
+  /* line 196, ../scss/_global.scss */
   .chat-stream-container, .my-stream-container {
     width: auto; }
 
-  /* line 119, ../scss/_global.scss */
-  video {
-    max-width: 100%; }
-
-  /* line 123, ../scss/_global.scss */
-  .peers-container video {
-    max-height: 100%; }
-
-  /* line 127, ../scss/_global.scss */
+  /* line 200, ../scss/_global.scss */
   .my-stream-container {
     padding: 10px; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-1 video {
+  /* line 204, ../scss/_global.scss */
+  .peers-container .video-wrap {
+    height: auto; }
+  /* line 207, ../scss/_global.scss */
+  .peers-container video {
+    height: auto; }
+
+  /* line 220, ../scss/_global.scss */
+  .peers-1 .video-wrap {
     width: 100%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-2 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-2 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-3 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-3 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-4 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-4 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-5 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-5 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-6 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-6 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-7 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-7 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-8 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-8 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-9 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-9 .video-wrap {
     width: 50%; }
 
-  /* line 139, ../scss/_global.scss */
-  .peers-10 video {
+  /* line 220, ../scss/_global.scss */
+  .peers-10 .video-wrap {
     width: 50%; } }
 
 /*# sourceMappingURL=base.css.map */
