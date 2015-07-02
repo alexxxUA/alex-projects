@@ -74,6 +74,7 @@ module.exports = function(grunt) {
 		//JS minification
 		uglify: {
 			options: {
+				mangle: false,
 				banner: '/* Generated date: <%= grunt.template.today("mm-dd-yyyy") %> */\n',
 			},
 			my_target: {

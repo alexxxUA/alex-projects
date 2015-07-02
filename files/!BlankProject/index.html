@@ -16,9 +16,15 @@
 	</div>
 	<footer></footer>
 	<div class="script-section">
-		<script type="text/javascript" src="js/app.js"></script>
-		<!-- <script type="text/javascript" src="js/app_min.js"></script> -->
-		<script src="http://localhost:12345/livereload.js"></script>
+		<script>
+			if(location.search.split('dev=')[1] == 'true'){
+				document.write('<script src="js/app.js"><\/script>');
+				document.write('<script src="http://localhost:12345/livereload.js"><\/script>');				
+			}
+			else{
+				document.write('<script src="app/app_min.js"><\/script>');
+			}
+		</script>
 	</div>
 </body>
 </html>

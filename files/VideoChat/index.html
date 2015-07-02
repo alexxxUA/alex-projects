@@ -70,15 +70,20 @@
 		</div>
 	</div>
 	<div class="script-section">
-		<script src="app/librarys/icecomm.js"></script>
-		<script src="app/librarys/angular1.3.16.min.js"></script>
-		<script src="app/librarys/scrollglue.js"></script>
-        <script src="app/librarys/angular-cookies1.3.16.min.js"></script>
-		<script src="app/app.js"></script>
-		<script src="app/controllers/mainController.js"></script>
-		<script src="app/directives/mainDirective.js"></script>
-		<!-- <script type="text/javascript" src="js/app_min.js"></script> -->
-		<script src="http://localhost:12345/livereload.js"></script>
+		<script>
+			if(location.search.split('dev=')[1] == 'true'){
+				document.write('<script src="app/librarys/icecomm.js"><\/script>');
+				document.write('<script src="app/librarys/angular1.3.16.min.js"><\/script>');
+				document.write('<script src="app/librarys/scrollglue.js"><\/script>');
+				document.write('<script src="app/librarys/angular-cookies1.3.16.min.js"><\/script>');
+				document.write('<script src="app/app.js"><\/script>');
+				document.write('<script src="app/controllers/mainController.js"><\/script>');
+				document.write('<script src="http://localhost:12345/livereload.js"><\/script>');				
+			}
+			else{
+				document.write('<script src="app/app_min.js"><\/script>');
+			}		
+		</script>
 	</div>
 </body>
 

@@ -77,11 +77,19 @@ module.exports = function (grunt) {
         //JS minification
         uglify: {
             options: {
+				mangle: false,
                 banner: '/* Generated date: <%= grunt.template.today("mm-dd-yyyy") %> */\n',
             },
             my_target: {
                 files: {
-                    'js/app_min.js': ['js/!(*_min.js)*.js']
+					'app/app_min.js': [
+						'app/librarys/icecomm.js',
+						'app/librarys/angular1.3.16.min.js',
+						'app/librarys/scrollglue.js',
+						'app/librarys/angular-cookies1.3.16.min.js',
+						'app/app.js',
+						'app/controllers/mainController.js'
+					]
                 }
             }
         }
