@@ -72,6 +72,7 @@
 	<div class="script-section">
 		<script>
 			if(location.search.split('dev=')[1] == 'true'){
+				document.write('<script src="app/librarys/detectRTC.js"><\/script>');
 				document.write('<script src="app/librarys/icecomm.js"><\/script>');
 				document.write('<script src="app/librarys/angular1.3.16.min.js"><\/script>');
 				document.write('<script src="app/librarys/scrollglue.js"><\/script>');

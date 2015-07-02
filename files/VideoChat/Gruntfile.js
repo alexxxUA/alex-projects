@@ -83,6 +83,7 @@ module.exports = function (grunt) {
             my_target: {
                 files: {
 					'app/app_min.js': [
+						'app/librarys/detectRTC.js',
 						'app/librarys/icecomm.js',
 						'app/librarys/angular1.3.16.min.js',
 						'app/librarys/scrollglue.js',
