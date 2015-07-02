@@ -1,3 +1,65 @@
+[INFO - 2.7.2015 16:00] Playlist (2.7.2015 14:52) - updated.
+Updated: 46
+Required failed: 7
+Failed: 10
+Failed channel list:
+	1. К1
+	2. Discovery Investigation
+	3. Discovery World
+	4. Discovery Science
+	5. Discovery HD Showcase
+	6. Discovery Channel HD
+	7. National Geographic
+	8. National Geographic HD
+	9. Nat Geo Wild HD
+	10. Animal Planet HD
+
+[INFO - 2.7.2015 15:00] Playlist (2.7.2015 14:52) - updated.
+Updated: 46
+Required failed: 7
+Failed: 10
+Failed channel list:
+	1. К1
+	2. Discovery Investigation
+	3. Discovery World
+	4. Discovery Science
+	5. Discovery HD Showcase
+	6. Discovery Channel HD
+	7. National Geographic
+	8. National Geographic HD
+	9. Nat Geo Wild HD
+	10. Animal Planet HD
+
+[INFO - 2.7.2015 14:00] Playlist (2.7.2015 11:52) - updated.
+Updated: 47
+Required failed: 6
+Failed: 9
+Failed channel list:
+	1. Discovery Investigation
+	2. Discovery World
+	3. Discovery Science
+	4. Discovery HD Showcase
+	5. Discovery Channel HD
+	6. National Geographic
+	7. National Geographic HD
+	8. Nat Geo Wild HD
+	9. Animal Planet HD
+
+[INFO - 2.7.2015 13:00] Playlist (2.7.2015 11:52) - updated.
+Updated: 47
+Required failed: 6
+Failed: 9
+Failed channel list:
+	1. Discovery Investigation
+	2. Discovery World
+	3. Discovery Science
+	4. Discovery HD Showcase
+	5. Discovery Channel HD
+	6. National Geographic
+	7. National Geographic HD
+	8. Nat Geo Wild HD
+	9. Animal Planet HD
+
 [INFO - 2.7.2015 12:00] Playlist (2.7.2015 11:52) - updated.
 Updated: 47
 Required failed: 6

@@ -2,8 +2,11 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.room = $location.hash();
     $scope.myName = $cookies['myName'] || '';
 	$scope.isLogget = $scope.myName ? true : false;
+	$scope.isChatOpen = false;
+	$scope.isShowLogin = false;
 	$scope.local = null;
 	$scope.peers = {};
+	$scope.isUnreadMsg = false;
 	$scope.msgs = [];
 	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
 	$scope.connect = function () {
@@ -15,6 +18,18 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		var message = isLocal ? angular.extend({}, msg, {isLocal: true}) : msg;
 		
 		$scope.msgs.push(message);
+	};
+	$scope.msgReceived = function(msg){
+		$scope.pushMsg(msg);
+		$scope.isUnreadMsg = true;
+	};
+	$scope.chatTriggerChange = function(){
+		if(!$scope.isLogget){
+			$scope.isShowLogin = true;
+		}
+		else{
+			$scope.isUnreadMsg = false;
+		}	
 	};
     $scope.login = function(e){
 		if($scope.chatForm.$valid){
@@ -81,7 +96,7 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		$timeout(function () {
 			switch (dataType) {
 			case 'msg':
-					$scope.pushMsg(data);
+					$scope.msgReceived(data);
 				break;
 			default:
 				$log.log('Income data has no route.');

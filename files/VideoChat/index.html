@@ -12,49 +12,60 @@
 </head>
 
 <body ng-controller="ChatController as chat">
-    <div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget}">
+	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen}">
 		<header class="connect-bar">
-			<input type="button" class="btn btn-info btn-connect" value="Connect" ng-click="connect()">
-            <input type="button" class="btn btn-danger btn-leave" value="Leave" ng-click="leave()">
-            <form name="chatForm" class="chat-login input-group" ng-submit="login()">
-				<input type="text" class="form-control" placeholder="Your name for chat" ng-model="myName" required>
-                <span class="input-group-btn">
-                    <button class="btn btn-info" type="submit">Login</button>
-                </span>
-            </form>
+			<div class="btn-connect" title="Connect to the room" ng-click="connect()">
+				<img src="img/min/start-call.png" alt="Start call">
+			</div>
+			<div class="btn-leave" title="Leave room" ng-click="leave()">
+				<img src="img/min/end-call.png" alt="End call">
+			</div>
 		</header>
 		<div class="main-container">
-            <div class="peers-container peers-{{objectSize(peers)}}">
-                <div class="video-wrap" ng-repeat="(key, value) in peers">
-				    <video autoplay src="{{peers[key].trustStream}}"></video>
+            <div class="videos-container">
+            	<div class="peers-container peers-{{objectSize(peers)}}">
+            	    <div class="video-wrap" ng-repeat="(key, value) in peers">
+						<video autoplay src="{{peers[key].trustStream}}"></video>
+					</div>
 				</div>
-			</div>
-			<div class="chat-stream-container clearfix">
-                <div class="my-stream-container">
-                    <video autoplay ng-src="{{local.trustStream}}"></video>
-                </div>
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <h4>Chat</h4>
-                    </div>
+				<div class="my-stream-container">
+					<video autoplay ng-src="{{local.trustStream}}"></video>
+				</div>
+            </div>
+			<div class="chat-container">
+				<div class="chat-trigger" ng-class="{'unread' : isUnreadMsg, 'show-login' : isShowLogin}">
+					<form name="chatForm" class="chat-login input-group" ng-submit="login()">
+						<input type="text" class="form-control" placeholder="Your name for chat" ng-model="myName" required>
+						<span class="input-group-btn">
+							<button class="btn btn-info" type="submit">Login</button>
+						</span>
+					</form>
+
+					<label for="openChat" title="Show chat">Chat</label>
+					<input type="checkbox" id="openChat" ng-model="isChatOpen" ng-checked="isChatOpen" ng-change="chatTriggerChange()">
+				</div>
+				<div class="chat-wrap">
+					<div class="chat-header">
+						<h4>#{{room}}</h4>
+					</div>
 					<div class="chat-msgs" scroll-glue-bottom>
-                    	<ul class="msgs-list">
+						<ul class="msgs-list">
 							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isLocal}">
-                    			<span class="name">{{itemMsg.name}}</span>
+								<span class="name">{{itemMsg.name}}</span>
 								<span class="msg">{{itemMsg.msg}}</span>
 								<span class="time">{{itemMsg.time | date : 'HH:mm'}}</span>
-                    		</li>
-                    	</ul>
-                    </div>
-                    <form name="sendMsgForm" class="chat-send-msg input-group" ng-submit="sendMsg()">
+							</li>
+						</ul>
+					</div>
+					<form name="sendMsgForm" class="chat-send-msg input-group" ng-submit="sendMsg()">
 						<textarea type="text" class="form-control" placeholder="Dear {{myName}}, type your message here..." required 
 							ng-model="msg"
-						  	ng-keyup="$event.keyCode == 13 && $event.ctrlKey && sendMsg()"></textarea>
-                        <span class="input-group-btn">
-                            <button class="btn btn-info" type="submit">Send</button>
-                        </span>
-                    </form>
-                </div>
+							ng-keyup="$event.keyCode == 13 && $event.ctrlKey && sendMsg()"></textarea>
+						<span class="input-group-btn">
+							<button class="btn btn-info" type="submit">Send</button>
+						</span>
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>

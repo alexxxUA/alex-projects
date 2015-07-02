@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <playlist version="1" xmlns="http://xspf.org/ns/0/">
-	<title>TV playlist: 2.7.2015 12:00; failed channels: 9</title>
+	<title>TV playlist: 2.7.2015 16:00; failed channels: 10</title>
 	<creator>Vasin Oleksiy</creator>
 	<trackList>
 		<track>
@@ -34,10 +34,6 @@
 		<track>
 			<title>ТРК Украина</title>
 			<location>90a01442376ffd39884b398f5134ddf6e83959c7</location>
-		</track>
-		<track>
-			<title>К1</title>
-			<location>b346d23fbf139a4b99291688b08f72edf5817b4c</location>
 		</track>
 		<track>
 			<title>К2</title>
