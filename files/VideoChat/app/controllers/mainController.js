@@ -11,7 +11,7 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
 	$scope.connect = function () {
 		comm.connect($scope.room, {
-			audio: false
+			audio: true
 		});
 	};
 	$scope.pushMsg = function (msg, isLocal){
