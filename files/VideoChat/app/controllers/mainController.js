@@ -11,8 +11,10 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 			audio: false
 		});
 	};
-	$scope.pushMsg = function (msg){
-		$scope.msgs.push(msg);
+	$scope.pushMsg = function (msg, isLocal){
+		var message = isLocal ? angular.extend({}, msg, {isLocal: true}) : msg;
+		
+		$scope.msgs.push(message);
 	};
     $scope.login = function(e){
 		if($scope.chatForm.$valid){
@@ -56,10 +58,11 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		var msg = {
 			name: $scope.myName,
 			ID: $scope.local.ID,
-			msg: $scope.msg
+			msg: $scope.msg,
+			time: new Date().getTime()
 		}
 		//Save msg
-		$scope.pushMsg(msg);
+		$scope.pushMsg(msg, true);
 		//Send msg
 		$scope.sendData(msg, 'msg');
 		//Reset msg

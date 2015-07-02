@@ -39,9 +39,10 @@
                     </div>
 					<div class="chat-msgs" scroll-glue-bottom>
                     	<ul class="msgs-list">
-                    		<li class="msg-item" ng-repeat="itemMsg in msgs">
-                    			<span class="name">{{itemMsg.name}}: </span>
+							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isLocal}">
+                    			<span class="name">{{itemMsg.name}}</span>
 								<span class="msg">{{itemMsg.msg}}</span>
+								<span class="time">{{itemMsg.time | date : 'HH:mm'}}</span>
                     		</li>
                     	</ul>
                     </div>

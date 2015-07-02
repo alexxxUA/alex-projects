@@ -4,9 +4,9 @@ body {
     min-height: 100%;
     margin: 0;
 }
-$maxPeers: 10;
-$maxPeersPerRow: 5;
-$maxPeersM: 10;
+$maxPeers: 6;
+$maxPeersPerRow: 3;
+$maxPeersM: 6;
 $maxPeersPerRowM: 2;
 
 video {
@@ -135,6 +135,7 @@ video {
 }
 .my-stream-container {
     width: 40%;
+	padding-right: 15px;
     float: left;
     height: 100%;
     display: flex;
@@ -191,6 +192,81 @@ video {
     }
 }
 
+$nameWidth: 100px;
+$timeWidth: 50px;
+$msgItemPadding: 4px 8px;
+$arrowSize: 6px;
+$msgColor: #5BC0DE;
+
+.msgs-list {
+	width: 100%;
+}
+.msg-item {
+	position: relative;
+	list-style: none;
+	margin-bottom: 5px;
+
+	.name {
+		width: $nameWidth;
+		position: absolute;
+		top: 0;
+		left: 0;
+		padding: $msgItemPadding;
+		text-align: center;
+		color: #FFF;
+		background: $msgColor;
+		border-radius: 10px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+	}
+	.msg {
+		display: block;
+		position: relative;
+		margin: 0 $timeWidth+15px 0 $nameWidth+15px;
+		padding: $msgItemPadding;
+		color: #FFF;
+		background: $msgColor;
+		border-radius: 5px;
+		
+		&:before {
+			content: '';
+			position: absolute;
+			left: -$arrowSize;
+			top: 8px;
+			width: 0;
+			height: 0;
+			border-top: $arrowSize solid transparent;
+			border-bottom: $arrowSize solid transparent;
+			border-right: $arrowSize solid $msgColor;
+		}
+	}
+	.time {
+		width: $timeWidth;
+		position: absolute;
+		top: 0;
+		right: 0;
+		padding: $msgItemPadding;
+		text-align: right;
+	}
+}
+$msgColor: #A0E2F5;
+.local-msg {
+	.name {
+		display: none;
+	}
+	.msg {
+		background: $msgColor;
+
+		&:before {
+			left: auto;
+			right: -$arrowSize;
+			border-right: 0;
+			border-left: $arrowSize solid $msgColor;
+		}
+	}
+}
+//Tablet/mobile
 @media (max-width: 991px) {
     .chat-stream-container,
     .my-stream-container{
@@ -200,9 +276,6 @@ video {
         padding: 10px;
     }
     .peers-container {
-        .video-wrap {
-            height: auto;        
-        }
         video {
             height: auto;
         }
@@ -220,4 +293,12 @@ video {
             width: $width;
         }
     }
+}
+//For peers stream container
+@media (max-width: 500px) {
+	.peers-container {
+		.video-wrap {
+			height: auto;
+		}
+	}
 }
