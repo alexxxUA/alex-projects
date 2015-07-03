@@ -1,18 +1,22 @@
 app.controller('ChatController', function ($cookies, $scope, $location, $sce, $log, $timeout) {
 	$scope.isHasWebCam = false;
 	$scope.isHasMic = false;
+	$scope.isNotificationAvailable = typeof Notification != undefined;
+	$scope.isNotificationEnabled = Notification && Notification.permission == 'granted' ? true : false;
+	$scope.isChatOpen = false;
+	$scope.isShowLogin = false;
+	$scope.isUnreadMsg = false;
+	$scope.relativePath = '//'+ location.host +'/'+ location.pathname.replace('index.html', '');
+	$scope.logoImg = $scope.relativePath +'img/min/logo.png';
 	$scope.room = $location.hash();
     $scope.myName = $cookies['myName'] || '';
 	$scope.isLogget = $scope.myName ? true : false;
-	$scope.isChatOpen = false;
-	$scope.isShowLogin = false;
 	$scope.local = null;
 	$scope.peers = {};
-	$scope.isUnreadMsg = false;
 	$scope.msgs = [];
 	$scope.init = function(){
-		//Update WebCam and Mic support
 		DetectRTC.load(function(){
+		//Update WebCam and Mic support
 			$timeout(function () {
 				$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
 				$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
@@ -28,7 +32,10 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		comm.on('local', function (peer) {
 			$timeout(function () {
 				$scope.local = $scope.getTrustStream([peer])[0];
+				//Check and set notification settings
+				$scope.checkNotificationService();
 			});
+			
 		});
 		comm.on('connected', function (peer) {
 			$timeout(function () {
@@ -40,6 +47,13 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 				delete $scope.peers[peer.ID];
 			});
 		});
+	};
+	$scope.checkNotificationService = function (){
+		if($scope.isNotificationAvailable && Notification.permission == 'default'){
+			Notification.requestPermission(function(result){
+				$scope.isNotificationEnabled = result == 'granted' ? true : false;
+			});
+		}
 	};
 	$scope.onTabClose = function(){
 		if($scope.local)
@@ -62,6 +76,10 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.msgReceived = function(msg){
 		$scope.pushMsg(msg);
 		$scope.isUnreadMsg = true;
+
+		//Send notification if window has no focus
+		if(!document.hasFocus())
+			$scope.sendNotification(msg.name +' send you a message.', msg.msg, $scope.logoImg);
 	};
 	$scope.chatTriggerChange = function(){
 		if(!$scope.isLogget){
@@ -122,6 +140,12 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		$scope.sendData(msg, 'msg');
 		//Reset msg
 		$scope.msg = '';
+	};
+	$scope.sendNotification = function(title, body, icon){
+		var anNotification = new Notification(title, {
+			body: body,
+			icon: icon
+		});		
 	};
 	$scope.routeData = function (res) {
 		var dataType = res.data.type,
