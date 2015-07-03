@@ -1,3 +1,16 @@
+[ng\:cloak],
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak,
+.ng-hide:not(.ng-hide-animate){
+	display:none !important;
+}
+ng\:form{
+	display:block;
+}
+
 html,
 body {
     height: 100%;
@@ -66,6 +79,9 @@ video {
 		}
     }
 }
+.btn-connect {
+	margin: 0 20px;
+}
 .btn-connect,
 .btn-leave {
 	position: relative;
@@ -79,9 +95,12 @@ video {
 	}
 }
 .connect-bar {
-    position: relative;
-    text-align: center;
-    padding: 2px 0;
+	position: fixed;
+	text-align: center;
+	padding: 2px 0;
+	width: 100%;
+	bottom: 0;
+
     &:before {
         content: '';
         position: absolute;
@@ -110,7 +129,7 @@ video {
     height: 100%;
 }
 .videos-container {
-    padding: 65px 0 10px;
+	padding: 10px 0 65px;
 	height: 100%;
 	width: 100%;
 	text-align: center;
@@ -150,7 +169,7 @@ video {
 	height: 35%;
 }
 .chat-wrap {
-    border-radius: 0 5px 5px 5px;
+    border-radius: 5px;
     overflow: hidden;
     background: #FFF;
 	height: 100%;
@@ -160,9 +179,9 @@ video {
 	width: 40%;
 	position: absolute;
 	z-index: 2;
-	top: 65px;
+	top: 10px;
 	right: -40%;
-	bottom: 10px;
+	bottom: 65px;
 	
 	@include transition(right 0.3s ease-in-out);
 }
@@ -181,7 +200,7 @@ $chatLoginWidth: 215px;
 	position: absolute;
 	z-index: 1;
 	right: 100%;
-	top: 0;
+	bottom: 36px;
 	
 	&.show-login .chat-login{
 		right: 0;
@@ -358,11 +377,6 @@ $msgColor: #5BC0DE;
     .my-stream-container{
         padding: 10px;
     }
-    .peers-container {
-        video {
-            height: auto;
-        }
-    }
     //Peers grid
     @for $i from 1 through $maxPeersM {
         $width: 0;
@@ -389,13 +403,10 @@ $msgColor: #5BC0DE;
 			}
 		}
 	}
-	.chat-wrap {
-		border-radius: 5px;
-	}
 	.chat-trigger {
 		position: fixed;
-		top: 10px;
 		right: 0px;
+		bottom: 10px;
 	}
 	.chat-container {
 		width: 98%;
@@ -407,13 +418,5 @@ $msgColor: #5BC0DE;
 		border-bottom: 8px solid rgba(0, 0, 0, 0);
 		box-shadow: none;
 		top: -8px;
-	}
-}
-//For peers stream container
-@media (max-width: 500px) {
-	.peers-container {
-		.video-wrap {
-			height: auto;
-		}
 	}
 }

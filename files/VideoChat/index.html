@@ -13,14 +13,6 @@
 
 <body ng-controller="ChatController as chat">
 	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen}">
-		<header class="connect-bar">
-			<div class="btn-connect" title="Connect to the room" ng-click="connect()">
-				<img src="img/min/start-call.png" alt="Start call">
-			</div>
-			<div class="btn-leave" title="Leave room" ng-click="leave()">
-				<img src="img/min/end-call.png" alt="End call">
-			</div>
-		</header>
 		<div class="main-container">
             <div class="videos-container">
             	<div class="peers-container peers-{{objectSize(peers)}}">
@@ -68,6 +60,17 @@
 				</div>
 			</div>
 		</div>
+		<footer class="connect-bar">
+			<div class="btn-connect ng-hide" title="Connect to the room" ng-click="connect(true)" ng-show="isHasWebCam">
+				<img src="img/min/start-video-call.png" alt="Start video call">
+			</div>
+			<div class="btn-connect" title="Connect to the room" ng-click="connect()">
+				<img src="img/min/start-call.png" alt="Start call">
+			</div>
+			<div class="btn-leave" title="Leave room" ng-click="leave()">
+				<img src="img/min/end-call.png" alt="End call">
+			</div>
+		</footer>
 	</div>
 	<div class="script-section">
 		<script>

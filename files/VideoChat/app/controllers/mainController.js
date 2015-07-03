@@ -1,4 +1,6 @@
 app.controller('ChatController', function ($cookies, $scope, $location, $sce, $log, $timeout) {
+	$scope.isHasWebCam = false;
+	$scope.isHasMic = false;
 	$scope.room = $location.hash();
     $scope.myName = $cookies['myName'] || '';
 	$scope.isLogget = $scope.myName ? true : false;
@@ -9,10 +11,12 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.isUnreadMsg = false;
 	$scope.msgs = [];
 	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
-	$scope.connect = function () {
+	$scope.connect = function (isVideo) {
+		var isVideo = isVideo ? true : false;
+
 		comm.connect($scope.room, {
-			audio: true,
-			video: DetectRTC.hasWebcam == true ? true : false,
+			audio: $scope.isHasMic,
+			video: isVideo,
 			limit: 7
 		});
 	};
@@ -106,6 +110,13 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 			}
 		});
 	};
+	//Update WebCam and Mic support
+	DetectRTC.load(function(){
+		$timeout(function () {
+			$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
+			$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
+		});
+	});
 	comm.on('data', $scope.routeData);
 	comm.on('local', function (peer) {
 		$timeout(function () {
