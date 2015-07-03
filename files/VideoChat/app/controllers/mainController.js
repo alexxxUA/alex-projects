@@ -10,7 +10,41 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.peers = {};
 	$scope.isUnreadMsg = false;
 	$scope.msgs = [];
-	$scope.peerCont = angular.element(document.querySelector('.peers-container'));
+	$scope.init = function(){
+		//Update WebCam and Mic support
+		DetectRTC.load(function(){
+			$timeout(function () {
+				$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
+				$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
+			});
+		});
+		$scope.registerEvents();
+	};
+	$scope.registerEvents = function(){
+		//Track if window close within session
+		window.onbeforeunload = $scope.onTabClose;
+		
+		comm.on('data', $scope.routeData);
+		comm.on('local', function (peer) {
+			$timeout(function () {
+				$scope.local = $scope.getTrustStream([peer])[0];
+			});
+		});
+		comm.on('connected', function (peer) {
+			$timeout(function () {
+				$scope.savePeer($scope.getTrustStream(peer));
+			});
+		});
+		comm.on('disconnect', function (peer) {
+			$timeout(function () {
+				delete $scope.peers[peer.ID];
+			});
+		});
+	};
+	$scope.onTabClose = function(){
+		if($scope.local)
+			return 'You want to leave the room?';
+	};
 	$scope.connect = function (isVideo) {
 		var isVideo = isVideo ? true : false;
 
@@ -110,27 +144,6 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 			}
 		});
 	};
-	//Update WebCam and Mic support
-	DetectRTC.load(function(){
-		$timeout(function () {
-			$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
-			$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
-		});
-	});
-	comm.on('data', $scope.routeData);
-	comm.on('local', function (peer) {
-		$timeout(function () {
-			$scope.local = $scope.getTrustStream([peer])[0];
-		});
-	});
-	comm.on('connected', function (peer) {
-		$timeout(function () {
-			$scope.savePeer($scope.getTrustStream(peer));
-		});
-	});
-	comm.on('disconnect', function (peer) {
-		$timeout(function () {
-			delete $scope.peers[peer.ID];
-		});
-	});
+	
+	$scope.init();
 });
