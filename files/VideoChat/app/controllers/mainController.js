@@ -1,8 +1,8 @@
 app.controller('ChatController', function ($scope, $location, $sce, $log, $timeout) {
 	$scope.isHasWebCam = false;
 	$scope.isHasMic = false;
-	$scope.isNotificationAvailable = typeof Notification != undefined;
-	$scope.isNotificationEnabled = Notification && Notification.permission == 'granted' ? true : false;
+	$scope.isNotificationAvailable = typeof Notification != 'undefined' ? true : false;
+	$scope.isNotificationEnabled = $scope.isNotificationAvailable && Notification.permission == 'granted' ? true : false;
 	$scope.isChatOpen = false;
 	$scope.isShowLogin = false;
 	$scope.isUnreadMsg = false;
@@ -77,7 +77,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		var isVideo = isVideo ? true : false;
 
 		comm.connect($scope.room, {
-			audio: $scope.isHasMic,
+			audio: true,
 			video: isVideo,
 			limit: 7
 		});
