@@ -1,4 +1,4 @@
-var app = angular.module('videoChat', ['ngCookies', 'luegg.directives']),
+var app = angular.module('videoChat', ['luegg.directives']),
     comm = new Icecomm('wxnPQomF6jnKHT1U4Tb4a5ISdWIYjNhESQLBAOtBxyUgkSCS');
 
 app.config(function ($locationProvider) {

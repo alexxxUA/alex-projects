@@ -1,4 +1,4 @@
-app.controller('ChatController', function ($cookies, $scope, $location, $sce, $log, $timeout) {
+app.controller('ChatController', function ($scope, $location, $sce, $log, $timeout) {
 	$scope.isHasWebCam = false;
 	$scope.isHasMic = false;
 	$scope.isNotificationAvailable = typeof Notification != undefined;
@@ -8,8 +8,9 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 	$scope.isUnreadMsg = false;
 	$scope.relativePath = '//'+ location.host +'/'+ location.pathname.replace('index.html', '');
 	$scope.logoImg = $scope.relativePath +'img/min/logo.png';
+	$scope.msgAudio = new Audio($scope.relativePath +'media/message.mp3');
 	$scope.room = $location.hash();
-    $scope.myName = $cookies['myName'] || '';
+    $scope.myName = localStorage.myName || '';
 	$scope.isLogget = $scope.myName ? true : false;
 	$scope.local = null;
 	$scope.peers = {};
@@ -59,6 +60,19 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		if($scope.local)
 			return 'You want to leave the room?';
 	};
+	$scope.onMsgKeyUp = function(e){
+		if(e.keyCode == 13){
+			if(e.ctrlKey)
+				$scope.insertEnter(e);
+			else
+				$scope.sendMsg();				
+		}
+	};
+	$scope.insertEnter = function(e){
+		var element = e.target;
+		
+		element.value = element.value +'\n';
+	};
 	$scope.connect = function (isVideo) {
 		var isVideo = isVideo ? true : false;
 
@@ -68,18 +82,19 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 			limit: 7
 		});
 	};
-	$scope.pushMsg = function (msg, isLocal){
-		var message = isLocal ? angular.extend({}, msg, {isLocal: true}) : msg;
+	$scope.pushMsg = function (msg){
+		var msg = $scope.parseMsg(msg);
 		
-		$scope.msgs.push(message);
+		$scope.msgs.push(msg);
 	};
 	$scope.msgReceived = function(msg){
 		$scope.pushMsg(msg);
 		$scope.isUnreadMsg = true;
-
+		
 		//Send notification if window has no focus
-		if(!document.hasFocus())
+		if(!document.hasFocus()){
 			$scope.sendNotification(msg.name +' send you a message.', msg.msg, $scope.logoImg);
+		}
 	};
 	$scope.chatTriggerChange = function(){
 		if(!$scope.isLogget){
@@ -92,7 +107,7 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
     $scope.login = function(e){
 		if($scope.chatForm.$valid){
             $scope.isLogget = true;
-            $cookies['myName'] = $scope.myName; 
+            localStorage.myName = $scope.myName; 
         }
     };
 	$scope.leave = function () {
@@ -115,6 +130,11 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		}
 		return peer;
 	};
+	$scope.parseMsg = function(msg){
+		msg.trustMsg = $sce.trustAsHtml(msg.msg.replace(/\n/gm, '<br>'));
+		
+		return msg;
+	};
 	$scope.sendData = function (data, type, ID) {
 		var sendData = angular.extend({}, {
 			data: data,
@@ -135,7 +155,7 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 			time: new Date().getTime()
 		}
 		//Save msg
-		$scope.pushMsg(msg, true);
+		$scope.pushMsg(msg);
 		//Send msg
 		$scope.sendData(msg, 'msg');
 		//Reset msg
@@ -145,7 +165,11 @@ app.controller('ChatController', function ($cookies, $scope, $location, $sce, $l
 		var anNotification = new Notification(title, {
 			body: body,
 			icon: icon
-		});		
+		});
+		//Play notification audio
+		$scope.msgAudio.play();
+		//Autoclose notification msg
+		setTimeout(anNotification.close.bind(anNotification), 4000);
 	};
 	$scope.routeData = function (res) {
 		var dataType = res.data.type,

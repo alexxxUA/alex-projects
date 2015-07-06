@@ -43,17 +43,16 @@
 					</div>
 					<div class="chat-msgs" scroll-glue-bottom>
 						<ul class="msgs-list">
-							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isLocal}">
+							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.ID == local.ID}">
 								<span class="name">{{itemMsg.name}}</span>
-								<span class="msg">{{itemMsg.msg}}</span>
+								<span class="msg" ng-bind-html="itemMsg.trustMsg"></span>
 								<span class="time">{{itemMsg.time | date : 'HH:mm'}}</span>
 							</li>
 						</ul>
 					</div>
 					<form name="sendMsgForm" class="chat-send-msg input-group" ng-submit="sendMsg()">
 						<textarea type="text" class="form-control" placeholder="Dear {{myName}}, type your message here..." required 
-							ng-model="msg"
-							ng-keyup="$event.keyCode == 13 && $event.ctrlKey && sendMsg()"></textarea>
+							ng-model="msg" ng-keyup="onMsgKeyUp($event)"></textarea>
 						<span class="input-group-btn">
 							<button class="btn btn-info" type="submit">Send</button>
 						</span>
@@ -80,7 +79,6 @@
 				document.write('<script src="app/librarys/icecomm.js"><\/script>');
 				document.write('<script src="app/librarys/angular1.3.16.min.js"><\/script>');
 				document.write('<script src="app/librarys/scrollglue.js"><\/script>');
-				document.write('<script src="app/librarys/angular-cookies1.3.16.min.js"><\/script>');
 				document.write('<script src="app/app.js"><\/script>');
 				document.write('<script src="app/controllers/mainController.js"><\/script>');
 				document.write('<script src="http://localhost:12345/livereload.js"><\/script>');				
