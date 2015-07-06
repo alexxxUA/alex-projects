@@ -167,6 +167,10 @@ video {
 }
 .my-stream-container {
 	height: 35%;
+	
+	video {
+		@include transform(scaleX(-1));
+	}
 }
 .chat-wrap {
     border-radius: 5px;
