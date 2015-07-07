@@ -7,9 +7,12 @@ html
 		link(type='text/css', rel='stylesheet', href='/css/bootstrap.min.css')
 		link(type='text/css', rel='stylesheet', href='/css/style.css')
 	body
+		script(src='/js/facebook.js')
 		#section-container
 			#header
 				h1 File Explorer
+				include facebookLogin
+				div#status
 			#content(class='clearfix')
 				#dynamicContent
 					block explorer
@@ -18,7 +21,5 @@ html
 		include contextMenu
 		#loading
 			img(src="/img/ajax-loader1.gif", width="32", height="32", alt="loader")
-		script(src='/js/jquery-1.11.2.min.js')
-		script(src='/js/underscore-min.js')
-		//script(src='/js/bootstrap.min.js')
-		script(src='/js/app.js')
+		div.script-container
+			include scriptInclude

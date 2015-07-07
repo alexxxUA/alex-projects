@@ -119,7 +119,7 @@ var Channel = {
 
 		needle.request(reqType, url, null, reqOptions, function(err, resp) {
 			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				this.logErr('Error in getting valid playlist!');
+				that.logErr('Error in getting valid playlist!');
 				return;
 			}
 			that.storeValidList(url, resp.body.toString('utf8'), resp.headers['last-modified']);
