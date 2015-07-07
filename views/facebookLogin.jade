@@ -1,2 +1,3 @@
-fb:login-button(scope="public_profile,email", onlogin="checkLoginState();")
-div#status
+div.login-container.js-login-container
+	fb:login-button(scope="public_profile,email", onlogin="fbLogin.checkLoginState();")
+	div#status
