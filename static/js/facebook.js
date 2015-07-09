@@ -12,6 +12,7 @@ window.fbAsyncInit = function() {
 	FB.init({
 		appId : fbLogin.apID,
 		cookie : true,  // enable cookies to allow the server to access the session
+		status: true,
 		xfbml : true,  // parse social plugins on this page
 		version : 'v2.2' // use version 2.2
 	});
@@ -55,9 +56,25 @@ var fbLogin = {
 		});
 		FB.api('/me/picture', function(response) {
 			that.user.pictureUrl = response.data.url;
-
-			console.log(that.user);
+			
+			that.login();
 		});
+	},
+	login: function(){
+		var that = this;
+		
+		console.log(that.user);
+		$.ajax({
+			url: '/login',
+			type: 'POST',
+			data: that.user,
+			success: function(response){
+				console.log(response);
+			},
+			error: function(err){
+				console.log(err);
+			}
+		})
 	}
 }
 

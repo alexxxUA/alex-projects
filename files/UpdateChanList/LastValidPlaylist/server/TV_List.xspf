@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <playlist version="1" xmlns="http://xspf.org/ns/0/">
-	<title>TV playlist: 2.7.2015 17:00; failed channels: 10</title>
+	<title>TV playlist: 9.7.2015 11:00; failed channels: 9</title>
 	<creator>Vasin Oleksiy</creator>
 	<trackList>
 		<track>
@@ -34,6 +34,10 @@
 		<track>
 			<title>ТРК Украина</title>
 			<location>90a01442376ffd39884b398f5134ddf6e83959c7</location>
+		</track>
+		<track>
+			<title>К1</title>
+			<location>b346d23fbf139a4b99291688b08f72edf5817b4c</location>
 		</track>
 		<track>
 			<title>К2</title>
@@ -109,15 +113,15 @@
 		</track>
 		<track>
 			<title>TV1000 Comedy HD</title>
-			<location>7e4a7d0d9e7e86dc56624c734a7c14c5ceabf374</location>
+			<location>f6d00e7a9489638eda8116afb8b392af9afed70c</location>
 		</track>
 		<track>
 			<title>TV1000 Megahit HD</title>
-			<location>553319060e530f81c17b136d1d8950104c6a6539</location>
+			<location>661f13e0e875af160d9fa0ac4e2851a3367d4062</location>
 		</track>
 		<track>
 			<title>TV1000 Premium HD</title>
-			<location>a1e91632d24e7abbc4949f657241d4e2f9ae75b6</location>
+			<location>187ac356160d9141262269aecec24942e0f3092d</location>
 		</track>
 		<track>
 			<title>Amedia 1</title>
@@ -129,7 +133,7 @@
 		</track>
 		<track>
 			<title>Amedia Premium HD</title>
-			<location>21ed894284a1f83be20bbde41f6ee60a142af123</location>
+			<location>9b0d9d72d92e47a785ac427c4f8c72c13f8217b1</location>
 		</track>
 		<track>
 			<title>SET HD</title>

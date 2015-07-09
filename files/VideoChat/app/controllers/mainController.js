@@ -10,7 +10,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	$scope.logoImg = $scope.relativePath +'img/min/logo.png';
 	$scope.msgAudio = new Audio($scope.relativePath +'media/message.mp3');
 	$scope.room = $location.hash();
-    $scope.myName = localStorage.myName || '';
+	$scope.myName = localStorage.myName || '';
 	$scope.isLogget = $scope.myName ? true : false;
 	$scope.local = null;
 	$scope.peers = {};
@@ -104,7 +104,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 			$scope.isUnreadMsg = false;
 		}	
 	};
-    $scope.login = function(e){
+	$scope.login = function(e){
 		if($scope.chatForm.$valid){
             $scope.isLogget = true;
             localStorage.myName = $scope.myName; 

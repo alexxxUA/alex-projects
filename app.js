@@ -1,8 +1,9 @@
-var	express		= require('express'),
-	app			= express(),
-	path 		= require('path'),
-	open		= require('open'),
-	ip 			= require('ip');
+var	express	= require('express'),
+	app	= express(),
+	path = require('path'),
+	open = require('open'),
+	ip = require('ip'),
+	mongoose 	= require("mongoose");
 
 //Store global variables
 global.filesP = path.join(__dirname, 'files');
@@ -15,6 +16,10 @@ var	routes		= require('./app_parts/routes.js'),
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8888,
 	ip = process.env.OPENSHIFT_NODEJS_IP || ip.address(),
 	oneDay = 86400000;
+
+
+// Connect to DB
+mongoose.connect('mongodb://localhost/explorer');
 
 // New call to compress content
 app.use(express.compress());
@@ -39,5 +44,5 @@ app.listen(port, ip, function(err){
 	if(err) throw error;
 
 	console.log('Server started on: '+ ip +':'+ port);
-	open('http://'+ ip +':'+ port);
+	//open('http://'+ ip +':'+ port);
 });

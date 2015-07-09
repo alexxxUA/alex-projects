@@ -4,9 +4,17 @@ var mime 		= require('mime'),
 	mkdirp 		= require('mkdirp'),
 	rmdir 		= require('rimraf'),
 	path 		= require('path'),
-	read 		= require('./readFileFolder.js');
+	read 		= require('./readFileFolder.js'),
+	User 		= require('./user.js');
 
 function init(app){
+	app.post('/login', function(req, res){
+		console.log(req.body);
+		User.findOne({}, function(err, user){
+			console.log(user);
+			res.send('test');
+		});
+	});
 	app.post('/upload', function(req, res){
 		var fName = req.header('x-file-name'),
 			fPath = req.header('x-file-path'),
