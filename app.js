@@ -15,11 +15,13 @@ var	routes		= require('./app_parts/routes.js'),
 
 var port = process.env.OPENSHIFT_NODEJS_PORT || 8888,
 	ip = process.env.OPENSHIFT_NODEJS_IP || ip.address(),
+	mongoIp = process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost',
+	mongoPort = process.env.OPENSHIFT_MONGODB_DB_PORT || '27017',
 	oneDay = 86400000;
 
 
 // Connect to DB
-mongoose.connect('mongodb://localhost/explorer');
+mongoose.connect('mongodb://'+ mongoIp +':'+ mongoPort +'/explorer');
 
 // New call to compress content
 app.use(express.compress());
