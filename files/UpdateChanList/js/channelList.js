@@ -74,7 +74,23 @@ var channelList = [
 	{dName: 'Мультимания', sName: 'Мультимания', flags: ''}
 ];
 
+var channelRegExps = function(channel, isReserve){
+	var isHd = channel.isHd ? '(?:hd|cee)' : '',
+		reserve = isReserve ? '(?:.+резерв.+)' : '',
+		regExp = null;
+
+	if(this.validList.type == 'm3u')
+		regExp = new RegExp('(?:EXTINF\:0,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*\\n+(.*))', 'im');
+	else if(this.validList.type == 'xspf')
+		regExp = new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*</title>)', 'im');
+
+	return regExp;
+}
 
 //Export channel list for server side
-if(typeof module != 'undefined')
-	module.exports.channelList = channelList;
+if(typeof module != 'undefined'){
+	module.exports = {
+		channelList: channelList,
+		channelRegExps: channelRegExps
+	};
+}

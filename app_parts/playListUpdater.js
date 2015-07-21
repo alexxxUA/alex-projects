@@ -3,10 +3,12 @@ var needle = require('needle'),
 	fs = require('fs'),
 	prependFile = require('prepend-file'),
 	_ = require('underscore'),
-	channels = require('./../files/UpdateChanList/js/channelList.js').channelList;
+	channels = require('./../files/UpdateChanList/js/channelList.js').channelList,
+	getRegExp = require('./../files/UpdateChanList/js/channelList.js').channelRegExps;
 
 var Channel = {
 	channels: {},
+	getRegExp: getRegExp,
 	availableFlags: [{
 			string: 'hd',
 			property: 'isHd'
@@ -144,18 +146,6 @@ var Channel = {
 			flagsObj[availableFlags[i].property] = flags.indexOf(availableFlags[i].string) != -1;
 
 		return flagsObj;
-	},
-	getRegExp: function(channel, isReserve) {
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			reserve = isReserve ? '(?:.+резерв.+)' : '',
-			regExp = null;
-
-		if(this.validList.type == 'm3u')
-			regExp = new RegExp('(?:EXTINF\:0,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*\\n*(?:[^acestream].*\n*)*)(?:acestream://)(.*)', 'im');
-		else if(this.validList.type == 'xspf')
-			regExp = new RegExp('(?:acestream://)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*</title>)', 'im');
-
-		return regExp;
 	},
 	getChannelId: function(channelName){
 		var chanId = this.validList.list.match(this.getRegExp(channelName)),

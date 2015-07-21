@@ -1,5 +1,6 @@
 var Channel = {
 	channels: {},
+	getRegExp: channelRegExps,
 	availableFlags: [{
 			string: 'hd',
 			property: 'isHd'
@@ -189,21 +190,10 @@ var Channel = {
 
 		return flagsObj;
 	},
-	getRegExp: function(channel, isReserve) {
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			reserve = isReserve ? '(?:.+резерв.+)' : '',
-			regExp = null;
-
-		if(this.validList.type == 'm3u')
-			regExp = new RegExp('(?:EXTINF\:0,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*\\n+(.*))', 'im');
-		else if(this.validList.type == 'xspf')
-			regExp = new RegExp('(?:acestream://)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*' + reserve + '\\s*</title>)', 'im');
-
-		return regExp;
-	},
 	getChannelId: function(channelName){
 		var regExp = this.getRegExp(channelName),
-			chanId = this.validList.list.match(regExp),
+			chanId = this.validList.list.match(regExp);
+
 		chanId = chanId ? chanId : this.validList.list.match(this.getRegExp(channelName, true)); //Check for резерв channel
 
 		return chanId && chanId[1] ? chanId[1] : false;
