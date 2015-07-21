@@ -26,8 +26,7 @@ var Channel = {
 	_pureXspfChannelItem: '\n<location>acestream://<%= id %></location>\n<title><%= name %></title>',
 	_errorList: '<ul class="list-group">' +
 				'<% _.each(list, function(item, index) { '+
-					'var channelFullName = item.dName + Channel.getHdText(item.isHd),'+
-						'sFullName = item.sName + Channel.getHdText(item.isHd);%>'+
+					'var channelFullName = item.dName + Channel.getHdText(item.isHd);%>'+
 					'<li class="list-group-item <% if(item.isReq){%>list-group-item-danger<% }else{ %>list-group-item-warning<% } %>">'+
 						'<a class="show-channel-popup" href="<%= Channel.getSearchChannelUrl(channelFullName) %>" title="<%=channelFullName%>"><%= channelFullName %></a>'+
 						'<span class="add-channel label label-info" data-failed-index="<%=index%>" title="Add channel to the generated list.">ADD</span>'+
@@ -36,7 +35,7 @@ var Channel = {
 								'<span class="input-group-btn">'+
 									'<input class="btn btn-primary add-cansel" type="button" value="Cansel">'+
 								'</span>'+
-								'<input class="add-channel-input form-control" data-channel="<%= sFullName %>" type="text" placeholder="ID for \'<%= channelFullName %>\'" required>'+
+								'<input class="add-channel-input form-control" data-channel="<%= channelFullName %>" type="text" placeholder="ID for \'<%= channelFullName %>\'" required>'+
 								'<span class="input-group-btn">'+
 									'<input class="btn btn-primary add-submit" type="submit" value="ADD">'+
 								'</span>'+

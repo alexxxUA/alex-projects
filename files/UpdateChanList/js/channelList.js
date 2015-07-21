@@ -46,8 +46,8 @@ var channelList = [
 
 	//Фильмы
 	{dName: 'Fox Life', sName: 'Fox Life', flags: 'hd'},
-	{dName: 'TV1000', sName: 'TV 1000', flags: 'req'},
-	{dName: 'TV1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
+	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
+	{dName: 'TV 1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
 	{dName: 'TV1000 Comedy', sName: 'TV1000 Comedy', flags: 'hd req'},
 	{dName: 'TV1000 Megahit', sName: 'TV1000 Megahit', flags: 'hd req'},
 	{dName: 'TV1000 Premium', sName: 'TV1000 Premium', flags: 'hd req'},
