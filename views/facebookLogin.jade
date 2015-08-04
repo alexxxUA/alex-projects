@@ -1,4 +1,14 @@
-div.login-container.js-login-container
-	script(src='/js/facebook.js')
-	fb:login-button(scope="public_profile,email", onlogin="fbLogin.checkLoginState();")
-	div#status
+-var loginClass = 'login-container js-login-container';
+-loginClass = user.isLogged ? loginClass +' user-logged' : loginClass;
+
+div(class=loginClass)
+	-if(user.isLogged)
+		a.js-fb-logOut.fb-log
+			img(src="/img/fs_signOut.png", )
+	-else
+		a.js-fb-logIn.fb-log
+			img(src="/img/fs_signIn.png", )
+	-if(user.isLogged)
+		div.user-info
+			img.user-img(src="#{user.avatar}", title="#{user.name}", title="#{user.name}")
+			span.user-name.hidden=user.name

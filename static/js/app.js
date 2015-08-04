@@ -656,6 +656,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 			if(typeof formError !== 'undefined' && formError.length)
 				executeFunctionByName(formError, window, request, $form);
 			navigation.hideLoader();
+			console.log(err);
 		}
 	});
 });

@@ -27,10 +27,11 @@ function readFolder(req, res){
 			});
 		}
 		else{
-			res.render('explorerInc.jade', {
+			res.render('mainExplorerView.jade', {
 				dirTree: dom.dirTree,
 				dirs: dom.dirs,
-				files: dom.files
+				files: dom.files,
+				user: res.user
 			});
 		}
 	};

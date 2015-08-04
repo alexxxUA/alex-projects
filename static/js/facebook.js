@@ -7,74 +7,66 @@
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-//Init FB
-window.fbAsyncInit = function() {
-	FB.init({
-		appId : fbLogin.apID,
-		cookie : true,  // enable cookies to allow the server to access the session
-		status: true,
-		xfbml : true,  // parse social plugins on this page
-		version : 'v2.2' // use version 2.2
-	});
 
-	fbLogin.getStatus();
-};
-
-//Main FB object
-var fbLogin = {
-	apID: 984466578230390,
-	user: {
-		id: undefined,
-		name: '',
-		email: '',
-		pictureUrl: ''
-	},
-	getStatus: function(){
-		var that = this;
-		
-		FB.getLoginStatus(function(response){
-			that.statusChanged(response);
+(function(){
+	//Init FB
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId : fbLogin.apID,
+			cookie : true,  // enable cookies to allow the server to access the session
+			status: true,
+			xfbml : true,  // parse social plugins on this page
+			version : 'v2.2' // use version 2.2
 		});
-	},
-	statusChanged: function(response){
-		if (response.status === 'connected'){
-			this.loggedIn();
+	};
+
+	//Main FB object
+	var fbLogin = {
+		apID: 984466578230390,
+		registerEvents: function(){
+			var that = this;
+
+			$(document).on('click', '.js-fb-logIn', $.proxy(this.doLogin, this));
+			$(document).on('click', '.js-fb-logOut', function(){
+				FB.logout(function(){
+					location.reload();
+				});
+			});
+		},
+		doLogin: function(){
+			var that = this;
+
+			FB.login(function(response){
+				if (response.authResponse)
+					that.login(response.authResponse.accessToken);
+			});
+		},
+		login: function(token){
+			var that = this,
+				data = {
+					token: token
+				};
+
+			$.ajax({
+				url: '/login',
+				type: 'POST',
+				data: data,
+				success: function(response){
+					that.loggedIn(response);
+				},
+				error: function(err){
+					console.log(err);
+				}
+			});
+		},
+		loggedIn: function(response){
+			location.reload();
 		}
-	},
-	checkLoginState: function(){
-		this.getStatus()
-	},
-	loggedIn: function(){
-		var that = this;
-		
-		FB.api('/me', function(response) {
-			that.user.id = response.id;
-			that.user.name = response.name;
-			that.user.email = response.email;
-
-			console.log(that.user);
-		});
-		FB.api('/me/picture', function(response) {
-			that.user.pictureUrl = response.data.url;
-			
-			that.login();
-		});
-	},
-	login: function(){
-		var that = this;
-		
-		console.log(that.user);
-		$.ajax({
-			url: '/login',
-			type: 'POST',
-			data: that.user,
-			success: function(response){
-				console.log(response);
-			},
-			error: function(err){
-				console.log(err);
-			}
-		})
 	}
-}
+	
+	fbLogin.registerEvents();
 
+	window.checkLoginState = function(){
+		fbLogin.checkLoginState.apply(fbLogin);
+	};
+})();

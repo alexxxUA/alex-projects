@@ -1,0 +1,1 @@
+node-inspector --web-port=9090 --save-live-edit=true

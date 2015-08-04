@@ -4,18 +4,87 @@ var mime 		= require('mime'),
 	mkdirp 		= require('mkdirp'),
 	rmdir 		= require('rimraf'),
 	path 		= require('path'),
+	fbParser	= require('fb-signed-parser'),
 	read 		= require('./readFileFolder.js'),
 	User 		= require('./user.js');
 
-function init(app){
+var FB = {
+	appId: process.env.FB_APP_ID,
+	secret: process.env.FB_SECRET,
+	v: process.env.FB_VERSION
+}
+
+function init(app, fbgraph){
+	var auth = {
+		isLogged: function(req, res, next){
+			var that = auth,
+				token = req.cookies['fbsr_'+ FB.appId],
+				userId = token ? fbParser.parse(token, FB.secret).user_id : '';
+
+			User.findOne({id: userId}, function(err, user){
+				if(err) throw err;
+
+				if(user && user._doc){
+					res.user = user._doc;
+					res.user.isLogged = true;
+					res.user.accessEdit = that.getEditAccessVal(req, user);
+				}
+				else{
+					res.user = {
+						isLogged: false,
+						accessEdit: false
+					};
+				}
+				if(typeof next != 'undefined')
+					next();
+			});
+		},
+		isHaveEditAccess: function(req, res, next){
+			if(!res.user.accessEdit)
+				res.status(500).send('You have no access for this action!');
+			else
+				next();
+		},
+		getEditAccessVal: function(req, user){
+			var accessEdit = false;
+			if(user.isAdmin)
+				accessEdit = true;
+			
+			return accessEdit;
+		},
+		newUser: function(userData, res){
+			var user = new User({
+				id: userData.id,
+				name: userData.name,
+				email: userData.email,
+				avatar: userData.picture.data.url,
+				isAdmin: false
+			});
+			
+			user.save();
+			res.send({isLogged: true});
+		}
+	}
+
+
 	app.post('/login', function(req, res){
-		console.log(req.body);
-		User.findOne({}, function(err, user){
-			console.log(user);
-			res.send('test');
+		var fb = new fbgraph.Facebook(req.body.token, FB.v);
+
+		fb.graph('/me?fields=id,name,picture,email', function(err, userData) {
+			if(err)
+				res.status(404).send('User not found');
+
+			User.findOne({id: userData.id}, function(err, user){
+				if(err) throw err;
+				
+				if(user && user._doc)
+					res.send({isLogged: true});
+				else
+					auth.newUser(userData, res);
+			});
 		});
 	});
-	app.post('/upload', function(req, res){
+	app.post('/upload', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var fName = req.header('x-file-name'),
 			fPath = req.header('x-file-path'),
 			fRelativePath = path.join(fPath, fName),
@@ -32,7 +101,7 @@ function init(app){
 		});
 	});
 
-	app.get('/create', function(req, res){
+	app.get('/create', auth.isLogged, auth.isHaveEditAccess, function(req, res, next){
 		var folderPath = path.join(filesP, req.query.oldPath, req.query.name);
 
 		mkdirp(folderPath, function(err){
@@ -43,7 +112,7 @@ function init(app){
 		});
 
 	});
-	app.get('/rename', function(req, res){
+	app.get('/rename', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var fileOldPath = path.join(filesP, req.query.oldPath, req.query.oldName),
 			filePath = path.join(filesP, req.query.oldPath, req.query.name);
 
@@ -54,7 +123,7 @@ function init(app){
 				res.send("Success!");
 		});
 	});
-	app.get('/delete', function(req, res){
+	app.get('/delete', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var filePath = path.join(filesP, req.query.oldPath, req.query.oldName);
 
 		rmdir(filePath, function(err){
@@ -104,8 +173,11 @@ function init(app){
 					charset: mime.charsets.lookup(this.type)
 				}
 
-				if(stat.isDirectory())
-					read.readFolder(req, res);
+				if(stat.isDirectory()){
+					auth.isLogged(req, res, function(){
+						read.readFolder(req, res);
+					});
+				}
 				else
 					read.readFile(req, res, file);
 			}

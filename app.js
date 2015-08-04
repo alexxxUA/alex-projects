@@ -1,5 +1,6 @@
 var	express	= require('express'),
 	app	= express(),
+	fbgraph = require('fbgraphapi'),
 	path = require('path'),
 	open = require('open'),
 	ip = require('ip'),
@@ -26,17 +27,20 @@ mongoose.connect('mongodb://'+ mongoIp +':'+ mongoPort +'/explorer');
 // New call to compress content
 app.use(express.compress());
 
+//Cookie
+app.use(express.cookieParser());
+
+//POST
+app.use(express.bodyParser());
+
 //set path to the views (template) directory
 app.set('views', path.join(__dirname, 'views'));
 
 //set path to static files
 app.use(express.static(path.join(__dirname, 'static'), {maxAge: oneDay}));
 
-//POST
-app.use(express.bodyParser());
-
 //Init Explorer app and routes
-routes.init(app);
+routes.init(app, fbgraph);
 
 //Init playlist updater
 playlist.channel.init();

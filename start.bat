@@ -1,1 +1,1 @@
-node app.js
+node --debug app.js
