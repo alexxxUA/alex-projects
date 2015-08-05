@@ -12,3 +12,5 @@ div(class=loginClass)
 		div.user-info
 			img.user-img(src="#{user.avatar}", title="#{user.name}", title="#{user.name}")
 			span.user-name.hidden=user.name
+	script.
+		var FBappId = '#{cf.FBappId}';

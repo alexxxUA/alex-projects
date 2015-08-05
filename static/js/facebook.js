@@ -12,7 +12,7 @@
 	//Init FB
 	window.fbAsyncInit = function() {
 		FB.init({
-			appId : fbLogin.apID,
+			appId : FBappId,
 			cookie : true,  // enable cookies to allow the server to access the session
 			status: true,
 			xfbml : true,  // parse social plugins on this page
@@ -22,7 +22,6 @@
 
 	//Main FB object
 	var fbLogin = {
-		apID: 984466578230390,
 		registerEvents: function(){
 			var that = this;
 

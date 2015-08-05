@@ -32,7 +32,8 @@ function readFolder(req, res){
 				dirTree: dom.dirTree,
 				dirs: dom.dirs,
 				files: dom.files,
-				user: res.user
+				user: res.user,
+				cf: cf
 			});
 		}
 	};
