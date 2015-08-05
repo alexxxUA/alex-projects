@@ -22,6 +22,7 @@
 
 	//Main FB object
 	var fbLogin = {
+		scope: 'email',
 		registerEvents: function(){
 			var that = this;
 
@@ -38,7 +39,7 @@
 			FB.login(function(response){
 				if (response.authResponse)
 					that.login(response.authResponse.accessToken);
-			});
+			},{ scope: that.scope });
 		},
 		login: function(token){
 			var that = this,
