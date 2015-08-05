@@ -1,6 +1,7 @@
-var fs 			= require('fs'),
-	path 		= require('path'),
-	fileTypeIcon 	= require('./fileTypeIcon.js');
+var fs = require('fs'),
+	path = require('path'),
+	cf = require('./config.js'),
+	fileTypeIcon = require('./fileTypeIcon.js');
 
 function readFolder(req, res){
 	var p =  decodeURI(path.join(filesP, req.path)),

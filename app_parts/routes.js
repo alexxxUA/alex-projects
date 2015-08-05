@@ -1,78 +1,22 @@
-var mime 		= require('mime'),
-	fs 			= require('fs'),
-	needle		= require('needle'),
-	mkdirp 		= require('mkdirp'),
-	rmdir 		= require('rimraf'),
-	path 		= require('path'),
-	fbParser	= require('fb-signed-parser'),
-	read 		= require('./readFileFolder.js'),
-	User 		= require('./user.js');
+var mime = require('mime'),
+	fs 	= require('fs'),
+	needle = require('needle'),
+	mkdirp = require('mkdirp'),
+	rmdir = require('rimraf'),
+	path = require('path'),
+	fbgraph = require('fbgraphapi'),
+	cf = require('./config.js'),
+	auth = require('./auth.js'),
+	read = require('./readFileFolder.js'),
+	User = require('./user.js');
 
-var FB = {
-	appId: process.env.FB_APP_ID,
-	secret: process.env.FB_SECRET,
-	v: process.env.FB_VERSION
-}
-
-function init(app, fbgraph){
-	var auth = {
-		isLogged: function(req, res, next){
-			var that = auth,
-				token = req.cookies['fbsr_'+ FB.appId],
-				userId = token ? fbParser.parse(token, FB.secret).user_id : '';
-
-			User.findOne({id: userId}, function(err, user){
-				if(err) throw err;
-
-				if(user && user._doc){
-					res.user = user._doc;
-					res.user.isLogged = true;
-					res.user.accessEdit = that.getEditAccessVal(req, user);
-				}
-				else{
-					res.user = {
-						isLogged: false,
-						accessEdit: false
-					};
-				}
-				if(typeof next != 'undefined')
-					next();
-			});
-		},
-		isHaveEditAccess: function(req, res, next){
-			if(!res.user.accessEdit)
-				res.status(500).send('You have no access for this action!');
-			else
-				next();
-		},
-		getEditAccessVal: function(req, user){
-			var accessEdit = false;
-			if(user.isAdmin)
-				accessEdit = true;
-			
-			return accessEdit;
-		},
-		newUser: function(userData, res){
-			var user = new User({
-				id: userData.id,
-				name: userData.name,
-				email: userData.email,
-				avatar: userData.picture.data.url,
-				isAdmin: false
-			});
-			
-			user.save();
-			res.send({isLogged: true});
-		}
-	}
-
-
+function init(app){
 	app.post('/login', function(req, res){
-		var fb = new fbgraph.Facebook(req.body.token, FB.v);
+		var fb = new fbgraph.Facebook(req.body.token, cf.FBv);
 
 		fb.graph('/me?fields=id,name,picture,email', function(err, userData) {
 			if(err)
-				res.status(404).send('User not found');
+				console.log(err);
 
 			User.findOne({id: userData.id}, function(err, user){
 				if(err) throw err;

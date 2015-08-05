@@ -2,3 +2,4 @@
 /files/**/.sass-cache/
 */.sass-cache/
 /openshiftEnv.txt
+/app_parts/configDev.js
