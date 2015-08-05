@@ -1,5 +1,7 @@
 /files/**/node_modules/
 /files/**/.sass-cache/
 */.sass-cache/
-/openshiftEnv.txt
 /app_parts/configDev.js
+/files/UpdateChanList/LastValidPlaylist/server/log.txt
+/files/UpdateChanList/LastValidPlaylist/server/TV_List.xspf
+/openshiftEnv.txt
