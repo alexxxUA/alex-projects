@@ -50,6 +50,14 @@ var auth = {
 
 		user.save();
 		res.send({isLogged: true});
+	},
+	updateCurrentUser: function(user, userData, res){
+		user.name = userData.name;
+		user.email = userData.email;
+		user.avatar = userData.picture.data.url;
+
+		user.save();
+		res.send({isLogged: true});
 	}
 }
 

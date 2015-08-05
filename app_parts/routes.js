@@ -15,14 +15,16 @@ function init(app){
 		var fb = new fbgraph.Facebook(req.body.token, cf.FBv);
 
 		fb.graph('/me?fields=id,name,picture,email', function(err, userData) {
-			if(err)
-				console.log(err);
+			if(err){
+				res.status(500).send('User not found on facebook');
+				return;
+			}
 
 			User.findOne({id: userData.id}, function(err, user){
 				if(err) throw err;
 				
 				if(user && user._doc)
-					res.send({isLogged: true});
+					auth.updateCurrentUser(user, userData, res);
 				else
 					auth.newUser(userData, res);
 			});
