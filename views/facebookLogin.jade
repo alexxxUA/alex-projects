@@ -1,7 +1,4 @@
--var loginClass = 'login-container js-login-container';
--loginClass = user.isLogged ? loginClass +' user-logged' : loginClass;
-
-div(class=loginClass)
+.login-container.js-login-container
 	-if(user.isLogged)
 		a.js-fb-logOut.fb-log
 			img(src="/img/fs_signOut.png", )
@@ -12,5 +9,3 @@ div(class=loginClass)
 		div.user-info
 			img.user-img(src="#{user.avatar}", title="#{user.name}", title="#{user.name}")
 			span.user-name.hidden=user.name
-	script.
-		var FBappId = '#{cf.FBappId}';

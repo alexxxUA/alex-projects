@@ -119,22 +119,24 @@ FileExplorer.prototype.registerEvents = function(){
 	var that = this,
 		$dropZone = $(that.dropZone);
 
-	//Hover efect
-	$dropZone[0].ondragover = function(e){
-		that.onDragMove(e);
-		return false;
-	}
-	$dropZone[0].ondragleave = function(e){
-		if(e.pageX == 0)
+	if(conf.isLogged){
+		//Hover efect
+		$dropZone[0].ondragover = function(e){
+			that.onDragMove(e);
+			return false;
+		}
+		$dropZone[0].ondragleave = function(e){
+			if(e.pageX == 0)
+				that.onDragEnd();
+			return false;
+		}
+		//On drop files
+		$dropZone[0].ondrop = function(e) {
+			e.preventDefault();
 			that.onDragEnd();
-		return false;
+			that.fileDroped(e);
+		};
 	}
-	//On drop files
-	$dropZone[0].ondrop = function(e) {
-		e.preventDefault();
-		that.onDragEnd();
-		that.fileDroped(e);
-	};
 
 	//Hide context menu
 	$(document).on('click', 'body', function(e){

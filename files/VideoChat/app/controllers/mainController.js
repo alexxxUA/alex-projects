@@ -65,7 +65,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 			if(e.ctrlKey)
 				$scope.insertEnter(e);
 			else
-				$scope.sendMsg();				
+				$scope.sendMsg();
 		}
 	};
 	$scope.insertEnter = function(e){
@@ -102,14 +102,14 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		}
 		else{
 			$scope.isUnreadMsg = false;
-		}	
+		}
 	};
 	$scope.login = function(e){
 		if($scope.chatForm.$valid){
-            $scope.isLogget = true;
-            localStorage.myName = $scope.myName; 
-        }
-    };
+			$scope.isLogget = true;
+			localStorage.myName = $scope.myName; 
+		}
+	};
 	$scope.leave = function () {
 		comm.leave();
 		$scope.peers = {};
@@ -180,7 +180,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 			return;
 
 		//$log.log(data);
-		
+
 		$timeout(function () {
 			switch (dataType) {
 			case 'msg':

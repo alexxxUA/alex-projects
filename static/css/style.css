@@ -240,6 +240,12 @@ to { color: #92F099; }
     z-index: initial;
     float: none;
 }
+.js-context-dropdown[is-file="false"]{
+	display: none;
+}
+.user-logged .js-context-dropdown[is-file="false"]{
+	display: block;
+}
 .js-context-menu{
     position: absolute;
     visibility: hidden;
@@ -367,7 +373,7 @@ to { color: #92F099; }
 	right: 50px;
 	top: 16px;
 }
-.login-container.user-logged {
+.user-logged .login-container {
 	top: 5px;
 }
 .user-img {
