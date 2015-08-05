@@ -1,6 +1,6 @@
 var fs = require('fs'),
 	path = require('path'),
-	cf = require('./config.js'),
+	cf = require('./../config/config.js'),
 	fileTypeIcon = require('./fileTypeIcon.js');
 
 function readFolder(req, res){

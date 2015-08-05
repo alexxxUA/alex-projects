@@ -9,7 +9,7 @@ var	express	= require('express'),
 //Set globals
 global.filesP = path.join(__dirname, 'files');
 
-var cf = require('./app_parts/config.js'),
+var cf = require('./config/config.js'),
 	routes = require('./app_parts/routes.js'),
 	playlist = require('./app_parts/playListUpdater.js');
 

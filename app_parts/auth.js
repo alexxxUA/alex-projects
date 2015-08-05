@@ -1,6 +1,6 @@
 var fbParser = require('fb-signed-parser'),
 	User = require('./user.js'),
-	cf = require('./config.js');
+	cf = require('./../config/config.js');
 
 var auth = {
 	isLogged: function(req, res, next){

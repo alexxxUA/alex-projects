@@ -3,7 +3,7 @@ var needle = require('needle'),
 	fs = require('fs'),
 	prependFile = require('prepend-file'),
 	_ = require('underscore'),
-	cf = require('./config.js'),
+	cf = require('./../config/config.js'),
 	channels = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	getRegExp = require('./../files/UpdateChanList/js/channelList.js').channelRegExps;
 
