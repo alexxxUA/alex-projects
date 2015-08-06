@@ -26,8 +26,8 @@ var channelList = [
 	//Познавательные
 	{dName: 'Мега', sName: 'Мега', flags: 'req'},
 	{dName: 'QTV', sName: 'QTV', flags: 'req'},
-	{dName: 'Viasat Explore', sName: 'Viasat Explore', flags: 'hd req'},
-	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigаtion Discovеry Eurоpe', flags: ''},
+	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
+	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World', sName: 'Discovery World|Discovеry Wоrld', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce', flags: 'req'},
 	{dName: 'Discovery HD Showcase', sName: 'Discovery HD Showcase', flags: ''},
@@ -38,7 +38,7 @@ var channelList = [
 	{dName: 'Animal Planet', sName: 'Animal Planet|Animаl Planеt', flags: 'hd req'},
 	{dName: 'Nat Geo Wild', sName: 'Nat Geo Wild|Nаt Geо Wild', flags: 'hd req'},
 	{dName: 'Моя Планета', sName: 'Моя Планета', flags: 'req'},
-	{dName: 'Техно 24', sName: 'Техно 24', flags: ''},
+	{dName: 'Техно 24', sName: 'Техно 24|24 Техно', flags: ''},
 	{dName: 'НЛО ТВ', sName: 'НЛО ТВ', flags: ''},
 	{dName: 'Travel channel', sName: 'Travel channel', flags: ''},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ', flags: ''},
@@ -46,7 +46,7 @@ var channelList = [
 	{dName: 'English Club TV', sName: 'English Club TV', flags: ''},
 
 	//Фильмы
-	{dName: 'Fox Life', sName: 'Fox Life', flags: 'hd'},
+	{dName: 'Fox Life', sName: 'Fox Life', flags: ''},
 	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
 	{dName: 'TV 1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
 	{dName: 'TV1000 Comedy', sName: 'TV1000 Comedy', flags: 'hd req'},
@@ -59,7 +59,7 @@ var channelList = [
 	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: 'req'},
 
 	//Музыка
-	{dName: 'MTV Hits', sName: 'MTV Hits', flags: ''},
+	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', flags: ''},
 	{dName: 'MTV Dance', sName: 'MTV Dance', flags: ''},
 	{dName: 'Music Box UA', sName: 'Music Box UA', flags: ''},
 	{dName: 'М1', sName: 'М1', flags: 'req'},

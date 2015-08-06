@@ -3,13 +3,13 @@ var needle = require('needle'),
 	fs = require('fs'),
 	prependFile = require('prepend-file'),
 	_ = require('underscore'),
+	cheerio = require('cheerio'),
 	cf = require('./../config/config.js'),
-	channels = require('./../files/UpdateChanList/js/channelList.js').channelList,
-	getRegExp = require('./../files/UpdateChanList/js/channelList.js').channelRegExps;
+	channels = require('./../files/UpdateChanList/js/channelList.js').channelList;
 
 var Channel = {
-	channels: {},
-	getRegExp: getRegExp,
+	channels: [],
+	getRegExp: '',
 	availableFlags: [{
 			string: 'hd',
 			property: 'isHd'
@@ -17,15 +17,14 @@ var Channel = {
 			string: 'req',
 			property: 'isReq'
 	}],
-	supportedTypes: ['m3u', 'xspf'],
+	channelCounter: 0,
 	validList: '',
-	genChannList: '',
-	genFullChannList: '',
 	generateInterval: '60', //Value in minutes
 	playlistPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/TV_List.xspf'),
 	logPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/log.txt'),
-	playlistUrl: 'http://www.trambroid.com/playlist.xspf',
-	_report: _.template('Playlist (<%= date %>) - updated.'+
+	playlistUrl: 'http://tuchkatv.ru/player.html',
+	playerUrl: 'http://1ttv.net/iframe.php?site=873&channel=',
+	_report: _.template('Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
 		'\nRequired failed: <%= reqFailedList.length %>'+
 		'\nFailed: <%= failedList.length %>'+
@@ -47,18 +46,13 @@ var Channel = {
 	},
 	init: function() {
 		this.setChannelListConfig(channels);
-		this.getValidPlaylist('GET', this.playlistUrl);
+		this.getValidPlaylist();
 
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getOffsetNextHour());
 	},
-	storeValidList: function(name, playList, date){
-		this.validList = {
-			name: name,
-			type: this.getFileType(name),
-			list: playList,
-			lModified: date
-		};
+	storeValidList: function(playList){
+		this.validList = playList;
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -76,14 +70,13 @@ var Channel = {
 			updatedList: [],
 			reqFailedList: []
 		};
-		this.genFullChannList = '';
-		this.genChannList = '';
+		this.channelCounter = 0;
 	},
 	setTimeoutCall: function(time){
 		var that = this;
 
 		setTimeout(function(){
-			that.getValidPlaylist('GET', that.playlistUrl);
+			that.getValidPlaylist();
 
 			that.setTimeoutCall(that.generateInterval * 60000);
 		}, time);
@@ -96,6 +89,12 @@ var Channel = {
 			this.extendObj(channel, this.getObjFromFlags(flags));
 		}
 		this.channels = channelListObj;
+	},
+	getDom: function(html){
+		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
+	},
+	getPLayerUrl: function(channelNum){
+		return this.playerUrl + channelNum;
 	},
 	getTimeOnZone: function(time, tZone){
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
@@ -111,29 +110,20 @@ var Channel = {
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
-	getValidPlaylist: function(reqType, url){
-		var that = this,
-			reqOptions = {
-				headers: {
-					'Accept': 'text/html'
-				},
-				method: 'HEAD'
-			};
+	getValidPlaylist: function(){
+		var that = this;
 
-		needle.request(reqType, url, null, reqOptions, function(err, resp) {
+		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
 			if (err || resp.statusCode == 404 || resp.statusCode == 500){
 				that.logErr('Error in getting valid playlist!');
 				return;
 			}
-			that.storeValidList(url, resp.body.toString('utf8'), resp.headers['last-modified']);
+			var $ = that.getDom(resp.body),
+				playlist = $('#sidebar select').html();
+
+			that.storeValidList(playlist);
 			that.getList();
 		});
-	},
-	getFileType: function(playlistName){
-		var playlist = playlistName.split('.'),
-			playlistType = playlist[playlist.length-1];
-
-		return playlistType.toLocaleLowerCase();
 	},
 	getHdText: function(isHd){
 		return isHd ? ' HD' : '';
@@ -148,52 +138,116 @@ var Channel = {
 
 		return flagsObj;
 	},
-	getChannelId: function(channelName){
-		var chanId = this.validList.list.match(this.getRegExp(channelName)),
-		chanId = chanId ? chanId : this.validList.list.match(this.getRegExp(channelName, true)); //Check for резерв channel
+	getChannelNumb: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
 
-		return chanId && chanId[1] ? chanId[1] : false;
+		return chanNum && chanNum[1] ? chanNum[1] : false;
 	},
-	getCustomList: function() {
+	getChannelId: function(channel, callback){
+		var that = this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPLayerUrl(chanNum);
+		
+		if(!chanNum){
+			this.failed(channel);
+			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
+			return;
+		}
+		
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			if(!chanId){
+				that.failed(channel);
+				return;
+			}
+			callback(chanId);
+		});
+	},
+	getIdFromFrame: function(url, channel, callback){
 		var that = this;
 
-		for (var i = 0; i < that.channels.length; i++) {
-			var curChannel = that.channels[i],
-				channelId = that.getChannelId(curChannel);
-
-			if (channelId) {
-				that.genChannList += that.formChannItem(curChannel, channelId);
-				that.report.updatedList.push(curChannel);
-			} else {
-				that.report.failedList.push(curChannel);
-				if(curChannel.isReq)
-					that.report.reqFailedList.push(curChannel);
+		needle.request('GET', url, null, {}, function(err, resp) {
+			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+				that.failed(channel);
+				return;
 			}
-		}
-		that.genFullChannList = '<?xml version="1.0" encoding="UTF-8"?>' +
-			'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
-			'\n\t<title>TV playlist: '+ this.getformatedDate(new Date()) +'; failed channels: '+ this.report.failedList.length +'</title>' +
-			'\n\t<creator>Vasin Oleksiy</creator>' +
-			'\n\t<trackList>' + this.genChannList + '\n\t</trackList>' +
-			'\n</playlist>';
+			var regExp = new RegExp('(?:this.loadPlayer\\((?:"|\'))([0-9a-f]+)', 'im'),
+				chanId = resp.body.match(regExp);
+
+			callback(chanId && chanId[1] ? chanId[1] : false);
+		});
 	},
 	getReport: function(){
-		var report = this._report(this.extendObj(this.report, {date: this.getformatedDate(new Date(this.validList.lModified))} ));
+		var report = this._report(this.report);
 
 		this.logInfo(report);
 	},
-	formChannItem: function(channel, newChannelId) {
+	getList: function() {
+		var that = this;
+
+		for (var i = 0; i < that.channels.length; i++) {
+			var curChannel = that.channels[i];
+			
+			(function(channel){
+				that.getChannelId(channel, function(ID){
+					that.storeChannelItem(channel, ID)
+				});
+			})(curChannel);
+		}
+	},
+	formFullChannList: function(){
+		var channels = '';
+		
+		for (var i = 0; i < this.channels.length; i++) {
+			var channel = this.channels[i];
+			if(channel.id){
+				channels += this.formChannItem(channel);
+			}
+		}
+
+		return '<?xml version="1.0" encoding="UTF-8"?>' +
+				'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
+				'\n\t<title>TV playlist: '+ this.getformatedDate(new Date()) +'; failed channels: '+ this.report.failedList.length +'</title>' +
+				'\n\t<creator>Vasin Oleksiy</creator>' +
+				'\n\t<trackList>' + channels + '\n\t</trackList>' +
+				'\n</playlist>';
+	},
+	formChannItem: function(channel) {
 		return '\n\t\t<track>' +
 				'\n\t\t\t<title>' + channel.dName + this.getHdText(channel.isHd) + '</title>' +
-				'\n\t\t\t<location>' + newChannelId.replace('\n', '') + '</location>' +
+				'\n\t\t\t<location>' + channel.id.replace('\n', '') + '</location>' +
 				'\n\t\t</track>';
 	},
-	savePlaylist: function(){
-		fs.writeFile(this.playlistPath, this.genFullChannList);
+	storeChannelItem: function(channel, ID){
+		this.channelCounter++
+		
+		channel.id = ID;
+
+		this.report.updatedList.push(channel);
+
+		//Finish playlist
+		if(this.channelCounter >= this.channels.length)
+			this.finishPlaylist();
 	},
-	getList: function() {
-		this.getCustomList();
-		this.savePlaylist();
+	savePlaylist: function(playlist){
+		fs.writeFile(this.playlistPath, playlist);
+	},
+	failed: function(channel){
+		this.channelCounter++
+
+		channel.id = false;
+
+		this.report.failedList.push(channel);
+		if(channel.isReq)
+			this.report.reqFailedList.push(channel);
+		
+		//Finish playlist
+		if(this.channelCounter >= this.channels.length)
+			this.finishPlaylist();
+	},
+	finishPlaylist: function(){
+		this.savePlaylist(this.formFullChannList());
 		this.getReport();
 
 		this.resetData();
