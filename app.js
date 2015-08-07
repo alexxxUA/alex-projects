@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'static'), {maxAge: cf.oneDay}));
 routes.init(app);
 
 //Init playlist updater
-playlist.channel.init();
+playlist.init();
 
 //listen server
 app.listen(cf.port, cf.ip, function(err){

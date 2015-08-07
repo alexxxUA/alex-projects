@@ -7,23 +7,27 @@ var needle = require('needle'),
 	cf = require('./../config/config.js'),
 	channels = require('./../files/UpdateChanList/js/channelList.js').channelList;
 
-var Channel = {
-	channels: [],
-	getRegExp: '',
-	availableFlags: [{
+function Channel(params){
+	this.channels = [];
+	this.availableFlags = [{
 			string: 'hd',
 			property: 'isHd'
 		},{
 			string: 'req',
 			property: 'isReq'
-	}],
-	channelCounter: 0,
-	validList: '',
-	generateInterval: '60', //Value in minutes
-	playlistPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/TV_List.xspf'),
-	logPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/log.txt'),
-	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
-	_report: _.template('Playlist updated.'+
+	}];
+	this.channelCounter = 0;
+	this.validList = '';
+	
+	this.generateInterval = '60'; //Value in minutes
+	this.playListName = 'TV_List.xspf';
+	this.logName = 'log.txt';
+	this.report = {
+		updatedList: [],
+		reqFailedList: [],
+		failedList: []
+	};
+	this._report = _.template('Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
 		'\nRequired failed: <%= reqFailedList.length %>'+
 		'\nFailed: <%= failedList.length %>'+
@@ -31,12 +35,15 @@ var Channel = {
 		'<% _.each(failedList, function(item, index) { '+
 			'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
 			'\n\t<%= index+1 %>. <%= channelFullName %>'+
-		'<% }); %>'),
-	report: {
-		updatedList: [],
-		reqFailedList: [],
-		failedList: []
-	},
+		'<% }); %>');
+	
+	//Init params
+	for(var param in params){
+		if (params.hasOwnProperty(param))
+			this[param] = params[param];
+	}
+}
+Channel.prototype = {
 	logInfo: function(msg){
 		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
@@ -44,14 +51,14 @@ var Channel = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function() {
+		this.playlistPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.playListName);
+		this.logPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.logName);
+
 		this.setChannelListConfig(channels);
 		this.getValidPlaylist();
 
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getOffsetNextHour());
-	},
-	storeValidList: function(resp){
-		this.validList = resp.body;
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -92,28 +99,6 @@ var Channel = {
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
 	},
-	getPLayerUrl: function(channel, callback){
-		var that = this,
-			channelPage = that.getChannelPage(channel);
-		
-		if(!channelPage){
-			console.log('Channel not found on the page: '+ channel.dName);
-			that.failed(channel);
-			return;
-		}
-
-		needle.request('GET', channelPage, null, {}, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				that.logErr('Error in getting page for channel: '+ channel.dName);
-				that.failed(channel);
-				return;
-			}
-			var $ = that.getDom(resp.body),
-				channelUrl = $('#Playerholder iframe').attr('src');
-
-			callback(channelUrl);
-		});
-	},
 	getTimeOnZone: function(time, tZone){
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
@@ -153,26 +138,6 @@ var Channel = {
 			flagsObj[availableFlags[i].property] = flags.indexOf(availableFlags[i].string) != -1;
 
 		return flagsObj;
-	},
-	getChannelPage: function(channel){
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/a>)', 'im'),
-			chanPage = this.validList.match(regExp);
-
-		return chanPage && chanPage[1] ? chanPage[1] : false;
-	},
-	getChannelId: function(channel, callback){
-		var that = this;
-		
-		that.getPLayerUrl(channel, function(url){
-			that.getIdFromFrame(url, channel, function(chanId){
-				if(!chanId){
-					that.failed(channel);
-					return;
-				}
-				callback(chanId);
-			});
-		});
 	},
 	getIdFromFrame: function(url, channel, callback){
 		var that = this;
@@ -262,4 +227,101 @@ var Channel = {
 		this.resetData();
 	}
 }
-module.exports.channel = Channel;
+
+var channelTorrentStream = new Channel({
+	playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt',
+	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
+	storeValidList: function(resp){
+		this.validList = resp.body;
+	},
+	getChannelPage: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/a>)', 'im'),
+			chanPage = this.validList.match(regExp);
+
+		return chanPage && chanPage[1] ? chanPage[1] : false;
+	},
+	getPLayerUrl: function(channel, callback){
+		var that = this,
+			channelPage = that.getChannelPage(channel);
+
+		if(!channelPage){
+			console.log('Channel not found on the page: '+ channel.dName);
+			that.failed(channel);
+			return;
+		}
+
+		needle.request('GET', channelPage, null, {}, function(err, resp) {
+			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+				that.logErr('Error in getting page for channel: '+ channel.dName);
+				that.failed(channel);
+				return;
+			}
+			var $ = that.getDom(resp.body),
+				channelUrl = $('#Playerholder iframe').attr('src');
+
+			callback(channelUrl);
+		});
+	},
+	getChannelId: function(channel, callback){
+		var that = this;
+
+		that.getPLayerUrl(channel, function(url){
+			that.getIdFromFrame(url, channel, function(chanId){
+				if(!chanId){
+					that.failed(channel);
+					return;
+				}
+				callback(chanId);
+			});
+		});
+	}
+});
+
+var channelTuchka = new Channel({
+	playListName: 'TV_List_tuchka.xspf',
+	logName: 'log_tuchka.txt',
+	playlistUrl: 'http://tuchkatv.ru/player.html',
+	playerUrl: 'http://1ttv.net/iframe.php?site=873&channel=',
+	storeValidList: function(resp){
+		var $ = this.getDom(resp.body),
+			playlist = $('#sidebar select').html();
+
+		this.validList = playlist;
+	},
+	getChannelNumb: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
+
+		return chanNum && chanNum[1] ? chanNum[1] : false;
+	},
+	getPLayerUrl: function(channelNum){
+		return this.playerUrl + channelNum;
+	},
+	getChannelId: function(channel, callback){
+		var that = this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPLayerUrl(chanNum);
+		
+		if(!chanNum){
+			this.failed(channel);
+			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
+			return;
+		}
+		
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			if(!chanId){
+				that.failed(channel);
+				return;
+			}
+			callback(chanId);
+		});
+	}
+});
+
+module.exports.init = function(){
+	channelTorrentStream.init();
+	channelTuchka.init();
+};
