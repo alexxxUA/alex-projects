@@ -87,14 +87,16 @@ Channel.prototype = {
 			that.setTimeoutCall(that.generateInterval * 60000);
 		}, time);
 	},
-	setChannelListConfig: function(channelListObj) {
-		for(var i=0; i < channelListObj.length; i++){
-			var channel = channelListObj[i],
+	setChannelListConfig: function(channelList) {
+		var channelArray = this.getArrayCopy(channelList);
+
+		for(var i=0; i < channelArray.length; i++){
+			var channel = channelArray[i],
 				flags = channel.flags ? channel.flags : '';
 
 			this.extendObj(channel, this.getObjFromFlags(flags));
 		}
-		this.channels = channelListObj;
+		this.channels = channelArray;
 	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
@@ -170,6 +172,9 @@ Channel.prototype = {
 				});
 			})(curChannel);
 		}
+	},
+	getArrayCopy: function(array){
+		return JSON.parse(JSON.stringify(array));
 	},
 	formFullChannList: function(){
 		var channels = '';
