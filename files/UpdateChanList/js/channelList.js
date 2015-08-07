@@ -9,8 +9,8 @@
 var channelList = [
 	//Украинские
 	{dName: '1+1', sName: '1\\+1', flags: 'req'},
-	{dName: 'СТБ', sName: 'СТБ', flags: 'req'},
-	{dName: 'Новый канал', sName: 'Новый канал', flags: 'req'},
+	{dName: 'СТБ', sName: 'СТБ|СТБ Украина', flags: 'req'},
+	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', flags: 'req'},
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
 	{dName: '2+2', sName: '2\\+2', flags: 'req'},
 	{dName: 'ТЕТ', sName: 'ТЕТ', flags: 'req'},
@@ -29,8 +29,8 @@ var channelList = [
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World', sName: 'Discovery World|Discovеry Wоrld', flags: ''},
-	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce', flags: 'req'},
-	{dName: 'Discovery HD Showcase', sName: 'Discovery HD Showcase', flags: ''},
+	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'req'},
+	{dName: 'Discovery HD Showcase', sName: 'Discovery HD Showcase|Discovery Showcase HD', flags: ''},
 	{dName: 'Discovery Channel', sName: 'Discovery Channel|Discovеry Channеl', flags: 'hd req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'hd req'},
@@ -39,15 +39,15 @@ var channelList = [
 	{dName: 'Nat Geo Wild', sName: 'Nat Geo Wild|Nаt Geо Wild', flags: 'hd req'},
 	{dName: 'Моя Планета', sName: 'Моя Планета', flags: 'req'},
 	{dName: 'Техно 24', sName: 'Техно 24|24 Техно', flags: ''},
-	{dName: 'НЛО ТВ', sName: 'НЛО ТВ', flags: ''},
+	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV', flags: ''},
 	{dName: 'Travel channel', sName: 'Travel channel', flags: ''},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ', flags: ''},
 	{dName: 'Extreme Sports', sName: 'Extreme Sports', flags: ''},
-	{dName: 'English Club TV', sName: 'English Club TV', flags: ''},
+	{dName: 'English Club TV', sName: 'English Club TV|EnglishClub TV', flags: ''},
 
 	//Фильмы
 	{dName: 'Fox Life', sName: 'Fox Life', flags: ''},
-	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
+	{dName: 'TV 1000', sName: 'TV 1000|TV1000', flags: 'req'},
 	{dName: 'TV 1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
 	{dName: 'TV1000 Comedy', sName: 'TV1000 Comedy', flags: 'hd req'},
 	{dName: 'TV1000 Megahit', sName: 'TV1000 Megahit', flags: 'hd req'},
@@ -55,7 +55,7 @@ var channelList = [
 	{dName: 'Amedia 1', sName: 'Amedia 1', flags: ''},
 	{dName: 'Amedia 2', sName: 'Amedia 2', flags: ''},
 	{dName: 'Amedia Premium', sName: 'Amedia Premium', flags: 'hd req'},
-	{dName: 'SET', sName: 'SET', flags: 'hd req'},
+	{dName: 'SET', sName: 'SET|SET HD \\\(SONY\\\)', flags: 'hd req'},
 	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: 'req'},
 
 	//Музыка

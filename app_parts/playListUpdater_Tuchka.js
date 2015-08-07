@@ -22,7 +22,8 @@ var Channel = {
 	generateInterval: '60', //Value in minutes
 	playlistPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/TV_List.xspf'),
 	logPath: path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/log.txt'),
-	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
+	playlistUrl: 'http://tuchkatv.ru/player.html',
+	playerUrl: 'http://1ttv.net/iframe.php?site=873&channel=',
 	_report: _.template('Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
 		'\nRequired failed: <%= reqFailedList.length %>'+
@@ -92,27 +93,8 @@ var Channel = {
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
 	},
-	getPLayerUrl: function(channel, callback){
-		var that = this,
-			channelPage = that.getChannelPage(channel);
-		
-		if(!channelPage){
-			console.log('Channel not found on the page: '+ channel.dName);
-			that.failed(channel);
-			return;
-		}
-
-		needle.request('GET', channelPage, null, {}, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				that.logErr('Error in getting page for channel: '+ channel.dName);
-				that.failed(channel);
-				return;
-			}
-			var $ = that.getDom(resp.body),
-				channelUrl = $('#Playerholder iframe').attr('src');
-
-			callback(channelUrl);
-		});
+	getPLayerUrl: function(channelNum){
+		return this.playerUrl + channelNum;
 	},
 	getTimeOnZone: function(time, tZone){
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
@@ -136,8 +118,10 @@ var Channel = {
 				that.logErr('Error in getting valid playlist!');
 				return;
 			}
+			var $ = that.getDom(resp.body),
+				playlist = $('#sidebar select').html();
 
-			that.storeValidList(resp.body);
+			that.storeValidList(playlist);
 			that.getList();
 		});
 	},
@@ -154,24 +138,30 @@ var Channel = {
 
 		return flagsObj;
 	},
-	getChannelPage: function(channel){
+	getChannelNumb: function(channel){
 		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/a>)', 'im'),
-			chanPage = this.validList.match(regExp);
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
 
-		return chanPage && chanPage[1] ? chanPage[1] : false;
+		return chanNum && chanNum[1] ? chanNum[1] : false;
 	},
 	getChannelId: function(channel, callback){
-		var that = this;
+		var that = this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPLayerUrl(chanNum);
 		
-		that.getPLayerUrl(channel, function(url){
-			that.getIdFromFrame(url, channel, function(chanId){
-				if(!chanId){
-					that.failed(channel);
-					return;
-				}
-				callback(chanId);
-			});
+		if(!chanNum){
+			this.failed(channel);
+			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
+			return;
+		}
+		
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			if(!chanId){
+				that.failed(channel);
+				return;
+			}
+			callback(chanId);
 		});
 	},
 	getIdFromFrame: function(url, channel, callback){
@@ -231,7 +221,7 @@ var Channel = {
 	},
 	storeChannelItem: function(channel, ID){
 		this.channelCounter++
-
+		
 		channel.id = ID;
 
 		this.report.updatedList.push(channel);
@@ -251,7 +241,7 @@ var Channel = {
 		this.report.failedList.push(channel);
 		if(channel.isReq)
 			this.report.reqFailedList.push(channel);
-
+		
 		//Finish playlist
 		if(this.channelCounter >= this.channels.length)
 			this.finishPlaylist();
@@ -259,6 +249,7 @@ var Channel = {
 	finishPlaylist: function(){
 		this.savePlaylist(this.formFullChannList());
 		this.getReport();
+
 		this.resetData();
 	}
 }
