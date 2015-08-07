@@ -50,8 +50,8 @@ var Channel = {
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getOffsetNextHour());
 	},
-	storeValidList: function(playList){
-		this.validList = playList;
+	storeValidList: function(resp){
+		this.validList = resp.body;
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -137,7 +137,7 @@ var Channel = {
 				return;
 			}
 
-			that.storeValidList(resp.body);
+			that.storeValidList(resp);
 			that.getList();
 		});
 	},

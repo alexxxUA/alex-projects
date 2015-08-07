@@ -51,7 +51,10 @@ var Channel = {
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getOffsetNextHour());
 	},
-	storeValidList: function(playList){
+	storeValidList: function(resp){
+		var $ = this.getDom(resp.body),
+			playlist = $('#sidebar select').html();
+
 		this.validList = playList;
 	},
 	extendObj: function(target) {
@@ -118,10 +121,8 @@ var Channel = {
 				that.logErr('Error in getting valid playlist!');
 				return;
 			}
-			var $ = that.getDom(resp.body),
-				playlist = $('#sidebar select').html();
 
-			that.storeValidList(playlist);
+			that.storeValidList(resp);
 			that.getList();
 		});
 	},
