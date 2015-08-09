@@ -9,7 +9,6 @@ var needle = require('needle'),
 	channels2 = require('./../config/channelList2.js').channelList;
 
 function Channel(params){
-	this.entryChannels = []; //Array of channel array
 	this.channels = [];
 	this.availableFlags = [{
 			string: 'hd',
@@ -52,11 +51,11 @@ Channel.prototype = {
 	logErr: function(msg){
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
-	init: function() {
+	init: function(channelsArray) {
 		this.playlistPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.playListName);
 		this.logPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.logName);
 		
-		this.setChannels(this.entryChannels);
+		this.setChannels(channelsArray);
 		this.setChannelListConfig();
 		this.getValidPlaylist();
 
@@ -240,7 +239,6 @@ Channel.prototype = {
 }
 
 var channelTorrentStream = new Channel({
-	entryChannels: [channels1],
 	playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
 	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
@@ -292,7 +290,6 @@ var channelTorrentStream = new Channel({
 });
 
 var channelTuchka = new Channel({
-	entryChannels: [channels1, channels2],
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
@@ -335,6 +332,6 @@ var channelTuchka = new Channel({
 });
 
 module.exports.init = function(){
-	channelTorrentStream.init();
-	channelTuchka.init();
+	channelTorrentStream.init([channels1]);
+	channelTuchka.init([channels1, channels2]);
 };
