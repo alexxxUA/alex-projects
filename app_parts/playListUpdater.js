@@ -5,9 +5,11 @@ var needle = require('needle'),
 	_ = require('underscore'),
 	cheerio = require('cheerio'),
 	cf = require('./../config/config.js'),
-	channels = require('./../files/UpdateChanList/js/channelList.js').channelList;
+	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
+	channels2 = require('./../config/channelList2.js').channelList;
 
 function Channel(params){
+	this.entryChannels = []; //Array of channel array
 	this.channels = [];
 	this.availableFlags = [{
 			string: 'hd',
@@ -53,8 +55,9 @@ Channel.prototype = {
 	init: function() {
 		this.playlistPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.playListName);
 		this.logPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.logName);
-
-		this.setChannelListConfig(channels);
+		
+		this.setChannels(this.entryChannels);
+		this.setChannelListConfig();
 		this.getValidPlaylist();
 
 		//Scheduler for updating playlist
@@ -87,16 +90,19 @@ Channel.prototype = {
 			that.setTimeoutCall(that.generateInterval * 60000);
 		}, time);
 	},
-	setChannelListConfig: function(channelList) {
-		var channelArray = this.getArrayCopy(channelList);
-
-		for(var i=0; i < channelArray.length; i++){
-			var channel = channelArray[i],
+	setChannels: function(entryChannelArray){
+		for(var i=0; i < entryChannelArray.length; i++){
+			var channelListItem = this.getArrayCopy(entryChannelArray[i]);
+			this.channels = this.channels.concat(channelListItem);
+		}
+	},
+	setChannelListConfig: function() {
+		for(var i=0; i < this.channels.length; i++){
+			var channel = this.channels[i],
 				flags = channel.flags ? channel.flags : '';
 
 			this.extendObj(channel, this.getObjFromFlags(flags));
 		}
-		this.channels = channelArray;
 	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
@@ -234,6 +240,7 @@ Channel.prototype = {
 }
 
 var channelTorrentStream = new Channel({
+	entryChannels: [channels1],
 	playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
 	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
@@ -285,6 +292,7 @@ var channelTorrentStream = new Channel({
 });
 
 var channelTuchka = new Channel({
+	entryChannels: [channels1, channels2],
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',

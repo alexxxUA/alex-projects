@@ -27,6 +27,7 @@ var channelList = [
 	{dName: 'Мега', sName: 'Мега', flags: 'req'},
 	{dName: 'QTV', sName: 'QTV', flags: 'req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
+	{dName: 'Viasat History', sName: 'Viasat History', flags: 'req'},
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World', sName: 'Discovery World|Discovеry Wоrld', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'req'},
@@ -37,6 +38,7 @@ var channelList = [
 	{dName: 'History Channel', sName: 'History Channel', flags: 'hd req'},
 	{dName: 'Animal Planet', sName: 'Animal Planet|Animаl Planеt', flags: 'hd req'},
 	{dName: 'Nat Geo Wild', sName: 'Nat Geo Wild|Nаt Geо Wild', flags: 'hd req'},
+	{dName: 'Наука 2.0', sName: 'Наука 2.0', flags: 'req'},
 	{dName: 'Моя Планета', sName: 'Моя Планета', flags: 'req'},
 	{dName: 'Техно 24', sName: 'Техно 24|24 Техно', flags: ''},
 	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV', flags: ''},
@@ -46,16 +48,19 @@ var channelList = [
 	{dName: 'English Club TV', sName: 'English Club TV|EnglishClub TV', flags: ''},
 
 	//Фильмы
+	{dName: 'Fox', sName: 'Fox', flags: ''},
 	{dName: 'Fox Life', sName: 'Fox Life', flags: ''},
 	{dName: 'TV 1000', sName: 'TV 1000|TV1000', flags: 'req'},
 	{dName: 'TV 1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
 	{dName: 'TV1000 Comedy', sName: 'TV1000 Comedy', flags: 'hd req'},
 	{dName: 'TV1000 Megahit', sName: 'TV1000 Megahit', flags: 'hd req'},
 	{dName: 'TV1000 Premium', sName: 'TV1000 Premium', flags: 'hd req'},
-	{dName: 'Amedia 1', sName: 'Amedia 1', flags: ''},
-	{dName: 'Amedia 2', sName: 'Amedia 2', flags: ''},
 	{dName: 'Amedia Premium', sName: 'Amedia Premium', flags: 'hd req'},
+	{dName: 'Amedia Hit', sName: 'Amedia Hit', flags: 'hd'},
+	{dName: 'Paramount Comedy', sName: 'Paramount Comedy', flags: ''},
+	{dName: 'HD Life', sName: 'HD Life', flags: 'req'},
 	{dName: 'SET', sName: 'SET|SET HD \\\(SONY\\\)', flags: 'hd req'},
+	{dName: 'HD Кино', sName: 'HD Кино', flags: 'req'},
 	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: 'req'},
 
 	//Музыка
