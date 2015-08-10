@@ -223,6 +223,7 @@ to { color: #92F099; }
 }
 #dirTree .glyphicon-cloud-upload{
     position: absolute;
+    visibility: hidden;
     top: -70px;
     font-size: 30px;
     left: 50%;
@@ -231,6 +232,7 @@ to { color: #92F099; }
 }
 .on-drag-over #dirTree .dir:last-child .glyphicon-cloud-upload,
 #dirTree .on-drag-over .glyphicon-cloud-upload{
+    visibility: visible;
     opacity: 1;
     top: -35px;
 }
