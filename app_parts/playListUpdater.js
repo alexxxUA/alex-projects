@@ -19,7 +19,7 @@ function Channel(params){
 	}];
 	this.channelCounter = 0;
 	this.validList = '';
-	
+
 	this.generateInterval = '60'; //Value in minutes
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
@@ -37,7 +37,7 @@ function Channel(params){
 			'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
 			'\n\t<%= index+1 %>. <%= channelFullName %>'+
 		'<% }); %>');
-	
+
 	//Init params
 	for(var param in params){
 		if (params.hasOwnProperty(param))
@@ -45,6 +45,13 @@ function Channel(params){
 	}
 }
 Channel.prototype = {
+	playlisGeneratorInstanses: [],
+	forceGeneratePlaylists: function(){
+		for(var i=0; i < this.playlisGeneratorInstanses.length; i++){
+			var instane = this.playlisGeneratorInstanses[i];
+			instane.func.call(instane.that);
+		}
+	},
 	logInfo: function(msg){
 		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
@@ -54,10 +61,11 @@ Channel.prototype = {
 	init: function(channelsArray) {
 		this.playlistPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.playListName);
 		this.logPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.logName);
-		
+
 		this.setChannels(channelsArray);
 		this.setChannelListConfig();
 		this.getValidPlaylist();
+		this.storeGenerator();
 
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getOffsetNextHour());
@@ -79,6 +87,13 @@ Channel.prototype = {
 			reqFailedList: []
 		};
 		this.channelCounter = 0;
+	},
+	storeGenerator: function(){
+		//Push playlist generator instance to global prototype property for further regeneration
+		this.playlisGeneratorInstanses.push({
+			that: this,
+			func: this.getValidPlaylist
+		});
 	},
 	setTimeoutCall: function(time){
 		var that = this;
@@ -183,7 +198,7 @@ Channel.prototype = {
 	},
 	formFullChannList: function(){
 		var channels = '';
-		
+
 		for (var i = 0; i < this.channels.length; i++) {
 			var channel = this.channels[i];
 			if(channel.id){
@@ -314,13 +329,13 @@ var channelTuchka = new Channel({
 		var that = this,
 			chanNum = this.getChannelNumb(channel),
 			chanUrl = this.getPLayerUrl(chanNum);
-		
+
 		if(!chanNum){
 			this.failed(channel);
 			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
 			return;
 		}
-		
+
 		this.getIdFromFrame(chanUrl, channel, function(chanId){
 			if(!chanId){
 				that.failed(channel);
@@ -331,7 +346,12 @@ var channelTuchka = new Channel({
 	}
 });
 
-module.exports.init = function(){
-	channelTorrentStream.init([channels1]);
-	channelTuchka.init([channels1, channels2]);
-};
+module.exports = {
+	init: function(){
+		channelTorrentStream.init([channels1]);
+		channelTuchka.init([channels1, channels2]);
+	},
+	forceGeneratePlaylists: function(){
+		Channel.prototype.forceGeneratePlaylists();
+	}
+}

@@ -7,5 +7,6 @@
 			img(src="/img/fs_signIn.png", )
 	-if(user.isLogged)
 		div.user-info
-			img.user-img(src="#{user.avatar}", title="#{user.name}", title="#{user.name}")
+			a(href="/admin")
+				img.user-img(src="#{user.avatar}", title="#{user.name}", title="#{user.name}")
 			span.user-name.hidden=user.name

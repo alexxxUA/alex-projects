@@ -119,7 +119,7 @@ FileExplorer.prototype.registerEvents = function(){
 	var that = this,
 		$dropZone = $(that.dropZone);
 
-	if(conf.isLogged){
+	if(typeof conf !== 'undefined' && conf.isLogged){
 		//Hover efect
 		$dropZone[0].ondragover = function(e){
 			that.onDragMove(e);
@@ -419,6 +419,29 @@ FileExplorer.prototype.deleted = function(request, $form){
 	fileExplorer.hideContextMenu();
 }
 
+var AdminPanel = {
+	forceGenerSel: '.js-force-generate-playlists',
+	init: function(){
+		this.registerEvents();
+	},
+	registerEvents: function(){
+		$(document).on('click', this.forceGenerSel, $.proxy(this.forceGeneratePlaylist, this));
+	},
+	forceGeneratePlaylist: function(e){
+		e.preventDefault();
+		var $this = $(e.currentTarget);
+
+		$.ajax({
+			url: $this.attr('href'),
+			success: function(res){
+				alert('Generation of playlists started!');
+			},
+			error: function(err){
+				alert('Generation of playlists failed!');
+			}
+		})
+	}
+}
 
 var Tmpl = {
     cache: {},
@@ -666,3 +689,4 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 var navigation = new Navigation();
 var fileExplorer = new FileExplorer();
 Validator.init();
+AdminPanel.init();

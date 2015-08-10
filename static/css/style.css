@@ -405,3 +405,6 @@ to { color: #92F099; }
 	display: inline-block;
 	margin-left: 8px;
 }
+.force-generate-playlist {
+	text-align: center;
+}

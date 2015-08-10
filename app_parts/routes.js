@@ -8,7 +8,8 @@ var mime = require('mime'),
 	cf = require('./../config/config.js'),
 	auth = require('./auth.js'),
 	read = require('./readFileFolder.js'),
-	User = require('./user.js');
+	User = require('./user.js'),
+	playlist = require('./playListUpdater.js');
 
 function init(app){
 	app.post('/login', function(req, res){
@@ -30,6 +31,20 @@ function init(app){
 			});
 		});
 	});
+
+	app.get('/admin', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		res.render('adminPanel.jade', {
+				title: 'Admin panel',
+				user: res.user,
+				cf: cf
+		});
+	});
+
+	app.get('/playlistForceGenerate', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		playlist.forceGeneratePlaylists();
+		res.send('Generation started!');
+	});
+
 	app.post('/upload', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var fName = req.header('x-file-name'),
 			fPath = req.header('x-file-path'),
@@ -47,7 +62,7 @@ function init(app){
 		});
 	});
 
-	app.get('/create', auth.isLogged, auth.isHaveEditAccess, function(req, res, next){
+	app.get('/create', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var folderPath = path.join(filesP, req.query.oldPath, req.query.name);
 
 		mkdirp(folderPath, function(err){

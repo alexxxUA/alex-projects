@@ -1,3 +1,5 @@
+-var mainTitle = typeof title != 'undefined' ? title : 'File Explorer';
+
 doctype
 html
 	head
@@ -10,12 +12,13 @@ html
 	body(class= user && user.isLogged == true ? 'user-logged' : '')
 		#section-container
 			#header
-				h1 File Explorer
+				h1=mainTitle
 				block facebookLogin
 			#content(class='clearfix')
 				#dynamicContent
 					block explorer
 				block error404
+				block adminPanel
 		include uploadSection
 		block contextMenu
 		#loading
