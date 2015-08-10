@@ -28,7 +28,7 @@ var auth = {
 	},
 	isHaveEditAccess: function(req, res, next){
 		if(!res.user.accessEdit)
-			res.status(500).send('You have no access for this action!');
+			res.redirect('error404');
 		else
 			next();
 	},

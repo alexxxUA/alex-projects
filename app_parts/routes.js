@@ -120,7 +120,7 @@ function init(app){
 	});
 
 	app.get('/error404', function(req, res){
-		res.render('error404.jade');
+		res.status(404).render('error404.jade');
 	});
 
 	app.get('*', function(req, res){
