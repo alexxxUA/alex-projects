@@ -369,6 +369,7 @@ FileExplorer.prototype.hideContextActionLinks = function(){
 FileExplorer.prototype.showActionContainer = function(e){
 	var actionType = $(e.target).data('action'),
 		$contextActionContainer = $(this.contextActionList).find(this.contextActionListItem +'[data-action="'+ actionType +'"]'),
+		$firstInput = $contextActionContainer.find('input:visible:first'),
 		$menu = $(this.contextMenu),
 		pos = {
 			pageX: $menu[0].offsetLeft,
@@ -385,6 +386,9 @@ FileExplorer.prototype.showActionContainer = function(e){
 		'top': visiblePos.y,
 		'left': visiblePos.x
 	});
+
+	//Set focus on input if exist
+	$firstInput.focus();
 }
 FileExplorer.prototype.cancelAction = function(){
 	$(this.contextDropDown).removeClass('fade-out');
