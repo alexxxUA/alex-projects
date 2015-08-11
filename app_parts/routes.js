@@ -124,12 +124,15 @@ function init(app){
 	});
 
 	app.get('*', function(req, res){
-		var p =  decodeURI(path.join(filesP, req.path));
+		var p =  decodeURI(path.join(filesP, req.path)),
+			pathArray = req.path.split('/');
 
 		fs.stat(p, function(err, stat){
 			if(!err && !res.getHeader('Content-Type') ){
 				var file = {
+					name: pathArray[pathArray.length-1],
 					total: stat.size,
+					mtime: new Date(stat.mtime.toUTCString()),
 					type: mime.lookup(p),
 					charset: mime.charsets.lookup(this.type)
 				}
@@ -139,8 +142,9 @@ function init(app){
 						read.readFolder(req, res);
 					});
 				}
-				else
+				else{
 					read.readFile(req, res, file);
+				}
 			}
 			else
 				res.redirect('/error404');

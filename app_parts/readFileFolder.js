@@ -82,35 +82,47 @@ function readFolder(req, res){
 }
 
 function readFile(req, res, file){
-	var p =  decodeURI(path.join(filesP, req.path));
+	var p =  decodeURI(path.join(filesP, req.path)),
+		headerModDate = req.headers['if-modified-since'],
+		modDate = headerModDate ? new Date(new Date(headerModDate).toUTCString()).getTime() : 0;
 
-	if (req.headers['range']) {
-		var range = req.headers.range,
-			parts = range.replace(/bytes=/, "").split("-"),
-			partialStart = parts[0],
-			partialEnd = parts[1];
-
-		var start = parseInt(partialStart, 10),
-			end = partialEnd ? parseInt(partialEnd, 10) : file.total-1,
-			chunkSize = (end-start)+1;
-
-		//console.log('"'+ req.path +'" - RANGE: ' + start + ' - ' + end + ' = ' + chunkSize);
-
-		res.writeHead(206, {
-			'Content-Range': 'bytes ' + start + '-' + end + '/' + file.total,
-			'Accept-Ranges': 'bytes',
-			'Content-Length': chunkSize,
-			'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
+	if(modDate == file.mtime.getTime()){
+		//console.log('Load cached file: '+ file.name);
+		res.writeHead(304, {
+			'Last-Modified': file.mtime.toUTCString()
 		});
-		fs.createReadStream(p, {start: start, end: end}).pipe(res);
+		res.end();
+	}
+	else{
+		//console.log('Not cached file: '+ file.name);
+		if (req.headers['range']) {
+			var range = req.headers.range,
+				parts = range.replace(/bytes=/, "").split("-"),
+				partialStart = parts[0],
+				partialEnd = parts[1];
 
-	} else {
-		//console.log('"'+ req.path +'" - TOTAL: '+ file.total);
-		res.writeHead(200, {
-			'Content-Length': file.total,
-			'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
-		});
-		fs.createReadStream(p).pipe(res);
+			var start = parseInt(partialStart, 10),
+				end = partialEnd ? parseInt(partialEnd, 10) : file.total-1,
+				chunkSize = (end-start)+1;
+
+			res.writeHead(206, {
+				'Content-Range': 'bytes ' + start + '-' + end + '/' + file.total,
+				'Accept-Ranges': 'bytes',
+				'Content-Length': chunkSize,
+				'Last-Modified': file.mtime.toUTCString(),
+				'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
+			});
+			fs.createReadStream(p, {start: start, end: end}).pipe(res);
+
+		}
+		else {
+			res.writeHead(200, {
+				'Content-Length': file.total,
+				'Last-Modified': file.mtime.toUTCString(),
+				'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
+			});
+			fs.createReadStream(p).pipe(res);
+		}
 	}
 };
 
