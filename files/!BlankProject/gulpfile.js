@@ -36,7 +36,10 @@ var P = {
 	},
 	jsMin: {
 		name: 'app_min.js',
-		src: ['./js/*.js', '!./js/*_min.js'],
+		src: [
+			'./js/app.js',
+			'!./js/*_min.js'
+		],
 		dest: './js'
 	},
 	scss: {
@@ -98,7 +101,9 @@ gulp.task('js-min', function() {
 });
 
 gulp.task('watch', function () {
-	livereload.listen(); //Default port is: 35729
+	livereload.listen({
+		port: 12345
+	});
 
 	gulp.watch('./scss/*.scss', ['compass']);
 });
