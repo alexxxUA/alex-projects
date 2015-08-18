@@ -31,14 +31,17 @@ var P = {
 	},
 	cssMin: {
 		name: 'base_min.css',
-		src: ['./css/*.css', '!./css/*_min.css'],
+		src: [
+			'./css/reset.css',
+			'./css/bootstrap_3.2.0.min.css',
+			'./css/base.css'
+		],
 		dest: './css'
 	},
 	jsMin: {
 		name: 'app_min.js',
 		src: [
-			'./js/app.js',
-			'!./js/*_min.js'
+			'./js/app.js'
 		],
 		dest: './js'
 	},
@@ -61,11 +64,21 @@ gulp.task('pcss', function(){
 gulp.task('compass', function() {
 	gulp.src(P.scss.src)
 		.pipe(compass({
-			bundleExec: true,
 			css: 'css',
-			sass: 'scss'
+			sass: 'scss',
+			javascript: 'js',
+			image: 'img',
+			style: 'expanded',
+			bundleExec: true,
+			relative: true,
+			sourcemap: true,
+			comments: true
 		}))
 		.pipe(gulp.dest(P.scss.dest))
+		.on('error', function(error) {
+			console.log(error);
+			this.emit('end');
+		})
 		.pipe(livereload());
 });
 
@@ -85,10 +98,9 @@ gulp.task('img-min', function(){
 gulp.task('css-min', function() {
 	return gulp.src(P.cssMin.src)
 		.pipe(concat(P.cssMin.name))
-		.pipe(sourcemaps.init())
 		.pipe(minifyCss({compatibility: 'ie8'}))
-		.pipe(sourcemaps.write())
-		.pipe(gulp.dest(P.cssMin.dest));
+		.pipe(gulp.dest(P.cssMin.dest))
+		.pipe(livereload());
 });
 
 //JS min
@@ -97,7 +109,8 @@ gulp.task('js-min', function() {
 		.pipe(concat(P.jsMin.name))
 		.pipe(uglify())
 		.pipe(gulp.dest(P.jsMin.dest))
-		.on('error', gutil.log);
+		.on('error', gutil.log)
+		.pipe(livereload());
 });
 
 gulp.task('watch', function () {
@@ -105,7 +118,9 @@ gulp.task('watch', function () {
 		port: 12345
 	});
 
-	gulp.watch('./scss/*.scss', ['compass']);
+	gulp.watch(P.scss.src, ['compass']);
+	gulp.watch(P.cssMin.src, ['css-min']);
+	gulp.watch(P.jsMin.src, ['js-min']);
 });
 
 //Dafault task with postCss
