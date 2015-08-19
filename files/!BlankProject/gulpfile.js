@@ -9,8 +9,7 @@ var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
 	plumber = require('gulp-plumber'),
-	notify = require('gulp-notify'),
-	scsslint = require('gulp-scss-lint');
+	notify = require('gulp-notify');
 
 //Post css plugins
 var processors = [
