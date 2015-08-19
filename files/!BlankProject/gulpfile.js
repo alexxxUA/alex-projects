@@ -1,16 +1,16 @@
 var gulp = require('gulp'),
     livereload = require('gulp-livereload'),
-    server = require('tiny-lr')();
 	watch = require('gulp-watch'),
 	compass = require('gulp-compass'),
-	scsslint = require('gulp-scss-lint'),
 	imagemin = require('gulp-imagemin'),
 	pngquant = require('imagemin-pngquant'),
 	minifyCss = require('gulp-minify-css'),
 	sourcemaps = require('gulp-sourcemaps'),
 	concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
-	gutil = require('gulp-util');
+	plumber = require('gulp-plumber'),
+	notify = require('gulp-notify'),
+	scsslint = require('gulp-scss-lint');
 
 //Post css plugins
 var processors = [
@@ -18,9 +18,8 @@ var processors = [
 		require('postcss-simple-vars'),
 		require('postcss-nested'),
 		require('pixrem')(), // add fallbacks for rem units
-		require('autoprefixer-core')({browsers: 'last 2 versions, ie 9, ios 6, android 4'}), // add vendor prefixes
-		require('cssnext')(),
-		require('cssnano')() // minify the result
+		require('autoprefixer-core')({browsers: 'last 2 versions, ie 9, ios 6, android 4'}),
+		require('cssnext')()
 	];
 
 //Paths
@@ -51,6 +50,9 @@ var P = {
 	}
 };
 
+//Error notification settings for plumber
+var plumberErrorHandler = { errorHandler: notify.onError("Error: <%= error.message %>") };
+
 //Post css task
 gulp.task('pcss', function(){
 	return gulp.src(P.scss.src)
@@ -63,6 +65,7 @@ gulp.task('pcss', function(){
 //Compass task
 gulp.task('compass', function() {
 	gulp.src(P.scss.src)
+		.pipe(plumber(plumberErrorHandler))
 		.pipe(compass({
 			css: 'css',
 			sass: 'scss',
@@ -78,13 +81,13 @@ gulp.task('compass', function() {
 		.on('error', function(error) {
 			console.log(error);
 			this.emit('end');
-		})
-		.pipe(livereload());
+		});
 });
 
 //Image min
 gulp.task('img-min', function(){
 	return gulp.src(P.imgMin.src)
+		.pipe(plumber(plumberErrorHandler))
         .pipe(imagemin({
 			optimizationLevel: 7,
             progressive: true,
@@ -97,20 +100,19 @@ gulp.task('img-min', function(){
 //Css min
 gulp.task('css-min', function() {
 	return gulp.src(P.cssMin.src)
+		.pipe(plumber(plumberErrorHandler))
 		.pipe(concat(P.cssMin.name))
 		.pipe(minifyCss({compatibility: 'ie8'}))
-		.pipe(gulp.dest(P.cssMin.dest))
-		.pipe(livereload());
+		.pipe(gulp.dest(P.cssMin.dest));
 });
 
 //JS min
 gulp.task('js-min', function() {  
 	return gulp.src(P.jsMin.src)
+		.pipe(plumber(plumberErrorHandler))
 		.pipe(concat(P.jsMin.name))
 		.pipe(uglify())
-		.pipe(gulp.dest(P.jsMin.dest))
-		.on('error', gutil.log)
-		.pipe(livereload());
+		.pipe(gulp.dest(P.jsMin.dest));
 });
 
 gulp.task('watch', function () {
@@ -121,6 +123,15 @@ gulp.task('watch', function () {
 	gulp.watch(P.scss.src, ['compass']);
 	gulp.watch(P.cssMin.src, ['css-min']);
 	gulp.watch(P.jsMin.src, ['js-min']);
+	
+	gulp.watch(['./css/*.css', './js/*.js', './*.html'], function(e){
+		gulp.src(e.path)
+			.pipe(plumber(plumberErrorHandler))
+			.pipe(livereload())
+			.pipe(notify(
+				e.path.replace(__dirname, '').replace(/\\/g, '/') + ' changed/reloaded'
+			));
+	});
 });
 
 //Dafault task with postCss
