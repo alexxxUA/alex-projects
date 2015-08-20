@@ -1,5 +1,5 @@
 var gulp = require('gulp'),
-    livereload = require('gulp-livereload'),
+	browserSync = require('browser-sync').create(),
 	watch = require('gulp-watch'),
 	compass = require('gulp-compass'),
 	imagemin = require('gulp-imagemin'),
@@ -115,9 +115,11 @@ gulp.task('js-min', function() {
 });
 
 gulp.task('watch', function () {
-	livereload.listen({
-		port: 12345
-	});
+	browserSync.init({
+        server: {
+            baseDir: "./"
+        }
+    });
 
 	gulp.watch(P.scss.src, ['compass']);
 	gulp.watch(P.cssMin.src, ['css-min']);
@@ -126,7 +128,7 @@ gulp.task('watch', function () {
 	gulp.watch(['./css/*.css', './js/*.js', './*.html'], function(e){
 		gulp.src(e.path)
 			.pipe(plumber(plumberErrorHandler))
-			.pipe(livereload())
+			.pipe(browserSync.stream())
 			.pipe(notify(
 				e.path.replace(__dirname, '').replace(/\\/g, '/') + ' changed/reloaded'
 			));
