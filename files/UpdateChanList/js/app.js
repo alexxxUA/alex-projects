@@ -228,8 +228,8 @@ var Channel = {
 		if( !this.onStartLoadPlaylist(data.url) )
 			return;
 
-		that.proxyRequest(data, function(res){
-			that.storeValidList(data.url, res.body, new Date(res.lModified));
+		that.proxyRequest(data, function(res, xhr){
+			that.storeValidList(data.url, res, new Date(xhr.getResponseHeader('Last-Modified')));
 			that.getList();
 		},
 		function(err){
@@ -253,8 +253,8 @@ var Channel = {
 			};
 
 		that.proxyRequest(data,
-			function(response){
-				var channelUrl = $(response.body).find('a:first').attr('href');
+			function(res){
+				var channelUrl = $(res).find('a:first').attr('href');
 
 				if(typeof channelUrl == 'undefined'){
 					callBack.call(that, false);
@@ -262,8 +262,8 @@ var Channel = {
 				}
 
 				that.proxyRequest({url: channelUrl},
-					function(response){
-						var $res = $(response.body),
+					function(res){
+						var $res = $(res),
 							$player = $res.find('#Playerholder iframe'),
 							url = $player.attr('src');
 
@@ -393,9 +393,8 @@ var Channel = {
 			url: location.protocol +'//'+ location.host +'/proxy',
 			data: $.param(dataObj),
 			dataType: 'html',
-			success: function(response){
-				var response = JSON.parse(response);
-				if(onSuccess) onSuccess.call(that, response);
+			success: function(response, status, xhr){
+				if(onSuccess) onSuccess.call(that, response, xhr);
 			},
 			error: function(err){
 				if(onError) onError.call(that, err);

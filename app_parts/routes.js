@@ -110,12 +110,13 @@ function init(app){
 				res.status(500).send(req.query.url);
 				return;
 			}
-			var data = {
-				body: resp.body.toString('utf8'),
-				lModified: resp.headers['last-modified'],
-				length: resp.headers['content-length']
-			};
-			res.send(data);
+
+			res.header({
+				'Content-Weight': resp.headers['content-length'],
+				'Last-Modified': resp.headers['last-modified']
+			});
+
+			res.send(resp.body.toString('utf8'));
 		});
 	});
 
