@@ -38,6 +38,7 @@
     "node": "*"
   },
   "devDependencies": {
+    "legacy-encoding": "^3.0.0",
     "nodemon": "*"
   }
 }

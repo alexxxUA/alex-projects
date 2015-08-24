@@ -26,6 +26,8 @@ var channelList = [
 	//Познавательные
 	{dName: 'Мега', sName: 'Мега', flags: 'req'},
 	{dName: 'QTV', sName: 'QTV', flags: 'req'},
+	{dName: 'Еда ТВ', sName: '(Еда ТВ|Еда)', flags: 'hd'},
+	{dName: 'Кухня ТВ', sName: 'Кухня ТВ', flags: 'req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
 	{dName: 'Viasat History', sName: 'Viasat History', flags: 'req'},
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
