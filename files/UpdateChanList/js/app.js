@@ -279,6 +279,9 @@ var Channel = {
 			}
 		);
 	},
+	getURLParameter: function(url, name) {
+		return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
+	},
 	formChannItem: function(channel, newChannelId) {
 		return '\n\t\t<track>' +
 				'\n\t\t\t<title>' + channel.dName + this.getHdText(channel.isHd) + '</title>' +
@@ -385,6 +388,14 @@ var Channel = {
 
 		$addForm.slideUp();
 	},
+	/*
+	@dataOgj: {
+		type: 'GET'/'POST', 	-req
+		url: '', 				-req
+		data: '',
+		isCookies: true/false
+	}	
+	*/
 	proxyRequest: function(dataObj, onSuccess, onError){
 		var that = this;
 
@@ -394,10 +405,10 @@ var Channel = {
 			data: $.param(dataObj),
 			dataType: 'html',
 			success: function(response, status, xhr){
-				if(onSuccess) onSuccess.call(that, response, xhr);
+				if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
 			},
 			error: function(err){
-				if(onError) onError.call(that, err);
+				if(onError) onError.call(that, err, dataObj);
 			}
 		});
 	},

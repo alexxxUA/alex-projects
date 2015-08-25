@@ -5,11 +5,133 @@ var mime = require('mime'),
 	rmdir = require('rimraf'),
 	path = require('path'),
 	fbgraph = require('fbgraphapi'),
+	legacy = require('legacy-encoding'),
 	cf = require('./../config/config.js'),
 	auth = require('./auth.js'),
 	read = require('./readFileFolder.js'),
 	User = require('./user.js'),
 	playlist = require('./playListUpdater.js');
+
+
+/*
+cookieList: {
+	domain: {
+		validTill: milisec,
+		cookies: []
+	},
+	......
+}
+*/
+var Proxy = {
+	cookieValid: 1000*60*60*5,
+	cookieList: {},
+	reqOptions: {
+		headers: {
+			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+		},
+		method: 'HEAD'
+	},
+	setCookie: function(domain, cookieArray){
+		var newCookieArray = [];
+
+		if(typeof cookieArray != 'undefined' && cookieArray.length <= 0){
+			console.log('Nothing to set. Empty cookie array!');
+			return;
+		}
+
+		cookieArray.forEach(function (elem) {
+			newCookieArray.push(elem.split(';')[0]);
+		});
+
+		this.cookieList[domain] = {
+			cookies: newCookieArray.join('; '),
+			validTill: (new Date()).getTime() + this.cookieValid
+		}
+	},
+	getCookie: function(domain){
+		var cookiesObj = this.cookieList[domain];
+		
+		return typeof cookiesObj != 'undefined' ? cookiesObj.cookies : '';
+	},
+	getReferer: function(req){
+		return req.query.url +'?'+ this.serializeObj(req.query.data);
+	},
+	isValidCookies: function(req){
+		var isValid = false,
+			curTime = (new Date()).getTime(),
+			domain = req.query.url,
+			cookies = this.cookieList[domain];
+		
+		if(typeof cookies != 'undefined' && cookies.validTill > curTime)
+			isValid = true;
+		
+		return isValid;
+	},
+	serializeObj: function(obj){
+		var str = '';
+		for (var key in obj) {
+			if (str != '') {
+				str += '&';
+			}
+			str += key + '=' + encodeURIComponent(obj[key]);
+		}
+		return str;
+	},
+	extendObj: function(target) {
+		var sources = [].slice.call(arguments, 1);
+
+		sources.forEach(function (source) {
+			for (var prop in source) {
+				target[prop] = source[prop];
+			}
+		});
+		return target;
+	},
+	requestCookies: function(req, res){
+		var that = this;
+
+		needle.request(req.query.type, req.query.url, req.query.data, that.reqOptions, function(err, resp) {
+			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+				console.log('Error in sending request for cookies.');
+				res.status(500).send(req.query.url);
+				return;
+			}
+
+			that.setCookie(req.query.url, resp.headers['set-cookie']);
+			that.sendRequest(req, res, true);
+		});
+	},
+	sendRequest: function(req, res, forceSend){
+		if(!forceSend && req.query.isCookies == 'true' && !this.isValidCookies(req)){
+			this.requestCookies(req, res);
+			return;
+		}
+
+		var optionsInstance = this.extendObj({}, this.reqOptions);
+
+		optionsInstance.headers['Cookie'] = this.getCookie(req.query.url);
+		optionsInstance.headers['Referer'] = this.getReferer(req);
+
+		needle.request(req.query.type, req.query.url, req.query.data, optionsInstance, function(err, resp) {
+			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+				res.status(500).send(req.query.url);
+				return;
+			}
+
+			var respBody = legacy.decode(resp.raw, 'utf8', {
+				mode: 'html'
+			});
+
+			res.header({
+				'Access-Control-Allow-Origin': '*',
+				'Content-Weight': resp.headers['content-length'],
+				'Last-Modified': resp.headers['last-modified'],
+				'Redirect-To': decodeURIComponent(resp.headers['location'])
+			});
+			res.send(respBody);
+		});
+	}
+};
 
 function init(app){
 	app.post('/login', function(req, res){
@@ -73,6 +195,7 @@ function init(app){
 		});
 
 	});
+
 	app.get('/rename', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var fileOldPath = path.join(filesP, req.query.oldPath, req.query.oldName),
 			filePath = path.join(filesP, req.query.oldPath, req.query.name);
@@ -84,6 +207,7 @@ function init(app){
 				res.send("Success!");
 		});
 	});
+
 	app.get('/delete', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var filePath = path.join(filesP, req.query.oldPath, req.query.oldName);
 
@@ -96,28 +220,8 @@ function init(app){
 	});
 
 	app.get('/proxy', function(req, res){
-		var reqOptions = {
-				headers: {
-					'Accept': 'text/html'
-				},
-				method: 'HEAD'
-			};
-
-		//console.log('\nType: '+ req.query.type +'\nURL: '+req.query.url +'\nData: '+ req.query.data +'\n');
-
-		needle.request(req.query.type, req.query.url, req.query.data, reqOptions, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				res.status(500).send(req.query.url);
-				return;
-			}
-
-			res.header({
-				'Content-Weight': resp.headers['content-length'],
-				'Last-Modified': resp.headers['last-modified']
-			});
-
-			res.send(resp.body.toString('utf8'));
-		});
+		//Send proxy request
+		Proxy.sendRequest(req, res);
 	});
 
 	app.get('/error404', function(req, res){
@@ -154,3 +258,6 @@ function init(app){
 }
 
 module.exports.init = init;
+
+
+

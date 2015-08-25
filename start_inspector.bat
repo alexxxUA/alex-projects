@@ -1,1 +1,1 @@
-node-inspector --web-port=9090 --save-live-edit=true
+node-inspector --web-port=9090 --save-live-edit=true --no-preload=true
