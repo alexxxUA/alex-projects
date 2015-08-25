@@ -10,17 +10,20 @@
 debugger;
 
 var FS = {
+    styles: '.m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
+    disableClickSel: '.b-file-new__link-material',
 	folderLinkSel: 'a[rel*=parent_id]',
-    proxyUrl: 'http://192.168.44.147:8888/proxy',
+    proxyUrl: 'http://192.168.0.156:8888/proxy',
     uaProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
     fsFilmBaseUrl: 'http://fs.to'+ location.pathname +'?ajax&',
     init: function(){
         var that = this;
 		
 		that.registerEvents();
+        that.addCustomStyles();
 
         that.getFolderHtml('0', function(res, xhr, dataObj){
             var redirectUrl = xhr.getResponseHeader('Redirect-To'),
@@ -39,6 +42,14 @@ var FS = {
     },
     registerEvents: function(){
         $(document).on('click', this.folderSel +' '+ this.folderLinkSel, $.proxy(this.showFolderContent, this));
+        //Prevent click
+        $(document).on('click', this.disableClickSel, function(e){
+            e.preventDefault();
+        });
+    },
+    addCustomStyles: function(){
+        var $styles = $("<style/>").html(this.styles);
+        $('head').append($styles);
     },
     getFolderHtml(id, callback){
         var that = this;
@@ -88,25 +99,13 @@ var FS = {
 	*/
 	proxyRequest: function(dataObj, onSuccess, onError){
 		var that = this;
-        
-        dataObj['_'] = (new Date()).getTime();
-        
-        /*
-        aja().
-        .url(this.proxyUrl)
-        .type('GET')
-        .data($.param(dataObj))
-        .on('success', function(response, status, xhr){
-            if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
-		})
-        .on('error', function(err){
-            console.error(err.statusText);
-            if(onError) onError.call(that, err, dataObj);
-        });
-        */
-		$.ajax({
-		type: 'GET',
-			url: this.proxyUrl,
+
+		jQuery.ajax({
+            type: 'GET',
+            url: that.proxyUrl,
+            cache: false,
+            crossDomain: true,
+            contentType: 'text/plain',
 			data: $.param(dataObj),
 			success: function(response, status, xhr){
 				if(onSuccess) onSuccess.call(that, response, xhr, dataObj);

@@ -193,7 +193,6 @@ function init(app){
 			else
 				res.send("Success!");
 		});
-
 	});
 
 	app.get('/rename', auth.isLogged, auth.isHaveEditAccess, function(req, res){
