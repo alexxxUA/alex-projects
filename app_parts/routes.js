@@ -33,7 +33,7 @@ var Proxy = {
 	},
 	respHeaders: {
 		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Headers': 'Redirect-To'
+		'Access-Control-Expose-Headers': 'Redirect-To'
 	},
 	setCookie: function(domain, cookieArray){
 		var newCookieArray = [];
