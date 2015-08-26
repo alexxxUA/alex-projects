@@ -24,7 +24,7 @@ var FS = {
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
 	slideTime: 200,
-    internalProxyUrl: 'http://192.168.0.135:8888/proxy',
+    internalProxyUrl: 'http://avasin.ml/proxy',
 	externalProxyUrl: 'http://213.108.74.236:8081',
     browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
@@ -197,7 +197,7 @@ var FS = {
 	proxyRequest: function(dataObj, onSuccess, onError){
 		var that = this;
 
-		jQuery.ajax({
+		$.ajax({
             type: 'GET',
             url: that.internalProxyUrl,
             crossDomain: true,
