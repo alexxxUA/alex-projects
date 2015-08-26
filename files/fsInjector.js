@@ -161,8 +161,6 @@ var FS = {
 				}, function(res, xhr, dataObj){
 					var redirectUrl = xhr.getResponseHeader('Redirect-To');
 
-					debugger;
-
 					if(redirectUrl !== null && redirectUrl !== 'undefined'){
 						//var path =  that.getURLParameter(redirectUrl, 'u');
 						$$link.attr('href', redirectUrl);
@@ -202,9 +200,6 @@ var FS = {
             url: that.internalProxyUrl,
             crossDomain: true,
 			data: $.param(dataObj),
-			header: {
-				'Access-Control-Request-Headers': 'Redirect-To'
-			},
 			success: function(response, status, xhr){
 				if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
 			},
