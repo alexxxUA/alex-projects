@@ -1,21 +1,19 @@
 // ==UserScript==
 // @name         FS.UA proxy video viewer
-// @namespace    
-// @version      2
+// @version      1.0
 // @description  FS.UA proxy video viewer from non UA coutries
 // @author       Alexey
 // @match        http://brb.to/*
-// @downloadURL	 http://192.168.44.147:8888/fsInjector.js
-// @grant        none
+// @downloadURL	 http://avasin.ml/fsInjector.js
 // ==/UserScript==
 
 var FS = {
     styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
-    'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
-    'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
-	'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
-	'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
-	'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}',
+			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
+			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
+			'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
+			'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
+			'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
@@ -25,7 +23,7 @@ var FS = {
     downloadLinkSel: '.b-file-new__link-material-download',
 	slideTime: 200,
     internalProxyUrl: 'http://avasin.ml/proxy',
-	externalProxyUrl: 'http://213.108.74.236:8081',
+	externalProxyUrl: 'http://213.108.74.236:8081',  //Site with proxy ips --->  http://www.proxynova.com/proxy-server-list/country-ua
     browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',

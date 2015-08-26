@@ -35,7 +35,7 @@ var Proxy = {
 		'Access-Control-Allow-Origin': '*',
 		'Access-Control-Expose-Headers': 'Redirect-To'
 	},
-	setCookie: function(domain, cookieArray){
+	storeCookies: function(domain, cookieArray){
 		var newCookieArray = [];
 
 		if(typeof cookieArray == 'undefined' || cookieArray.length <= 0){
@@ -101,7 +101,7 @@ var Proxy = {
 				return;
 			}
 
-			that.setCookie(req.query.url, resp.headers['set-cookie']);
+			that.storeCookies(req.query.url, resp.headers['set-cookie']);
 			that.makeProxyRequest(req, res, true);
 		});
 	},
