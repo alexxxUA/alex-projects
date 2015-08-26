@@ -31,10 +31,14 @@ var Proxy = {
 		},
 		method: 'HEAD'
 	},
+	respHeaders: {
+		'Access-Control-Allow-Origin': '*',
+		'Access-Control-Allow-Headers': 'Redirect-To'
+	},
 	setCookie: function(domain, cookieArray){
 		var newCookieArray = [];
 
-		if(typeof cookieArray != 'undefined' && cookieArray.length <= 0){
+		if(typeof cookieArray == 'undefined' || cookieArray.length <= 0){
 			console.log('Nothing to set. Empty cookie array!');
 			return;
 		}
@@ -98,11 +102,34 @@ var Proxy = {
 			}
 
 			that.setCookie(req.query.url, resp.headers['set-cookie']);
-			that.sendRequest(req, res, true);
+			that.makeProxyRequest(req, res, true);
 		});
 	},
-	sendRequest: function(req, res, forceSend){
-		if(!forceSend && req.query.isCookies == 'true' && !this.isValidCookies(req)){
+	sendRequest: function(req, res, options){
+		var that = this;
+
+		needle.request(req.query.type, req.query.url, req.query.data, options, function(err, resp) {
+			var respHeaders = that.extendObj({}, that.respHeaders);
+
+			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+				res.header(respHeaders).status(500).send(req.query.url);
+				return;
+			}
+
+			var respBody = legacy.decode(resp.raw, 'utf8', {
+				mode: 'html'
+			});
+
+			res.header(that.extendObj(respHeaders, {				
+				'Content-Weight': resp.headers['content-length'],
+				'Last-Modified': resp.headers['last-modified'],
+				'Redirect-To': decodeURIComponent(resp.headers['location'])
+			}));
+			res.send(respBody);
+		});
+	},
+	makeProxyRequest: function(req, res, skipCookieCheck){
+		if(!skipCookieCheck && req.query.isCookies == 'true' && !this.isValidCookies(req)){
 			this.requestCookies(req, res);
 			return;
 		}
@@ -112,24 +139,12 @@ var Proxy = {
 		optionsInstance.headers['Cookie'] = this.getCookie(req.query.url);
 		optionsInstance.headers['Referer'] = this.getReferer(req);
 
-		needle.request(req.query.type, req.query.url, req.query.data, optionsInstance, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				res.status(500).send(req.query.url);
-				return;
-			}
+		//Set proxy if it was requested
+		if(typeof req.query.proxy != undefined)
+			optionsInstance.proxy = req.query.proxy;
 
-			var respBody = legacy.decode(resp.raw, 'utf8', {
-				mode: 'html'
-			});
-
-			res.header({
-				'Access-Control-Allow-Origin': '*',
-				'Content-Weight': resp.headers['content-length'],
-				'Last-Modified': resp.headers['last-modified'],
-				'Redirect-To': decodeURIComponent(resp.headers['location'])
-			});
-			res.send(respBody);
-		});
+		//Send request
+		this.sendRequest(req, res, optionsInstance);
 	}
 };
 
@@ -219,8 +234,8 @@ function init(app){
 	});
 
 	app.get('/proxy', function(req, res){
-		//Send proxy request
-		Proxy.sendRequest(req, res);
+		//Make proxy request
+		Proxy.makeProxyRequest(req, res);
 	});
 
 	app.get('/error404', function(req, res){

@@ -1,47 +1,61 @@
 // ==UserScript==
 // @name         FS.UA proxy video viewer
-// @namespace    http://your.homepage/
-// @version      0.1
+// @namespace    
+// @version      2
 // @description  FS.UA proxy video viewer from non UA coutries
-// @author       You
+// @author       Alexey
 // @match        http://brb.to/*
+// @downloadURL	 http://192.168.44.147:8888/fsInjector.js
 // @grant        none
 // ==/UserScript==
-debugger;
+
 
 var FS = {
-    styles: '.m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}',
+    styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
+    'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
+    'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
+	'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
+	'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
-    disableClickSel: '.b-file-new__link-material',
+	subContentSel: '.filelist',
+    disableClickSel: '.b-file-new__link-material, .material-video-quality',
 	folderLinkSel: 'a[rel*=parent_id]',
-    proxyUrl: 'http://192.168.0.156:8888/proxy',
-    uaProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
-    fsFilmBaseUrl: 'http://fs.to'+ location.pathname +'?ajax&',
+    downloadLinkSel: '.b-file-new__link-material-download',
+	slideTime: 200,
+    internalProxyUrl: 'http://192.168.44.147:8888/proxy',
+	externalProxyUrl: 'http://94.45.65.94:3128',
+    browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
+	fsDomain: 'http://fs.to',
+    fsBasePath: location.pathname +'?ajax&',
+    fsFilmBaseUrl: '',
     init: function(){
         var that = this;
+        
+		//Store base content url
+        that.fsFilmBaseUrl = that.fsDomain + that.fsBasePath;
 		
+        //Do not run script in case files placeholder not found
+        if($(that.mainFilesSel).length == 0)
+            return;
+
 		that.registerEvents();
         that.addCustomStyles();
 
         that.getFolderHtml('0', function(res, xhr, dataObj){
-            var redirectUrl = xhr.getResponseHeader('Redirect-To'),
-                $mainHolder = $(that.mainFilesSel),
+            var $mainHolder = $(that.mainFilesSel),
                 $files = $(that.filesSel);
 
-            if(redirectUrl !== null && redirectUrl !== 'undefined'){
-                var path =  that.getURLParameter(redirectUrl, 'u');
-                $files.html(path);
-            }
-            else{
-                $files.html(that.getCleanDom(res));
-            }
-            $mainHolder.css('display', 'block');
+			$files.html(res);
+            $mainHolder.slideDown();
         });
     },
     registerEvents: function(){
-        $(document).on('click', this.folderSel +' '+ this.folderLinkSel, $.proxy(this.showFolderContent, this));
+		//Show folder content
+        $(document).on('click', this.folderSel +' '+ this.folderLinkSel +':not(.loaded)', $.proxy(this.showFolderContent, this));
+        //Toggle content
+		$(document).on('click', this.folderSel +' '+ this.folderLinkSel +'.loaded', $.proxy(this.contentToggle, this));
         //Prevent click
         $(document).on('click', this.disableClickSel, function(e){
             e.preventDefault();
@@ -56,16 +70,13 @@ var FS = {
 
         that.proxyRequest({
             type: 'GET',
-            url: that.uaProxyUrl,
-            isCookies: true,
-            data: {
-                'u': that.fsFilmBaseUrl +'folder='+ id
-            }
+			proxy: that.externalProxyUrl,
+            url: that.fsFilmBaseUrl +'folder='+ id
         }, function(res, xhr, dataObj){
             callback(res, xhr, dataObj);
         });
     },
-    getCleanDom: function(html){
+    cleanResponse: function(html){
         var $htmlWrap = $('<div/>').html(html);
         
         $htmlWrap.find('#include').remove();
@@ -78,7 +89,6 @@ var FS = {
 	},
 	showFolderContent: function(e){
         e.preventDefault();
-        e.stopPropagation();
 		var that = this,
 			$target = $(e.currentTarget),
             metadata = $target.metadata({type: "attr", name: "rel"}),
@@ -86,8 +96,95 @@ var FS = {
 			$folder = $target.closest(that.folderSel);
 		
 		that.getFolderHtml(folderId, function(res, xhr, dataObj){
-			$folder.append(that.getCleanDom(res))
+			that.show($folder, res);
 		});
+	},
+	showContent: function($folderLink){
+		var $content = $folderLink.closest(this.folderSel).find(this.subContentSel);
+
+		$folderLink.addClass('loaded');
+		$content.slideDown(this.slideTime);			
+	},
+	show: function($folder, res){
+		var that = this;
+
+		that.contentPreparing(res, function($html){
+			$folder.append($html);
+			that.showContent($html);
+		});
+
+	},
+	contentToggle: function(e){
+		e.preventDefault();
+		var $target = $(e.currentTarget),
+			$content = $target.closest(this.folderSel).find(this.subContentSel).first();
+		
+		$content.slideToggle(this.slideTime);
+	},
+	contentPreparing: function(html, callback){
+		var $html = $(html),
+            $downloadLinks = $html.find(this.downloadLinkSel),
+			$subContent = $html.find(this.subContentSel),
+			$folderLink = $html.find(this.folderLinkSel);
+
+        //Show content for loaded subfolder
+		if($subContent.length > 0){
+			this.showContent($folderLink);
+		}
+        
+		//Parse download links
+        if($downloadLinks.length > 0){
+			this.parseDownloads($downloadLinks, function(){
+				//Finish to parse links
+				console.log('Finish parsing links!');
+				callback($html);
+			});
+		}
+		else{
+			callback($html);
+		}
+	},
+	parseDownloads: function($links, callback){
+		var that = this,
+			linksLensth = $links.length,
+			counter = 0;
+		
+		for(var i=0; i < linksLensth; i++){
+			var $link = $($links[i]),
+				oldUrl = $link.attr('href');
+			
+			(function($$link){
+				that.proxyRequest({
+					type: 'GET',
+					proxy: that.externalProxyUrl,
+					url: that.fsDomain + oldUrl
+				}, function(res, xhr, dataObj){
+					var redirectUrl = xhr.getResponseHeader('Redirect-To');
+
+					debugger;
+
+					if(redirectUrl !== null && redirectUrl !== 'undefined'){
+						//var path =  that.getURLParameter(redirectUrl, 'u');
+						$$link.attr('href', redirectUrl);
+						console.log('Download URL was found! '+ redirectUrl);
+					}
+					else{
+						console.log('Download url for link not found!');
+					}
+
+					//Callback functionality
+					counter++;
+					if(counter >= $links.length)
+						callback();
+				}, function(err){
+					console.log(err);
+					//Callback functionality
+					counter++;
+					if(counter >= $links.length)
+						callback();
+				});
+			})($link);
+		}
 	},
     /*
 	@dataOgj: {
@@ -102,11 +199,12 @@ var FS = {
 
 		jQuery.ajax({
             type: 'GET',
-            url: that.proxyUrl,
-            cache: false,
+            url: that.internalProxyUrl,
             crossDomain: true,
-            contentType: 'text/plain',
 			data: $.param(dataObj),
+			header: {
+				'Access-Control-Request-Headers': 'Redirect-To'
+			},
 			success: function(response, status, xhr){
 				if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
 			},
