@@ -165,16 +165,13 @@ var FS = {
 						$$link.attr('href', redirectUrl);
 						console.log('Download URL was found! '+ redirectUrl);
 					}
-					else{
-						$$link.addClass('error');
-						console.log('Download url for link not found!');
-					}
 
 					//Callback functionality
 					counter++;
 					if(counter >= $links.length)
 						callback();
 				}, function(err){
+					$$link.addClass('error');
 					console.log(err);
 					//Callback functionality
 					counter++;
