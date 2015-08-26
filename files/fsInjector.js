@@ -15,7 +15,8 @@ var FS = {
     'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
     'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
 	'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
-	'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}',
+	'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
+	'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
@@ -162,11 +163,11 @@ var FS = {
 					var redirectUrl = xhr.getResponseHeader('Redirect-To');
 
 					if(redirectUrl !== null && redirectUrl !== 'undefined'){
-						//var path =  that.getURLParameter(redirectUrl, 'u');
 						$$link.attr('href', redirectUrl);
 						console.log('Download URL was found! '+ redirectUrl);
 					}
 					else{
+						$$link.addClass('error');
 						console.log('Download url for link not found!');
 					}
 
