@@ -47,8 +47,10 @@ var FS = {
             var $mainHolder = $(that.mainFilesSel),
                 $files = $(that.filesSel);
 
-			$files.html(res);
-            $mainHolder.slideDown();
+            that.contentPreparing(res, function($html){
+                $files.append($html);
+                $mainHolder.slideDown(that.slideTime);
+            });
         });
     },
     registerEvents: function(){
