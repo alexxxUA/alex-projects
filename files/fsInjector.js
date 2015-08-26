@@ -9,7 +9,6 @@
 // @grant        none
 // ==/UserScript==
 
-
 var FS = {
     styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
     'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
@@ -25,8 +24,8 @@ var FS = {
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
 	slideTime: 200,
-    internalProxyUrl: 'http://192.168.44.147:8888/proxy',
-	externalProxyUrl: 'http://94.45.65.94:3128',
+    internalProxyUrl: 'http://192.168.0.135:8888/proxy',
+	externalProxyUrl: 'http://213.108.74.236:8081',
     browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
@@ -97,7 +96,7 @@ var FS = {
 			$folder = $target.closest(that.folderSel);
 		
 		that.getFolderHtml(folderId, function(res, xhr, dataObj){
-			that.show($folder, res);
+			that.show($target, res);
 		});
 	},
 	showContent: function($folderLink){
@@ -106,14 +105,14 @@ var FS = {
 		$folderLink.addClass('loaded');
 		$content.slideDown(this.slideTime);			
 	},
-	show: function($folder, res){
-		var that = this;
+	show: function($folderLink, res){
+		var that = this,
+            $folder = $folderLink.closest(that.folderSel);
 
 		that.contentPreparing(res, function($html){
 			$folder.append($html);
-			that.showContent($html);
+			that.showContent($folderLink);
 		});
-
 	},
 	contentToggle: function(e){
 		e.preventDefault();
