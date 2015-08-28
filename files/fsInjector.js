@@ -7,7 +7,59 @@
 // @downloadURL	 http://avasin.ml/fsInjector.js
 // ==/UserScript==
 
-var FS = {
+function Proxy(params){
+	this.internalProxyUrl = 'http://avasin.ml/proxy';
+	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
+	this.browserProxyUrl = 'http://www.anonym.pp.ua/browse.php?';
+	
+	//Init entry params
+	this.initParams(params);
+}
+
+Proxy.prototype.initParams = function(params){
+	for(var param in params){
+		if (params.hasOwnProperty(param))
+			this[param] = params[param];
+	}
+}
+Proxy.prototype.cleanResponse = function(html){
+	var $htmlWrap = $('<div/>').html(html);
+
+	$htmlWrap.find('#include').remove();
+	$htmlWrap.find('style').remove();
+
+	return $htmlWrap.html();
+}
+Proxy.prototype.getURLParameter = function(url, name) {
+	return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
+}
+/*
+@dataOgj: {
+	type: 'GET'/'POST', 	-req
+	url: '', 				-req
+	data: '',
+	isCookies: true/false
+}	
+*/
+Proxy.prototype.proxyRequest = function(dataObj, onSuccess, onError){
+	var that = this;
+
+	$.ajax({
+		type: 'GET',
+		url: that.internalProxyUrl,
+		crossDomain: true,
+		data: $.param(dataObj),
+		success: function(response, status, xhr){
+			if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
+		},
+		error: function(err){
+			console.error(err.statusText);
+			if(onError) onError.call(that, err, dataObj);
+		}
+	});
+}	
+
+var FS = new Proxy({
     styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
 			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
 			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
@@ -22,8 +74,8 @@ var FS = {
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
 	slideTime: 200,
-    internalProxyUrl: 'http://avasin.ml/proxy',
-	externalProxyUrl: 'http://213.108.74.236:8081',  //Site with proxy ips --->  http://www.proxynova.com/proxy-server-list/country-ua
+    internalProxyUrl: 'http://10.20.30.59:8888/proxy',
+	externalProxyUrl: 'http://213.108.74.236:8081',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
     browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
@@ -76,17 +128,6 @@ var FS = {
             callback(res, xhr, dataObj);
         });
     },
-    cleanResponse: function(html){
-        var $htmlWrap = $('<div/>').html(html);
-        
-        $htmlWrap.find('#include').remove();
-        $htmlWrap.find('style').remove();
-        
-        return $htmlWrap.html();
-    },
-    getURLParameter: function(url, name) {
-		return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
-	},
 	showFolderContent: function(e){
         e.preventDefault();
 		var that = this,
@@ -135,8 +176,6 @@ var FS = {
 		//Parse download links
         if($downloadLinks.length > 0){
 			this.parseDownloads($downloadLinks, function(){
-				//Finish to parse links
-				console.log('Finish parsing links!');
 				callback($html);
 			});
 		}
@@ -168,44 +207,24 @@ var FS = {
 
 					//Callback functionality
 					counter++;
-					if(counter >= $links.length)
+					if(counter >= $links.length){
+						//Finish to parse links
 						callback();
+					}
 				}, function(err){
 					$$link.addClass('error');
 					console.log(err);
+
 					//Callback functionality
 					counter++;
-					if(counter >= $links.length)
+					if(counter >= $links.length){
+						//Finish to parse links
 						callback();
+					}
 				});
 			})($link);
 		}
-	},
-    /*
-	@dataOgj: {
-		type: 'GET'/'POST', 	-req
-		url: '', 				-req
-		data: '',
-		isCookies: true/false
-	}	
-	*/
-	proxyRequest: function(dataObj, onSuccess, onError){
-		var that = this;
-
-		$.ajax({
-            type: 'GET',
-            url: that.internalProxyUrl,
-            crossDomain: true,
-			data: $.param(dataObj),
-			success: function(response, status, xhr){
-				if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
-			},
-			error: function(err){
-                console.error(err.statusText);
-				if(onError) onError.call(that, err, dataObj);
-			}
-		});
 	}
-}
+});
 
 FS.init();
