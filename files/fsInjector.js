@@ -11,9 +11,13 @@ function Proxy(params){
 	this.internalProxyUrl = 'http://avasin.ml/proxy';
 	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	this.browserProxyUrl = 'http://www.anonym.pp.ua/browse.php?';
+	this.isBrowserProxy = false;
 	
 	//Init entry params
 	this.initParams(params);
+	
+	//Base init
+	this.init();
 }
 
 Proxy.prototype.initParams = function(params){
@@ -22,7 +26,7 @@ Proxy.prototype.initParams = function(params){
 			this[param] = params[param];
 	}
 }
-Proxy.prototype.cleanResponse = function(html){
+Proxy.prototype.getCleanResponse = function(html){
 	var $htmlWrap = $('<div/>').html(html);
 
 	$htmlWrap.find('#include').remove();
@@ -34,6 +38,7 @@ Proxy.prototype.getURLParameter = function(url, name) {
 	return (RegExp(name + '=' + '(.+?)(&|$)').exec(url)||[,null])[1];
 }
 /*
+Object for server side request
 @dataOgj: {
 	type: 'GET'/'POST', 	-req
 	url: '', 				-req
@@ -42,7 +47,17 @@ Proxy.prototype.getURLParameter = function(url, name) {
 }	
 */
 Proxy.prototype.proxyRequest = function(dataObj, onSuccess, onError){
+	if(this.isBrowserProxy)
+		this.browserProxyRequest(dataObj, onSuccess, onError);
+	else
+		this.externalProxyRequest(dataObj, onSuccess, onError);
+}
+Proxy.prototype.externalProxyRequest = function(dataObj, onSuccess, onError){
 	var that = this;
+	
+	$.extend(dataObj, {
+		proxy: that.externalProxyUrl
+	});
 
 	$.ajax({
 		type: 'GET',
@@ -57,7 +72,34 @@ Proxy.prototype.proxyRequest = function(dataObj, onSuccess, onError){
 			if(onError) onError.call(that, err, dataObj);
 		}
 	});
-}	
+}
+Proxy.prototype.browserProxyRequest = function(dataObj, onSuccess, onError){
+	var that = this;
+	
+	debugger;
+	
+	$.extend(dataObj, {
+		url: that.browserProxyUrl,
+		data: {
+			u: dataObj.url
+		},
+		isCookies: true
+	});
+
+	$.ajax({
+		type: 'GET',
+		url: that.internalProxyUrl,
+		crossDomain: true,
+		data: $.param(dataObj),
+		success: function(response, status, xhr){
+			if(onSuccess) onSuccess.call(that, that.getCleanResponse(response), xhr, dataObj);
+		},
+		error: function(err){
+			console.error(err.statusText);
+			if(onError) onError.call(that, err, dataObj);
+		}
+	});
+}
 
 var FS = new Proxy({
     styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
@@ -73,9 +115,10 @@ var FS = new Proxy({
     disableClickSel: '.b-file-new__link-material, .material-video-quality',
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
+	isBrowserProxy: true,
 	slideTime: 200,
-    internalProxyUrl: 'http://10.20.30.59:8888/proxy',
-	externalProxyUrl: 'http://213.108.74.236:8081',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
+    internalProxyUrl: 'http://192.168.0.156:8888/proxy',
+	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
     browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
@@ -117,16 +160,17 @@ var FS = new Proxy({
         var $styles = $("<style/>").html(this.styles);
         $('head').append($styles);
     },
-    getFolderHtml(id, callback){
+    getFolderHtml(id, onSuccess, onError){
         var that = this;
 
         that.proxyRequest({
-            type: 'GET',
-			proxy: that.externalProxyUrl,
+			type: 'GET',
             url: that.fsFilmBaseUrl +'folder='+ id
-        }, function(res, xhr, dataObj){
-            callback(res, xhr, dataObj);
-        });
+        }, function(response, xhr, dataObj){
+			if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
+		}, function(err, dataObj){
+			if(onError) onError.call(that, err, dataObj);
+		});
     },
 	showFolderContent: function(e){
         e.preventDefault();
@@ -195,7 +239,6 @@ var FS = new Proxy({
 			(function($$link){
 				that.proxyRequest({
 					type: 'GET',
-					proxy: that.externalProxyUrl,
 					url: that.fsDomain + oldUrl
 				}, function(res, xhr, dataObj){
 					var redirectUrl = xhr.getResponseHeader('Redirect-To');
@@ -226,5 +269,3 @@ var FS = new Proxy({
 		}
 	}
 });
-
-FS.init();
