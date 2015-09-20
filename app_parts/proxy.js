@@ -11,7 +11,7 @@ cookieList: {
 }
 */
 var Proxy = {
-	cookieValid: 1000*60*60*5,
+	cookieValid: 1000*60*60*3,
 	cookieList: {},
 	reqOptions: {
 		headers: {
@@ -95,6 +95,12 @@ var Proxy = {
 	},
 	sendRequest: function(req, res, options){
 		var that = this;
+		
+		//Return if URL not specified.
+		if(typeof req.query.url == 'undefined'){
+			res.staus(404).send('Url not specified.')
+			return;
+		}
 
 		needle.request(req.query.type, req.query.url, req.query.data, options, function(err, resp) {
 			var respHeaders = that.extendObj({}, that.respHeaders);
