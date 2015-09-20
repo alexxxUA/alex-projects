@@ -10,7 +10,7 @@
 
 /* MODAL CLASS */
 var Modal = function(params){
-	this.bgClass = 'bg';
+	this.bgClass = 'b-modal';
 	this.modalClass = 'modal';
 	this.contentClass = 'container';
 	this.closeClass = 'close';
