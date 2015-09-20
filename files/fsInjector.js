@@ -4,6 +4,7 @@
 // @description  FS.UA proxy video viewer from non UA coutries
 // @author       Alexey
 // @match        http://brb.to/*
+// @match        http://fs.to/*
 // @downloadURL	 http://avasin.ml/fsInjector.js
 // ==/UserScript==
 
@@ -26,11 +27,36 @@ Proxy.prototype.initParams = function(params){
 			this[param] = params[param];
 	}
 }
-Proxy.prototype.getCleanResponse = function(html){
-	var $htmlWrap = $('<div/>').html(html);
+Proxy.prototype.removeScriptFromString = function(string){
+	return string.replace(/<.*?script.*?>.*?<\/.*?script.*?>/igm, '');
+}
+Proxy.prototype.cleanHref = function(href){
+	var newHref = href.replace(/\/browse\.php\?u=/, '');
+	newHref = newHref.replace(/http\:\/\/www\.anonym\.pp\.ua/, '');
 
+	return newHref;
+}
+Proxy.prototype.cleanLinks = function($html){
+	var that = this,
+		$links = $html.find('[href]');
+
+	$links.each(function(){
+		var $link = $(this);
+
+		$link.attr('href', that.cleanHref($link.attr('href')));
+	});
+
+	return $html;
+}
+Proxy.prototype.getCleanResponse = function(html){
+	var $htmlWrap = $('<div/>').html(this.removeScriptFromString(html));
+	
+	//Remove part of static DOM
 	$htmlWrap.find('#include').remove();
 	$htmlWrap.find('style').remove();
+
+	//Clean href on links
+	$htmlWrap = this.cleanLinks($htmlWrap);
 
 	return $htmlWrap.html();
 }
@@ -76,12 +102,11 @@ Proxy.prototype.externalProxyRequest = function(dataObj, onSuccess, onError){
 Proxy.prototype.browserProxyRequest = function(dataObj, onSuccess, onError){
 	var that = this;
 	
-	debugger;
-	
 	$.extend(dataObj, {
 		url: that.browserProxyUrl,
 		data: {
-			u: dataObj.url
+			u: dataObj.url,
+			b: '28'
 		},
 		isCookies: true
 	});
@@ -119,7 +144,6 @@ var FS = new Proxy({
 	slideTime: 200,
     internalProxyUrl: 'http://192.168.0.156:8888/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
-    browserProxyUrl: 'http://www.anonym.pp.ua/browse.php?',
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
     fsFilmBaseUrl: '',
@@ -184,11 +208,18 @@ var FS = new Proxy({
 			that.show($target, res);
 		});
 	},
-	showContent: function($folderLink){
-		var $content = $folderLink.closest(this.folderSel).find(this.subContentSel);
+	showContent: function($folderLinks){
+		var that = this;
 
-		$folderLink.addClass('loaded');
-		$content.slideDown(this.slideTime);			
+		$folderLinks.each(function(){
+			var $folderLink = $(this),
+				$content = $folderLink.closest(that.folderSel).find(that.subContentSel).first();
+			
+			if($content.length !== 0){
+				$folderLink.addClass('loaded');
+				$content.slideDown(that.slideTime);		
+			}
+		});
 	},
 	show: function($folderLink, res){
 		var that = this,
@@ -234,18 +265,19 @@ var FS = new Proxy({
 		
 		for(var i=0; i < linksLensth; i++){
 			var $link = $($links[i]),
-				oldUrl = $link.attr('href');
+				oldUrl = $link.attr('href'),
+				reqUrl = that.isBrowserProxy ? oldUrl : that.fsDomain + oldUrl;
 			
 			(function($$link){
 				that.proxyRequest({
 					type: 'GET',
-					url: that.fsDomain + oldUrl
+					url: reqUrl
 				}, function(res, xhr, dataObj){
 					var redirectUrl = xhr.getResponseHeader('Redirect-To');
 
 					if(redirectUrl !== null && redirectUrl !== 'undefined'){
-						$$link.attr('href', redirectUrl);
-						console.log('Download URL was found! '+ redirectUrl);
+						$$link.attr('href', that.cleanHref(redirectUrl));
+						//console.log('Download URL was found! '+ that.cleanHref(redirectUrl));
 					}
 
 					//Callback functionality
