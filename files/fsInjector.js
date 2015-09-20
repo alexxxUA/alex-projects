@@ -8,6 +8,73 @@
 // @downloadURL	 http://avasin.ml/fsInjector.js
 // ==/UserScript==
 
+/* MODAL CLASS */
+var Modal = function(params){
+	this.bgClass = 'bg';
+	this.modalClass = 'modal';
+	this.contentClass = 'container';
+	this.closeClass = 'close';
+	this.activeClass = 'active';
+	this.contentWidth = 500;
+
+	//Init entry params
+	this.initParams(params);
+	
+	//Base init
+	this.init();
+}
+
+Modal.prototype.initParams = function(params){
+	for(var param in params){
+		if (params.hasOwnProperty(param))
+			this[param] = params[param];
+	}
+}
+Modal.prototype.init = function(param){
+	this.createDom();
+	this.addCustomStyles();
+	this.registerEvents();
+}
+Modal.prototype.addCustomStyles = function(){
+	var $styles = $("<style/>").html(
+		'.'+ this.modalClass +'{display: none;position: fixed;width: '+ this.contentWidth +'px;top: 50%;left: 50%;margin: -200px 0 0 -'+ this.contentWidth/2 +'px;z-index: 99999;background: #000;box-shadow: 0 0 4px 1px #00A08D;border-radius: 5px;}'+
+		'.'+ this.modalClass +'.'+ this.activeClass +'{display: block;}'+
+		'.'+ this.modalClass +' .'+ this.contentClass +'{width:100%; height: 100%;padding: 3%;box-sizing: border-box;text-align:center;}'+
+		'.'+ this.modalClass +' video{width: auto;height: auto;max-width: 100%;max-height: 100%;}'+
+		'.'+ this.bgClass +'{position: fixed;width: 100%;height: 100%;background: #000;z-index: 99999;top: 0;opacity: 0.5;display: none;}'+
+		'.'+ this.bgClass +'.'+ this.activeClass +'{display: block;}'+
+		'.'+ this.closeClass +'{position: absolute;right: 10px;top: 5px;color: #C9F2F9;font: normal 20px arial;cursor: pointer;}'
+	);
+	$('head').append($styles);
+}	
+Modal.prototype.createDom = function(){
+	$('body').append('<div class="'+ this.bgClass +'"></div>')
+		.append('<div class="'+ this.modalClass +'"><div class="'+ this.closeClass +'">✖</div><div class="'+ this.contentClass +'"></div></div>')
+}
+Modal.prototype.registerEvents = function(){
+	$(document).on('click', '.'+ this.closeClass, $.proxy(this, 'hide'));
+	$(document).on('click', '.'+ this.bgClass, $.proxy(this, 'hide'));
+}
+Modal.prototype.updatePosition = function(){
+	var $modal = $('.'+ this.modalClass);
+
+	if($modal.height() >= window.innerHeight){
+		$modal.height(window.innerHeight - 150);
+	}
+
+	$modal.css({'margin-top': - $modal.height()/2});
+}
+Modal.prototype.show = function(content, callback){
+	$('.'+ this.bgClass).addClass(this.activeClass);
+	$('.'+ this.modalClass).addClass(this.activeClass).find('.'+ this.contentClass).html(content);
+	if(callback) callback();
+}
+Modal.prototype.hide = function(){
+	$('.'+ this.bgClass).removeClass(this.activeClass);
+	$('.'+ this.modalClass).removeClass(this.activeClass).css({'height':'', 'margin-top':''}).find('.'+ this.contentClass).html('');
+}
+
+/* PROXY CLASS */
 function Proxy(params){
 	this.internalProxyUrl = 'http://avasin.ml/proxy';
 	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
@@ -126,13 +193,9 @@ Proxy.prototype.browserProxyRequest = function(dataObj, onSuccess, onError){
 	});
 }
 
+
+//Greate FS instance and init()
 var FS = new Proxy({
-    styles: 'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
-			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
-			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
-			'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
-			'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
-			'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
@@ -140,9 +203,13 @@ var FS = new Proxy({
     disableClickSel: '.b-file-new__link-material, .material-video-quality',
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
+	vidListItemSel: '.m-file-new_type_video',
+	playBtnClass: 'play-btn',
+	videoId: 'fsVideo',
+	videoWidth: 900,
 	isBrowserProxy: true,
 	slideTime: 200,
-    internalProxyUrl: 'http://192.168.0.156:8888/proxy',
+    internalProxyUrl: 'http://avasin.ml/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
@@ -175,15 +242,28 @@ var FS = new Proxy({
         $(document).on('click', this.folderSel +' '+ this.folderLinkSel +':not(.loaded)', $.proxy(this.showFolderContent, this));
         //Toggle content
 		$(document).on('click', this.folderSel +' '+ this.folderLinkSel +'.loaded', $.proxy(this.contentToggle, this));
-        //Prevent click
+        //Play video
+		$(document).on('click', '.'+ this.playBtnClass, $.proxy(this.showVideo, this));
+		//Prevent click
         $(document).on('click', this.disableClickSel, function(e){
             e.preventDefault();
         });
     },
     addCustomStyles: function(){
-        var $styles = $("<style/>").html(this.styles);
+        var $styles = $("<style/>").html(
+			'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
+			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
+			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
+			'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
+			'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
+			'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}'+
+			'.'+ this.playBtnClass +'{cursor:pointer;position: absolute;top: 11px;right: -23px;border-left: 18px solid #2E6DB1;border-top: 9px solid transparent;border-bottom: 9px solid transparent;font-size: 0;z-index: 16;width: 0;height: 0;}'
+		);
         $('head').append($styles);
     },
+	getPlayBtnNode: function(url){
+		return '<a class="'+ this.playBtnClass +'" href="'+ url +'" title="Play">Play</a>';
+	},
     getFolderHtml(id, onSuccess, onError){
         var that = this;
 
@@ -196,6 +276,26 @@ var FS = new Proxy({
 			if(onError) onError.call(that, err, dataObj);
 		});
     },
+	getVidTemplate: function(url){
+		return '<video id="'+ this.videoId +'" name="media" autoplay controls preload="auto">'+
+				'<source src="'+ url +'"></source>'+
+			'</video>';
+	},
+	videoReady: function(){
+		$('#'+ this.videoId).one('loadeddata', function(){
+			modal.updatePosition();
+		});
+	},
+	showVideo: function(e){
+		e.preventDefault();
+		var that = this,
+			$btn = $(e.currentTarget),
+			vidNode = this.getVidTemplate($btn.attr('href'));
+
+		modal.show(vidNode, function(){
+			that.videoReady();
+		});
+	},
 	showFolderContent: function(e){
         e.preventDefault();
 		var that = this,
@@ -237,25 +337,38 @@ var FS = new Proxy({
 		
 		$content.slideToggle(this.slideTime);
 	},
+	addPlayBtn: function($html){
+		var that = this,
+			$vidListItems = $html.find(this.vidListItemSel);
+		
+		$vidListItems.each(function(){
+			var $vidListItem = $(this),
+				$downloadLink = $vidListItem.find(that.downloadLinkSel);
+			
+			//Add play button
+			$vidListItem.append(that.getPlayBtnNode($downloadLink.attr('href')));
+		});
+		
+		return $html;
+	},
 	contentPreparing: function(html, callback){
-		var $html = $(html),
-            $downloadLinks = $html.find(this.downloadLinkSel),
-			$subContent = $html.find(this.subContentSel),
-			$folderLink = $html.find(this.folderLinkSel);
+		var that= this,
+			$html = $(html),
+            $downloadLinks = $html.find(that.downloadLinkSel),
+			$subContent = $html.find(that.subContentSel),
+			$folderLink = $html.find(that.folderLinkSel);
 
         //Show content for loaded subfolder
-		if($subContent.length > 0){
-			this.showContent($folderLink);
-		}
+		that.showContent($folderLink);
         
 		//Parse download links
         if($downloadLinks.length > 0){
-			this.parseDownloads($downloadLinks, function(){
-				callback($html);
+			that.parseDownloads($downloadLinks, function(){
+				callback(that.addPlayBtn($html));
 			});
 		}
 		else{
-			callback($html);
+			callback(that.addPlayBtn($html));
 		}
 	},
 	parseDownloads: function($links, callback){
@@ -300,4 +413,9 @@ var FS = new Proxy({
 			})($link);
 		}
 	}
+});
+
+//Greate Modal instance and init()
+var modal = new Modal({
+	contentWidth: FS.videoWidth
 });
