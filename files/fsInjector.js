@@ -204,11 +204,20 @@ var FS = new Proxy({
 	folderLinkSel: 'a[rel*=parent_id]',
     downloadLinkSel: '.b-file-new__link-material-download',
 	vidListItemSel: '.m-file-new_type_video',
+	posterItemSel: '.b-poster-tile, .b-poster-new, .l-tab-item-content, .b-main__new-item, .b-main__top-commentable-item-wrap, .b-poster-detail',
+	posterTitleSel: '.b-poster-tile__title-short,'+
+					'.m-poster-new__short_title,'+
+					'.b-tab-item__title-inner span,'+
+					'.b-tab-item__title-inner h1,'+
+					'.b-main__new-item-title,'+
+					'.b-poster-detail__title,'+
+					'.b-main__top-commentable-item-title-value',
 	playBtnClass: 'play-btn',
 	videoId: 'fsVideo',
 	videoWidth: 900,
 	isBrowserProxy: true,
 	slideTime: 200,
+	rutorSearchUrl: 'http://rutor.org/search/',
     internalProxyUrl: 'http://avasin.ml/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	fsDomain: 'http://fs.to',
@@ -218,24 +227,12 @@ var FS = new Proxy({
         var that = this;
         
 		//Store base content url
-        that.fsFilmBaseUrl = that.fsDomain + that.fsBasePath;
-		
-        //Do not run script in case files placeholder not found
-        if($(that.mainFilesSel).length == 0)
-            return;
+        this.fsFilmBaseUrl = this.fsDomain + this.fsBasePath;
 
-		that.registerEvents();
-        that.addCustomStyles();
-
-        that.getFolderHtml('0', function(res, xhr, dataObj){
-            var $mainHolder = $(that.mainFilesSel),
-                $files = $(that.filesSel);
-
-            that.contentPreparing(res, function($html){
-                $files.append($html);
-                $mainHolder.slideDown(that.slideTime);
-            });
-        });
+		this.registerEvents();
+        this.addCustomStyles();
+		this.showFirstFolder();
+        this.showRutorLinks();
     },
     registerEvents: function(){
 		//Show folder content
@@ -257,12 +254,31 @@ var FS = new Proxy({
 			'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
 			'body .b-filelist .filelist li.b-file-new {margin-left: 7px;}'+
 			'body .b-file-new__link-material-download.error, body .error .b-file-new__link-material-size {color: #FF5757;}'+
-			'.'+ this.playBtnClass +'{cursor:pointer;position: absolute;top: 11px;right: -23px;border-left: 18px solid #2E6DB1;border-top: 9px solid transparent;border-bottom: 9px solid transparent;font-size: 0;z-index: 16;width: 0;height: 0;}'
+			'.'+ this.playBtnClass +'{cursor:pointer;position: absolute;top: 11px;right: -23px;border-left: 18px solid #2E6DB1;border-top: 9px solid transparent;border-bottom: 9px solid transparent;font-size: 0;z-index: 16;width: 0;height: 0;}'+
+			this.posterItemSel +'{position: relative;}'+
+			'.b-main__top-commentable-item-wrap .rutor-poster-link {top: 25px;}'+
+			'.b-poster-new .rutor-poster-link {top: -10px; left: -10px;}'+
+			'.b-poster-detail .rutor-poster-link {top: -5px; left: -5px;}'+
+			'.l-tab-item-content .rutor-poster-link {top: -15px; left: -15px; width: 48px; height: 48px;}'+
+			'.rutor-poster-link img {width: 100%;}'+
+			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 1005; width: 35px; height: 35px;}'
 		);
         $('head').append($styles);
     },
 	getPlayBtnNode: function(url){
 		return '<a class="'+ this.playBtnClass +'" href="'+ url +'" title="Play">Play</a>';
+	},
+	getVidTemplate: function(url){
+		return '<video id="'+ this.videoId +'" name="media" autoplay controls preload="auto">'+
+				'<source src="'+ url +'"></source>'+
+			'</video>';
+	},
+	getRutorLink: function(title){
+		var cleanTitle = this.getCleanTitle(title);
+
+		return '<a href="'+ this.rutorSearchUrl + cleanTitle +'" title="'+ title +'" class="rutor-poster-link" target="_blank">'+
+					'<img src="https://maxcdn.icons8.com/Color/PNG/48/Logos/utorrent-48.png">'+
+				'</a>';
 	},
     getFolderHtml(id, onSuccess, onError){
         var that = this;
@@ -276,14 +292,25 @@ var FS = new Proxy({
 			if(onError) onError.call(that, err, dataObj);
 		});
     },
-	getVidTemplate: function(url){
-		return '<video id="'+ this.videoId +'" name="media" autoplay controls preload="auto">'+
-				'<source src="'+ url +'"></source>'+
-			'</video>';
+	getCleanTitle: function(title){
+		var newTitle = title.replace(/\n+|\t+|\v+/g, '');	//Remove "enters" and "tabs"
+
+		return newTitle.replace(/\s+/g, '%20'); //Convert spaces
 	},
 	videoReady: function(){
 		$('#'+ this.videoId).one('loadeddata', function(){
 			modal.updatePosition();
+		});
+	},
+	showRutorLinks: function(){
+		var that = this,
+			$posters = $(this.posterItemSel);
+		
+		$posters.each(function(){
+			var $poster = $(this),
+				title = $poster.find(that.posterTitleSel).text();
+
+			$poster.append(that.getRutorLink(title));
 		});
 	},
 	showVideo: function(e){
@@ -295,6 +322,23 @@ var FS = new Proxy({
 		modal.show(vidNode, function(){
 			that.videoReady();
 		});
+	},
+	showFirstFolder: function(){
+		var that = this;
+		
+		//Do not run showing folder in case file's placeholder not found
+        if($(that.mainFilesSel).length == 0)
+            return;
+
+		that.getFolderHtml('0', function(res, xhr, dataObj){
+            var $mainHolder = $(that.mainFilesSel),
+                $files = $(that.filesSel);
+
+            that.contentPreparing(res, function($html){
+                $files.append($html);
+                $mainHolder.slideDown(that.slideTime);
+            });
+        });
 	},
 	showFolderContent: function(e){
         e.preventDefault();

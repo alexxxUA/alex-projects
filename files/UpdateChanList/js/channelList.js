@@ -26,10 +26,11 @@ var channelList = [
 	//Познавательные
 	{dName: 'Мега', sName: 'Мега', flags: 'req'},
 	{dName: 'QTV', sName: 'QTV', flags: 'req'},
-	{dName: 'Еда ТВ', sName: '(Еда ТВ|Еда)', flags: 'hd'},
+	{dName: 'Еда ТВ', sName: '(Еда ТВ|Еда)', flags: ''},
 	{dName: 'Кухня ТВ', sName: 'Кухня ТВ', flags: 'req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
 	{dName: 'Viasat History', sName: 'Viasat History', flags: 'req'},
+	{dName: 'Viasat Nature-History', sName: 'Viasat Nature-History', flags: 'hd req'},
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World', sName: 'Discovery World|Discovеry Wоrld', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'req'},
