@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA proxy video viewer
-// @version      2.0
+// @version      3.0
 // @description  FS.UA proxy video viewer from non UA coutries
 // @author       Alexey
 // @match        http://brb.to/*
