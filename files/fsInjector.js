@@ -209,6 +209,7 @@ var FS = new Proxy({
 					'.m-poster-new__short_title,'+
 					'.b-tab-item__title-inner span,'+
 					'.b-tab-item__title-inner h1,'+
+					'.b-tab-item__title-origin,'+
 					'.b-main__new-item-title,'+
 					'.b-poster-detail__title,'+
 					'.b-main__top-commentable-item-title-value',
@@ -261,7 +262,9 @@ var FS = new Proxy({
 			'.b-poster-detail .rutor-poster-link {top: -5px; left: -5px;}'+
 			'.l-tab-item-content .rutor-poster-link {top: -15px; left: -15px; width: 48px; height: 48px;}'+
 			'.rutor-poster-link img {width: 100%;}'+
-			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 1005; width: 35px; height: 35px;}'
+            '.b-poster-tile__link:hover + .rutor-poster-link, .b-poster-detail__link:hover + .rutor-poster-link {z-index: 999}'+
+			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 100; width: 35px; height: 35px;}'+
+			'.rutor-poster-link + .rutor-poster-link {top: 30px;}'
 		);
         $('head').append($styles);
     },
@@ -305,12 +308,16 @@ var FS = new Proxy({
 	showRutorLinks: function(){
 		var that = this,
 			$posters = $(this.posterItemSel);
-		
+
 		$posters.each(function(){
 			var $poster = $(this),
-				title = $poster.find(that.posterTitleSel).text();
+				$title = $poster.find(that.posterTitleSel);
 
-			$poster.append(that.getRutorLink(title));
+			$title.each(function(){
+				var title = $(this).text();
+
+				$poster.append(that.getRutorLink(title));
+			});
 		});
 	},
 	showVideo: function(e){
