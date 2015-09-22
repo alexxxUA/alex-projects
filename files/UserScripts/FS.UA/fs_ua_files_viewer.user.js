@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         FS.UA proxy video viewer
+// @name         FS.UA files viewer
 // @version      3.0
-// @description  FS.UA proxy video viewer from non UA coutries
+// @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
 // @match        http://fs.to/*
-// @updateURL	 http://avasin.ml/fsInjector.js
+// @updateURL	 http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
 // ==/UserScript==
 
 /* MODAL CLASS */
