@@ -218,6 +218,7 @@ var FS = new Proxy({
 	videoWidth: 900,
 	isBrowserProxy: true,
 	slideTime: 200,
+	torrentImgUrl: 'https://maxcdn.icons8.com/Color/PNG/48/Logos/utorrent-48.png',
 	rutorSearchUrl: 'http://rutor.org/search/',
     internalProxyUrl: 'http://avasin.ml/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
@@ -280,7 +281,7 @@ var FS = new Proxy({
 		var cleanTitle = this.getCleanTitle(title);
 
 		return '<a href="'+ this.rutorSearchUrl + cleanTitle +'" title="'+ title +'" class="rutor-poster-link" target="_blank">'+
-					'<img src="https://maxcdn.icons8.com/Color/PNG/48/Logos/utorrent-48.png">'+
+					'<img src="'+ this.torrentImgUrl +'">'+
 				'</a>';
 	},
     getFolderHtml(id, onSuccess, onError){
