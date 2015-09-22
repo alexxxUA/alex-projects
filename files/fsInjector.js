@@ -5,7 +5,7 @@
 // @author       Alexey
 // @match        http://brb.to/*
 // @match        http://fs.to/*
-// @downloadURL	 http://avasin.ml/fsInjector.js
+// @updateURL	 http://avasin.ml/fsInjector.js
 // ==/UserScript==
 
 /* MODAL CLASS */
