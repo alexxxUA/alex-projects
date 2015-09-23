@@ -67,9 +67,25 @@ Modal.prototype.updatePosition = function(){
 Modal.prototype.show = function(content, callback){
 	$('.'+ this.bgClass).addClass(this.activeClass);
 	$('.'+ this.modalClass).addClass(this.activeClass).find('.'+ this.contentClass).html(content);
+	this.videoReady();
 	if(callback) callback();
 }
+Modal.prototype.videoReady = function(){
+	$('.'+ this.modalClass +' video').each(function(){
+		$(this).one('loadeddata', function(){
+			modal.updatePosition();
+		});
+	});
+}
+Modal.prototype.removeVideos = function(){
+	$('.'+ this.modalClass +' video').each(function(){
+		this.pause();
+		this.src = '';
+		$(this).remove();
+	});
+}
 Modal.prototype.hide = function(){
+	this.removeVideos();
 	$('.'+ this.bgClass).removeClass(this.activeClass);
 	$('.'+ this.modalClass).removeClass(this.activeClass).css({'height':'', 'margin-top':''}).find('.'+ this.contentClass).html('');
 }
@@ -214,7 +230,6 @@ var FS = new Proxy({
 					'.b-poster-detail__title,'+
 					'.b-main__top-commentable-item-title-value',
 	playBtnClass: 'play-btn',
-	videoId: 'fsVideo',
 	videoWidth: 900,
 	isBrowserProxy: true,
 	slideTime: 200,
@@ -273,7 +288,7 @@ var FS = new Proxy({
 		return '<a class="'+ this.playBtnClass +'" href="'+ url +'" title="Play">Play</a>';
 	},
 	getVidTemplate: function(url){
-		return '<video id="'+ this.videoId +'" name="media" autoplay controls preload="auto">'+
+		return '<video name="media" autoplay controls preload="auto">'+
 				'<source src="'+ url +'"></source>'+
 			'</video>';
 	},
@@ -301,11 +316,6 @@ var FS = new Proxy({
 
 		return newTitle.replace(/\s+/g, '%20'); //Convert spaces
 	},
-	videoReady: function(){
-		$('#'+ this.videoId).one('loadeddata', function(){
-			modal.updatePosition();
-		});
-	},
 	showRutorLinks: function(){
 		var that = this,
 			$posters = $(this.posterItemSel);
@@ -327,9 +337,7 @@ var FS = new Proxy({
 			$btn = $(e.currentTarget),
 			vidNode = this.getVidTemplate($btn.attr('href'));
 
-		modal.show(vidNode, function(){
-			that.videoReady();
-		});
+		modal.show(vidNode);
 	},
 	showFirstFolder: function(){
 		var that = this;
