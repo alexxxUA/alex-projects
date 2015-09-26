@@ -282,6 +282,8 @@ Proxy.prototype.browserProxyRequest = function(dataObj, onSuccess, onError){
 
 //Greate FS instance and init()
 var FS = new Proxy({
+	ajaxLoaderClass: 'b-ajax-loader',
+    ajaxErrorClass: 'b-ajax-error',
     mainFilesSel: '.b-files-folders',
     filesSel: '.b-filelist',
     folderSel: '.folder',
