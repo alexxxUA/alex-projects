@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      3.0
+// @version      4.0
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
