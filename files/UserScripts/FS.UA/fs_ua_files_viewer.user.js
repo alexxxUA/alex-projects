@@ -92,23 +92,83 @@ Modal.prototype.hide = function(){
 
 /* PROXY CLASS */
 function Proxy(params){
+	this.ajaxLoaderClass = 'js-ajax-loader';
+	this.ajaxErrorClass = 'js-ajax-error';
+	this.ajaxImgUrl = 'http://avasin.ml/img/ajax-loader.gif';
 	this.internalProxyUrl = 'http://avasin.ml/proxy';
 	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	this.browserProxyUrl = 'http://www.anonym.pp.ua/browse.php?';
 	this.isBrowserProxy = false;
-	
+	this.readSpeed = 600; //Symbols per minute
+
 	//Init entry params
 	this.initParams(params);
 	
+	//Init associate params
+	this.initAssociateParms();
+	
 	//Base init
+	this.baseInit();
+
+	//Custom init
 	this.init();
 }
-
 Proxy.prototype.initParams = function(params){
 	for(var param in params){
 		if (params.hasOwnProperty(param))
 			this[param] = params[param];
 	}
+}
+Proxy.prototype.initAssociateParms = function(){
+	//Set params based on another params
+	this.$ajaxLoader = $('<div class="'+ this.ajaxLoaderClass +'"><img src="'+ this.ajaxImgUrl +'"></div>');
+	this.$ajaxError = $('<div class="'+ this.ajaxErrorClass +'"></div>');
+}
+Proxy.prototype.baseInit = function(){
+	this.initAjaxLoader();
+	this.baseRegisterEvents();
+};
+Proxy.prototype.baseRegisterEvents = function(){
+	this.$ajaxError.on('click', $.proxy(this.hideError, this));
+}
+//Ajax loader
+Proxy.prototype.initAjaxLoader = function(){
+	$('body').append(this.$ajaxLoader).append(this.$ajaxError);
+};
+Proxy.prototype.showError = function(msg){
+	var that = this,
+		estimatedTime = that.getEstimatedReadTime(msg);
+	
+	setTimeout(function(){
+		that.$ajaxError.text(msg).show();
+		$(window).on('mousemove', $.proxy(that.setLoaderPos, that));
+
+		//Hide error after timeout
+		setTimeout(function(){
+			that.hideError();
+		}, estimatedTime);
+	}, 200);
+}
+Proxy.prototype.hideError = function(){
+	this.$ajaxError.hide().text('');
+	$(window).off('mousemove');
+}
+Proxy.prototype.showLoader = function(){
+	this.$ajaxLoader.show();
+	$(window).on('mousemove', $.proxy(this.setLoaderPos, this));
+}
+Proxy.prototype.hideLoader = function(){
+	this.$ajaxLoader.hide();
+	$(window).off('mousemove');
+}
+Proxy.prototype.setLoaderPos = function(e){
+	var position = {
+		'top' : e.pageY,
+		'left' : e.pageX
+	}
+
+	this.$ajaxLoader.css(position);
+	this.$ajaxError.css(position);
 }
 Proxy.prototype.removeScriptFromString = function(string){
 	return string.replace(/<.*?script.*?>.*?<\/.*?script.*?>/igm, '');
@@ -116,6 +176,7 @@ Proxy.prototype.removeScriptFromString = function(string){
 Proxy.prototype.cleanHref = function(href){
 	var newHref = href.replace(/\/browse\.php\?u=/, '');
 	newHref = newHref.replace(/http\:\/\/www\.anonym\.pp\.ua/, '');
+	newHref = newHref.replace(/&.*$/g, '');
 
 	return newHref;
 }
@@ -130,6 +191,9 @@ Proxy.prototype.cleanLinks = function($html){
 	});
 
 	return $html;
+}
+Proxy.prototype.getEstimatedReadTime = function(string){
+	return (string.length / this.readSpeed * 60000).toFixed() ;
 }
 Proxy.prototype.getCleanResponse = function(html){
 	var $htmlWrap = $('<div/>').html(this.removeScriptFromString(html));
@@ -177,7 +241,10 @@ Proxy.prototype.externalProxyRequest = function(dataObj, onSuccess, onError){
 			if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
 		},
 		error: function(err){
-			console.error(err.statusText);
+			//Show error message
+			var errMsg = typeof dataObj.errMsg != 'undefined' ? dataObj.errMsg : err.statusText;
+			that.showError(errMsg);
+			//Load callback
 			if(onError) onError.call(that, err, dataObj);
 		}
 	});
@@ -203,7 +270,10 @@ Proxy.prototype.browserProxyRequest = function(dataObj, onSuccess, onError){
 			if(onSuccess) onSuccess.call(that, that.getCleanResponse(response), xhr, dataObj);
 		},
 		error: function(err){
-			console.error(err.statusText);
+			//Show error message
+			var errMsg = typeof dataObj.errMsg != 'undefined' ? dataObj.errMsg : err.statusText;
+			that.showError(errMsg);
+			//Load callback
 			if(onError) onError.call(that, err, dataObj);
 		}
 	});
@@ -216,8 +286,9 @@ var FS = new Proxy({
     filesSel: '.b-filelist',
     folderSel: '.folder',
 	subContentSel: '.filelist',
-    disableClickSel: '.b-file-new__link-material, .material-video-quality',
+    disableClickSel: '.material-video-quality, .disabled',
 	folderLinkSel: 'a[rel*=parent_id]',
+	materialLinkSel: '.b-file-new__link-material',
     downloadLinkSel: '.b-file-new__link-material-download',
 	vidListItemSel: '.m-file-new_type_video',
 	posterItemSel: '.b-poster-tile, .b-poster-new, .l-tab-item-content, .b-main__new-item, .b-main__top-commentable-item-wrap, .b-poster-detail',
@@ -235,7 +306,7 @@ var FS = new Proxy({
 	slideTime: 200,
 	torrentImgUrl: 'https://maxcdn.icons8.com/Color/PNG/48/Logos/utorrent-48.png',
 	rutorSearchUrl: 'http://rutor.org/search/',
-    internalProxyUrl: 'http://avasin.ml/proxy',
+    //internalProxyUrl: 'http://192.168.0.135:8888/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	fsDomain: 'http://fs.to',
     fsBasePath: location.pathname +'?ajax&',
@@ -253,7 +324,7 @@ var FS = new Proxy({
     },
     registerEvents: function(){
 		//Show folder content
-        $(document).on('click', this.folderSel +' '+ this.folderLinkSel +':not(.loaded)', $.proxy(this.showFolderContent, this));
+        $(document).on('click', this.folderSel +' '+ this.folderLinkSel +':not(.loaded):not(.disabled)', $.proxy(this.showFolderContent, this));
         //Toggle content
 		$(document).on('click', this.folderSel +' '+ this.folderLinkSel +'.loaded', $.proxy(this.contentToggle, this));
         //Play video
@@ -265,7 +336,10 @@ var FS = new Proxy({
     },
     addCustomStyles: function(){
         var $styles = $("<style/>").html(
-			'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0; cursor: default;}'+
+			'.'+ this.ajaxLoaderClass +' {position: absolute; width:30px; height:30px; z-index:999999; left:50%; top:50%; margin:12px 0 0 12px; display:none;}'+
+			'.'+ this.ajaxLoaderClass +' img {width: 100%; height: 100%;}'+
+			'.'+ this.ajaxErrorClass +' {position:absolute; display:none; left:50%; top:50%; z-index:999999; min-width:100px; max-width:200px; color:#FF7D7D; background:#00013F; border-radius:0 10px 10px; padding:10px; text-align:center; margin:12px 0 0 12px;}'+
+			'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0;}'+
 			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
 			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
 			'body .b-filelist .filelist .filelist {margin-left: -7px; padding-left: 0;}'+
@@ -299,16 +373,22 @@ var FS = new Proxy({
 					'<img src="'+ this.torrentImgUrl +'">'+
 				'</a>';
 	},
-    getFolderHtml(id, onSuccess, onError){
+    getFolderHtml(params){
         var that = this;
 
-        that.proxyRequest({
+        //Show loader
+		that.showLoader();
+		//Proxy reqest
+		that.proxyRequest({
 			type: 'GET',
-            url: that.fsFilmBaseUrl +'folder='+ id
+            url: that.fsFilmBaseUrl +'folder='+ params.id,
+			errMsg: params.errMsg
         }, function(response, xhr, dataObj){
-			if(onSuccess) onSuccess.call(that, response, xhr, dataObj);
+			that.hideLoader();
+			if(params.onSuccess) params.onSuccess.call(that, response, xhr, dataObj);
 		}, function(err, dataObj){
-			if(onError) onError.call(that, err, dataObj);
+			that.hideLoader();
+			if(params.onError) params.onError.call(that, err, dataObj);
 		});
     },
 	getCleanTitle: function(title){
@@ -346,14 +426,18 @@ var FS = new Proxy({
         if($(that.mainFilesSel).length == 0)
             return;
 
-		that.getFolderHtml('0', function(res, xhr, dataObj){
-            var $mainHolder = $(that.mainFilesSel),
-                $files = $(that.filesSel);
+		that.getFolderHtml({
+			id: '0',
+			errMsg: 'Error in loading content. Try to refresh the page.',
+			onSuccess: function(res, xhr, dataObj){
+				var $mainHolder = $(that.mainFilesSel),
+					$files = $(that.filesSel);
 
-            that.contentPreparing(res, function($html){
-                $files.append($html);
-                $mainHolder.slideDown(that.slideTime);
-            });
+				that.contentPreparing(res, function($html){
+					$files.append($html);
+					$mainHolder.slideDown(that.slideTime);
+            	});
+			}						 
         });
 	},
 	showFolderContent: function(e){
@@ -364,8 +448,20 @@ var FS = new Proxy({
 			folderId = metadata.parent_id,
 			$folder = $target.closest(that.folderSel);
 		
-		that.getFolderHtml(folderId, function(res, xhr, dataObj){
-			that.show($target, res);
+		//Prevent multi clicks
+		$target.addClass('disabled');
+		
+		//Load folder HTML
+		that.getFolderHtml({
+			id: folderId,
+			errMsg: 'Error in loading folder "'+ $target.text() +'". Please try again.',
+			onSuccess: function(res, xhr, dataObj){
+				that.show($target, res);
+			},
+			onError: function(){
+				//Reenable folder link
+				$target.removeClass('disabled');
+			}
 		});
 	},
 	showContent: function($folderLinks){
@@ -388,6 +484,9 @@ var FS = new Proxy({
 		that.contentPreparing(res, function($html){
 			$folder.append($html);
 			that.showContent($folderLink);
+
+			//Reenable folder link
+			$folderLink.removeClass('disabled');
 		});
 	},
 	contentToggle: function(e){
@@ -400,7 +499,7 @@ var FS = new Proxy({
 	addPlayBtn: function($html){
 		var that = this,
 			$vidListItems = $html.find(this.vidListItemSel);
-		
+		//debugger;
 		$vidListItems.each(function(){
 			var $vidListItem = $(this),
 				$downloadLink = $vidListItem.find(that.downloadLinkSel);
@@ -436,6 +535,9 @@ var FS = new Proxy({
 			linksLensth = $links.length,
 			counter = 0;
 		
+		//Show AJAX loader
+		that.showLoader();
+
 		for(var i=0; i < linksLensth; i++){
 			var $link = $($links[i]),
 				oldUrl = $link.attr('href'),
@@ -449,8 +551,11 @@ var FS = new Proxy({
 					var redirectUrl = xhr.getResponseHeader('Redirect-To');
 
 					if(redirectUrl !== null && redirectUrl !== 'undefined'){
-						$$link.attr('href', that.cleanHref(redirectUrl));
-						//console.log('Download URL was found! '+ that.cleanHref(redirectUrl));
+						var url = that.cleanHref(redirectUrl),
+							$titleLink = $$link.siblings(that.materialLinkSel);
+
+						$$link.attr('href', url);
+						$titleLink.attr({'href': url, 'class': ''});
 					}
 
 					//Callback functionality
@@ -458,16 +563,19 @@ var FS = new Proxy({
 					if(counter >= $links.length){
 						//Finish to parse links
 						callback();
+						//Hide AJAX loader
+						that.hideLoader();
 					}
 				}, function(err){
 					$$link.addClass('error');
-					console.log(err);
 
 					//Callback functionality
 					counter++;
 					if(counter >= $links.length){
 						//Finish to parse links
 						callback();
+						//Hide AJAX loader
+						that.hideLoader();
 					}
 				});
 			})($link);

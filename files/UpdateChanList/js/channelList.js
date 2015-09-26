@@ -62,7 +62,7 @@ var channelList = [
 	{dName: 'Amedia Hit', sName: 'Amedia Hit', flags: 'hd'},
 	{dName: 'Paramount Comedy', sName: 'Paramount Comedy', flags: ''},
 	{dName: 'HD Life', sName: 'HD Life', flags: 'req'},
-	{dName: 'SET', sName: 'SET|SET HD \\\(SONY\\\)', flags: 'hd req'},
+	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'HD Кино', sName: 'HD Кино', flags: 'req'},
 	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: 'req'},
 

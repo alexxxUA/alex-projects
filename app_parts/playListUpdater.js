@@ -138,8 +138,10 @@ Channel.prototype = {
 	getValidPlaylist: function(){
 		var that = this;
 
+		that.resetData();
+
 		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+			if (err || resp.statusCode !== 200){
 				that.logErr('Error in getting valid playlist!');
 				return;
 			}
@@ -165,7 +167,7 @@ Channel.prototype = {
 		var that = this;
 
 		needle.request('GET', url, null, {}, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+			if (err || resp.statusCode !== 200){
 				that.failed(channel);
 				return;
 			}
@@ -278,7 +280,7 @@ var channelTorrentStream = new Channel({
 		}
 
 		needle.request('GET', channelPage, null, {}, function(err, resp) {
-			if (err || resp.statusCode == 404 || resp.statusCode == 500){
+			if (err || resp.statusCode !== 200){
 				that.logErr('Error in getting page for channel: '+ channel.dName);
 				that.failed(channel);
 				return;
