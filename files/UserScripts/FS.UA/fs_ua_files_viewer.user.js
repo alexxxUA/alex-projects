@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      4.0
+// @version      4.1
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
@@ -103,10 +103,10 @@ function Proxy(params){
 
 	//Init entry params
 	this.initParams(params);
-	
+
 	//Init associate params
-	this.initAssociateParms();
-	
+	this.initAssociateParams();
+
 	//Base init
 	this.baseInit();
 
@@ -119,7 +119,7 @@ Proxy.prototype.initParams = function(params){
 			this[param] = params[param];
 	}
 }
-Proxy.prototype.initAssociateParms = function(){
+Proxy.prototype.initAssociateParams = function(){
 	//Set params based on another params
 	this.$ajaxLoader = $('<div class="'+ this.ajaxLoaderClass +'"><img src="'+ this.ajaxImgUrl +'"></div>');
 	this.$ajaxError = $('<div class="'+ this.ajaxErrorClass +'"></div>');
@@ -138,24 +138,31 @@ Proxy.prototype.initAjaxLoader = function(){
 Proxy.prototype.showError = function(msg){
 	var that = this,
 		estimatedTime = that.getEstimatedReadTime(msg);
-	
+
+	this.hideError();
+	this.hideLoader();
+
 	setTimeout(function(){
-		that.$ajaxError.text(msg).show();
 		$(window).on('mousemove', $.proxy(that.setLoaderPos, that));
+		that.$ajaxError.text(msg).show();
 
 		//Hide error after timeout
-		setTimeout(function(){
+		that.errTimeOut = setTimeout(function(){
 			that.hideError();
 		}, estimatedTime);
 	}, 200);
 }
 Proxy.prototype.hideError = function(){
+	clearTimeout(this.errTimeOut);
 	this.$ajaxError.hide().text('');
 	$(window).off('mousemove');
 }
 Proxy.prototype.showLoader = function(){
-	this.$ajaxLoader.show();
+	this.hideError();
+	this.hideLoader();
+
 	$(window).on('mousemove', $.proxy(this.setLoaderPos, this));
+	this.$ajaxLoader.show();
 }
 Proxy.prototype.hideLoader = function(){
 	this.$ajaxLoader.hide();
@@ -163,7 +170,7 @@ Proxy.prototype.hideLoader = function(){
 }
 Proxy.prototype.setLoaderPos = function(e){
 	var position = {
-		'top' : e.pageY,
+		'top' : e.pageY - $(window).scrollTop(),
 		'left' : e.pageX
 	}
 
@@ -338,9 +345,9 @@ var FS = new Proxy({
     },
     addCustomStyles: function(){
         var $styles = $("<style/>").html(
-			'.'+ this.ajaxLoaderClass +' {position: absolute; width:30px; height:30px; z-index:999999; left:50%; top:50%; margin:12px 0 0 12px; display:none;}'+
+			'.'+ this.ajaxLoaderClass +' {position: fixed; width:30px; height:30px; z-index:999999; left:50%; top:50%; margin:12px 0 0 12px; display:none;}'+
 			'.'+ this.ajaxLoaderClass +' img {width: 100%; height: 100%;}'+
-			'.'+ this.ajaxErrorClass +' {position:absolute; display:none; left:50%; top:50%; z-index:999999; min-width:100px; max-width:200px; color:#FF7D7D; background:#00013F; border-radius:0 10px 10px; padding:10px; text-align:center; margin:12px 0 0 12px;}'+
+			'.'+ this.ajaxErrorClass +' {position:fixed; display:none; left:50%; top:50%; z-index:999999; min-width:100px; max-width:200px; color:#FF7D7D; background:#00013F; border-radius:0 10px 10px; padding:10px; text-align:center; margin:12px 0 0 12px;}'+
 			'body .m-file-new_type_video .b-file-new__link-material-filename {background: none; padding: 0;}'+
 			'body .b-files-folders .b-filelist .material-video-quality {background-color: inherit; color: inherit; cursor: default;}'+
 			'body .b-filelist .folder-filelist, .filelist m-current {display: none}'+
