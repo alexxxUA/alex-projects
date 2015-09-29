@@ -113,6 +113,7 @@ function Proxy(params){
 	//Custom init
 	this.init();
 }
+Proxy.prototype.init = function(){}
 Proxy.prototype.initParams = function(params){
 	for(var param in params){
 		if (params.hasOwnProperty(param))
