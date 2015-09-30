@@ -1,1 +1,1 @@
-(Get-Content C:\Users\kucya\AppData\Roaming\ACEStream\player\lua\http\.hosts) | ForEach-Object { $_ -replace "#192.168", "192.168" } | Set-Content C:\Users\kucya\AppData\Roaming\ACEStream\player\lua\http\.hosts
+(Get-Content C:\Users\%USERNAME%\AppData\Roaming\ACEStream\player\lua\http\.hosts) | ForEach-Object { $_ -replace "#192.168", "192.168" } | Set-Content C:\Users\%USERNAME%\AppData\Roaming\ACEStream\player\lua\http\.hosts
