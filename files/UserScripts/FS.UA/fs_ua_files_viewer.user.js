@@ -172,7 +172,7 @@ Proxy.prototype.hideLoader = function(){
 Proxy.prototype.setLoaderPos = function(e){
 	var position = {
 		'top' : e.pageY - $(window).scrollTop(),
-		'left' : e.pageX
+		'left' : e.pageX - $(window).scrollLeft()
 	}
 
 	this.$ajaxLoader.css(position);
@@ -311,6 +311,9 @@ var FS = new Proxy({
 					'.b-poster-detail__title,'+
 					'.b-main__top-commentable-item-title-value',
 	playBtnClass: 'play-btn',
+	$head: $('head'),
+	//cssArray: ['//vjs.zencdn.net/5.0.0/video-js.css'],
+	//jsArray: ['//vjs.zencdn.net/5.0.0/video.js'],
 	videoWidth: 900,
 	isBrowserProxy: true,
 	slideTime: 200,
@@ -322,7 +325,9 @@ var FS = new Proxy({
     fsBasePath: location.pathname +'?ajax&',
     fsFilmBaseUrl: '',
     init: function(){
-        var that = this;
+		//Load css and js files
+		this.loadCss();
+		this.loadJs();
         
 		//Store base content url
         this.fsFilmBaseUrl = this.fsDomain + this.fsBasePath;
@@ -366,8 +371,20 @@ var FS = new Proxy({
 			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 100; width: 35px; height: 35px;}'+
 			'.rutor-poster-link + .rutor-poster-link {top: 30px;}'
 		);
-        $('head').append($styles);
+        this.$head.append($styles);
     },
+	loadCss: function(){
+		var cssArray = typeof this.cssArray != 'undefined' ? this.cssArray : [];
+
+		for(var i=0; i<cssArray.length; i++)
+			this.$head.append('<link rel="stylesheet" href="'+ cssArray[i] +'">');
+	},
+	loadJs: function(){
+		var jsArray = typeof this.jsArray != 'undefined' ? this.jsArray : [];
+
+		for(var i=0; i<jsArray.length;  i++)
+			this.$head.append('<script src="'+ jsArray[i] +'"><\/script>');
+	},
 	getPlayBtnNode: function(url){
 		return '<a class="'+ this.playBtnClass +'" href="'+ url +'" title="Play">Play</a>';
 	},
