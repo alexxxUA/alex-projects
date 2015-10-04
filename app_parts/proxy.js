@@ -73,8 +73,9 @@ var Proxy = {
 		var sources = [].slice.call(arguments, 1);
 
 		sources.forEach(function (source) {
-			for (var prop in source) {
-				target[prop] = source[prop];
+			var unlinkedSource = JSON.parse(JSON.stringify(source));
+			for (var prop in unlinkedSource){
+				target[prop] = unlinkedSource[prop];
 			}
 		});
 		return target;
@@ -103,10 +104,8 @@ var Proxy = {
 		}
 
 		needle.request(req.query.type, req.query.url, req.query.data, options, function(err, resp) {
-			var respHeaders = that.extendObj({}, that.respHeaders);
-
 			if (err || resp.statusCode == 404 || resp.statusCode == 500){
-				res.header(respHeaders).status(500).send(req.query.url);
+				res.header(that.respHeaders).status(500).send(req.query.url);
 				return;
 			}
 
@@ -114,7 +113,7 @@ var Proxy = {
 				mode: 'html'
 			});
 
-			res.header(that.extendObj(respHeaders, {				
+			res.header(that.extendObj({}, that.respHeaders, {				
 				'Content-Weight': resp.headers['content-length'],
 				'Last-Modified': resp.headers['last-modified'],
 				'Redirect-To': decodeURIComponent(resp.headers['location'])

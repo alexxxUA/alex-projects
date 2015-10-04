@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      5
+// @version      5.1
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
@@ -331,11 +331,17 @@ var FS = new Proxy({
         
 		//Store base content url
         this.fsFilmBaseUrl = this.fsDomain + this.fsBasePath;
+		this.isShowFiles = $(this.mainFilesSel).length != 0 && $('.b-files-folders-link').length == 0;
+
+        this.addCustomStyles();
+        this.showRutorLinks();
+		
+		//Do not run showing folder in case file's placeholder not found or folders not hidden
+		if(!this.isShowFiles)
+			return;
 
 		this.registerEvents();
-        this.addCustomStyles();
 		this.showFirstFolder();
-        this.showRutorLinks();
     },
     registerEvents: function(){
 		//Show folder content
@@ -448,10 +454,6 @@ var FS = new Proxy({
 	},
 	showFirstFolder: function(){
 		var that = this;
-		
-		//Do not run showing folder in case file's placeholder not found
-        if($(that.mainFilesSel).length == 0)
-            return;
 
 		that.getFolderHtml({
 			id: '0',
