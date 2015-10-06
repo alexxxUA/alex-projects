@@ -12,18 +12,21 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	$scope.room = $location.hash();
 	$scope.myName = localStorage.myName || '';
 	$scope.isLogget = $scope.myName ? true : false;
+	$scope.historySize = 200;
 	$scope.local = null;
 	$scope.peers = {};
 	$scope.msgs = [];
+	$scope.urlRegExp = /((https?:\/\/|ftp:\/\/).*?[a-z_\/0-9\-\#=&])(?=(\.|,|;|\?|\!)?("|'|«|»|\[|\s|\r|\n|$))/mig;
 	$scope.init = function(){
 		DetectRTC.load(function(){
-		//Update WebCam and Mic support
+			//Update WebCam and Mic support
 			$timeout(function () {
 				$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
 				$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
 			});
 		});
 		$scope.registerEvents();
+		$scope.loadChatHistory();
 	};
 	$scope.registerEvents = function(){
 		//Track if window close within session
@@ -57,6 +60,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		}
 	};
 	$scope.onTabClose = function(){
+		$scope.saveChatHistory();
 		if($scope.local)
 			return 'You want to leave the room?';
 	};
@@ -83,9 +87,9 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		});
 	};
 	$scope.pushMsg = function (msg){
-		var msg = $scope.parseMsg(msg);
+		var trustedMsg = $scope.getTrustedMsgs([msg]);
 		
-		$scope.msgs.push(msg);
+		$scope.msgs.push(trustedMsg[0]);
 	};
 	$scope.msgReceived = function(msg){
 		$scope.pushMsg(msg);
@@ -111,6 +115,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		}
 	};
 	$scope.leave = function () {
+		$scope.saveChatHistory();
 		comm.leave();
 		$scope.peers = {};
 		$scope.local = null;
@@ -119,6 +124,27 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		var peerToSave = {};
 		peerToSave[peer.ID] = peer;
 		angular.extend($scope.peers, peerToSave);
+	};
+	$scope.saveChatHistory = function(){
+		var copyMsgs = JSON.parse(JSON.stringify($scope.msgs)),
+			slicedMsgs = copyMsgs.slice(-$scope.historySize);
+
+		angular.forEach(slicedMsgs, function(val, key){
+			delete val.$$hashKey;
+			delete val.trustMsg;
+		});
+
+		localStorage['roomHistory#'+ $scope.room] = JSON.stringify(slicedMsgs);
+	};
+	$scope.loadChatHistory = function(){
+		var chatHistory = localStorage['roomHistory#'+ $scope.room];
+
+		//Return if chat history not found 
+		if(typeof chatHistory == 'undefined')
+			return;
+		
+		chatHistory = JSON.parse(chatHistory);
+		$scope.msgs = $scope.getTrustedMsgs(chatHistory);
 	};
 	$scope.getTrustStream = function (peer) {
 		if(peer.stream)
@@ -130,10 +156,18 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		}
 		return peer;
 	};
-	$scope.parseMsg = function(msg){
-		msg.trustMsg = $sce.trustAsHtml(msg.msg.replace(/\n/gm, '<br>'));
+	$scope.getParsedMsg = function (msg) {
+		//Replace links
+		msg = msg.replace($scope.urlRegExp, '<a href="$1" target="_blank">$1</a>');
 		
 		return msg;
+	};
+	$scope.getTrustedMsgs = function (msgs) {
+		angular.forEach(msgs, function(val, key){
+			val.trustMsg = $sce.trustAsHtml(val.msg.replace(/\n/gm, '<br>'));
+		});
+
+		return msgs;
 	};
 	$scope.sendData = function (data, type, ID) {
 		var sendData = angular.extend({}, {
@@ -148,12 +182,14 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		if(!$scope.sendMsgForm.$valid)
 			return;
 		
-		var msg = {
-			name: $scope.myName,
-			ID: $scope.local.ID,
-			msg: $scope.msg,
-			time: new Date().getTime()
-		}
+		var parsedMsg = $scope.getParsedMsg($scope.msg),
+			msg = {
+				name: $scope.myName,
+				ID: $scope.local.ID,
+				msg: parsedMsg,
+				time: new Date().getTime()
+			};
+
 		//Save msg
 		$scope.pushMsg(msg);
 		//Send msg

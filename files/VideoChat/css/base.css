@@ -339,12 +339,13 @@ video {
 .msg-item .msg {
   display: block;
   position: relative;
+  word-break: break-word;
   margin: 0 65px 0 115px;
   padding: 4px 8px;
   color: #FFF;
   background: #6989DF;
   border-radius: 5px; }
-/* line 338, ../scss/_global.scss */
+/* line 339, ../scss/_global.scss */
 .msg-item .msg:before {
   content: '';
   position: absolute;
@@ -356,6 +357,13 @@ video {
   border-bottom: 6px solid transparent;
   border-right: 6px solid #6989DF; }
 /* line 350, ../scss/_global.scss */
+.msg-item .msg a {
+  color: #FFF;
+  text-decoration: underline; }
+/* line 354, ../scss/_global.scss */
+.msg-item .msg a:hover {
+  text-decoration: none; }
+/* line 359, ../scss/_global.scss */
 .msg-item .time {
   width: 50px;
   position: absolute;
@@ -364,13 +372,13 @@ video {
   padding: 4px 8px;
   text-align: right; }
 
-/* line 361, ../scss/_global.scss */
+/* line 370, ../scss/_global.scss */
 .local-msg .name {
   display: none; }
-/* line 364, ../scss/_global.scss */
+/* line 373, ../scss/_global.scss */
 .local-msg .msg {
   background: #5BC0DE; }
-/* line 367, ../scss/_global.scss */
+/* line 376, ../scss/_global.scss */
 .local-msg .msg:before {
   left: auto;
   right: -6px;
@@ -378,57 +386,57 @@ video {
   border-left: 6px solid #5BC0DE; }
 
 @media (max-width: 991px) {
-  /* line 377, ../scss/_global.scss */
+  /* line 386, ../scss/_global.scss */
   .chat-stream-container, .my-stream-container {
     width: auto; }
 
-  /* line 381, ../scss/_global.scss */
+  /* line 390, ../scss/_global.scss */
   .my-stream-container {
     padding: 10px; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-1 .video-wrap {
     width: 100%; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-2 .video-wrap {
     width: 50%; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-3 .video-wrap {
     width: 50%; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-4 .video-wrap {
     width: 50%; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-5 .video-wrap {
     width: 50%; }
 
-  /* line 393, ../scss/_global.scss */
+  /* line 402, ../scss/_global.scss */
   .peers-6 .video-wrap {
     width: 50%; } }
 @media (max-width: 737px) {
-  /* line 402, ../scss/_global.scss */
+  /* line 411, ../scss/_global.scss */
   .main-wrap.logged.chat-open .videos-container {
     width: 100%; }
-  /* line 405, ../scss/_global.scss */
+  /* line 414, ../scss/_global.scss */
   .main-wrap.logged.chat-open .chat-container {
     right: 1%; }
 
-  /* line 410, ../scss/_global.scss */
+  /* line 419, ../scss/_global.scss */
   .chat-trigger {
     position: fixed;
     right: 0px;
     bottom: 10px; }
 
-  /* line 415, ../scss/_global.scss */
+  /* line 424, ../scss/_global.scss */
   .chat-container {
     width: 98%;
     right: -98%; }
 
-  /* line 420, ../scss/_global.scss */
+  /* line 429, ../scss/_global.scss */
   .chat-login {
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;

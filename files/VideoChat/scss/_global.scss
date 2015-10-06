@@ -329,6 +329,7 @@ $msgColor: #6989DF;
 	.msg {
 		display: block;
 		position: relative;
+		word-break: break-word;
 		margin: 0 $timeWidth+15px 0 $nameWidth+15px;
 		padding: $msgItemPadding;
 		color: #FFF;
@@ -345,6 +346,14 @@ $msgColor: #6989DF;
 			border-top: $arrowSize solid transparent;
 			border-bottom: $arrowSize solid transparent;
 			border-right: $arrowSize solid $msgColor;
+		}
+		a {
+			color: #FFF;
+			text-decoration: underline;
+			
+			&:hover {
+				text-decoration: none;
+			}
 		}
 	}
 	.time {
