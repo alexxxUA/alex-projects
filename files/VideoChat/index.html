@@ -43,7 +43,7 @@
 					</div>
 					<div class="chat-msgs" scroll-glue-bottom>
 						<ul class="msgs-list">
-							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.ID == local.ID}">
+							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isOwn}">
 								<span class="name">{{itemMsg.name}}</span>
 								<span class="msg" ng-bind-html="itemMsg.trustMsg"></span>
 								<span class="time">{{itemMsg.time | date : 'HH:mm'}}</span>

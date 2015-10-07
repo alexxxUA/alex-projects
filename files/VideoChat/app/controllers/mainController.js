@@ -184,16 +184,18 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		
 		var parsedMsg = $scope.getParsedMsg($scope.msg),
 			msg = {
+				isOwn: false,
 				name: $scope.myName,
 				ID: $scope.local.ID,
 				msg: parsedMsg,
 				time: new Date().getTime()
 			};
 
-		//Save msg
-		$scope.pushMsg(msg);
 		//Send msg
 		$scope.sendData(msg, 'msg');
+		//Save msg
+		msg.isOwn = true;
+		$scope.pushMsg(msg);
 		//Reset msg
 		$scope.msg = '';
 	};
