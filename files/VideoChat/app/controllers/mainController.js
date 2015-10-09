@@ -27,10 +27,13 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 				$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
 				$scope.isBrowserSuppWebRTC = DetectRTC.isWebRTCSupported;
 				$scope.isMacMobDevice = DetectRTC.osName == 'MacOS' && DetectRTC.isMobileDevice;
+
+				if($scope.isBrowserSuppWebRTC){
+					$scope.registerEvents();
+					$scope.loadChatHistory();
+				}
 			});
 		});
-		$scope.registerEvents();
-		$scope.loadChatHistory();
 	};
 	$scope.registerEvents = function(){
 		//Track if window close within session
