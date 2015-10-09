@@ -26,6 +26,14 @@ video {
     max-height: 100%;
     max-width: 100%;
 }
+.browser-not-supported-msg {
+	position: fixed;
+    top: 40%;
+    z-index: 5;
+    left: 5%;
+    right: 5%;
+    text-align: center;
+}
 .main-wrap {
     position: relative;
     z-index: 1;

@@ -1,6 +1,8 @@
 app.controller('ChatController', function ($scope, $location, $sce, $log, $timeout) {
 	$scope.isHasWebCam = false;
 	$scope.isHasMic = false;
+	$scope.isBrowserSuppWebRTC = true;
+	$scope.isMacMobDevice = false;
 	$scope.isNotificationAvailable = typeof Notification != 'undefined' ? true : false;
 	$scope.isNotificationEnabled = $scope.isNotificationAvailable && Notification.permission == 'granted' ? true : false;
 	$scope.isChatOpen = false;
@@ -20,9 +22,11 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	$scope.init = function(){
 		DetectRTC.load(function(){
 			//Update WebCam and Mic support
-			$timeout(function () {
+			$timeout(function(){
 				$scope.isHasWebCam = DetectRTC.hasWebcam == true ? true : false;
 				$scope.isHasMic = DetectRTC.hasMicrophone == true ? true : false;
+				$scope.isBrowserSuppWebRTC = DetectRTC.isWebRTCSupported;
+				$scope.isMacMobDevice = DetectRTC.osName == 'MacOS' && DetectRTC.isMobileDevice;
 			});
 		});
 		$scope.registerEvents();
