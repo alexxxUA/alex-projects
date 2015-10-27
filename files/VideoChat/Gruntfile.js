@@ -73,7 +73,6 @@ module.exports = function (grunt) {
                     'css/base_min.css': [
                         'css/reset.css',
                         'css/bootstrap_3.2.0.min.css',
-                        'font/Icomoon/style.css',
                         'css/base.css'
                     ]
                 }

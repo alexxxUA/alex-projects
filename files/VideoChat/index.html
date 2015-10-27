@@ -6,11 +6,40 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
 	<title>Video chat</title>
 	<link rel="shortcut icon" href="img/min/favicon.ico" type="image/x-icon">
-	<!-- <link rel="stylesheet" href="css/base_min.css"> -->
-	<link rel="stylesheet" href="css/reset.css">
-	<link rel="stylesheet" href="css/bootstrap_3.2.0.min.css">
-	<link rel="stylesheet" href="font/Icomoon/style.css">
-	<link rel="stylesheet" href="css/base.css">
+	<script>
+		var sourceLoader = {
+			isDev: location.search.split('dev=')[1] == 'true' ? true : false,
+			devCss: [
+				'css/reset.css',
+				'css/bootstrap_3.2.0.min.css',
+				'font/Icomoon/style.css',
+				'css/base.css'
+			],
+			devJs: [
+				'app/librarys/detectRTC.js',
+				'app/librarys/icecomm.js',
+				'app/librarys/angular1.3.16.min.js',
+				'app/librarys/scrollglue.js',
+				'app/app.js',
+				'app/controllers/mainController.js',
+				'http://localhost:12345/livereload.js'
+			],
+			prodCss: ['font/Icomoon/style.css', 'css/base_min.css'],
+			prodJs: ['app/app_min.js'],
+			loadCss: function(){
+				var cssArray = this.isDev ? this.devCss : this.prodCss;
+				for(var i=0; i<cssArray.length; i++)
+					document.write('<link rel="stylesheet" href="'+ cssArray[i] +'">');
+			},
+			loadJs: function(){
+				var jsArray = this.isDev ? this.devJs : this.prodJs;
+				for(var i=0; i<jsArray.length;  i++)
+					document.write('<script src="'+ jsArray[i] +'"><\/script>');
+			}
+		}
+		//Load css files
+		sourceLoader.loadCss();
+	</script>
 </head>
 
 <body ng-controller="ChatController as chat">
@@ -50,7 +79,7 @@
 						</span>
 					</form>
 
-					<label class="icon-message" for="openChat" title="Show chat"></label>
+					<label class="icon-message" for="openChat" title="Show/Hide chat"></label>
 					<input type="checkbox" id="openChat" ng-model="isChatOpen" ng-checked="isChatOpen" ng-change="chatTriggerChange()">
 				</div>
 				<div class="chat-wrap">
@@ -77,26 +106,13 @@
 			</div>
 		</div>
 		<footer class="connect-bar">
-			<div class="icon-videocam btn-connect ng-hide" title="Connect to the room" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
-			<div class="icon-call btn-connect ng-hide" title="Connect to the room" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
-			<div class="icon-call_end btn-leave" title="Leave room" ng-click="leave()"></div>
+			<div class="icon-videocam btn-connect ng-hide" title="Connect to the room with video" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
+			<div class="icon-call btn-connect ng-hide" title="Connect to the room with audio" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
+			<div class="icon-call_end btn-leave" title="Leave the room" ng-click="leave()"></div>
 		</footer>
 	</div>
 	<div class="script-section">
-		<script>
-			if(location.search.split('dev=')[1] == 'true'){
-				document.write('<script src="app/librarys/detectRTC.js"><\/script>');
-				document.write('<script src="app/librarys/icecomm.js"><\/script>');
-				document.write('<script src="app/librarys/angular1.3.16.min.js"><\/script>');
-				document.write('<script src="app/librarys/scrollglue.js"><\/script>');
-				document.write('<script src="app/app.js"><\/script>');
-				document.write('<script src="app/controllers/mainController.js"><\/script>');
-				document.write('<script src="http://localhost:12345/livereload.js"><\/script>');
-			}
-			else{
-				document.write('<script src="app/app_min.js"><\/script>');
-			}
-		</script>
+		<script>sourceLoader.loadJs();</script>
 	</div>
 </body>
 
