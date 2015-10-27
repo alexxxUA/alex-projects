@@ -56,14 +56,14 @@
 			<p>Your device doesn't support web technology, which used in this app :(</p>
 			<p>We hope, that your device will start support WebRTC soon... :)</p>
 		</div>
-		
 	</div>
 	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen}">
 		<div class="main-container">
             <div class="videos-container">
             	<div class="peers-container peers-{{objectSize(peers)}}">
             	    <div class="video-wrap" ng-repeat="(key, value) in peers">
-						<video autoplay ng-src="{{peers[key].trustStream}}"></video>
+                        <video autoplay id="video-{{key}}" ng-src="{{peers[key].trustStream}}"></video>
+                        <!--<div class="icon-mic mute" ng-class="{'muted': peers[key].isMuted}" ng-click="muteToggle(key)"></div>-->
 					</div>
 				</div>
 				<div class="my-stream-container">

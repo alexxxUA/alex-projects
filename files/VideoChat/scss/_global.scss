@@ -163,9 +163,42 @@ video {
         height: 100%;
     }
     .video-wrap {
+        position: relative;
         display: inline-block;
         text-align: center;    
-        padding: 0 10px 10px;
+        padding: 0 15px 10px;
+    }
+}
+$muteSize: 30;
+.mute {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: - ($muteSize / 2) + px;
+    padding-bottom: 3px;
+    font-size: $muteSize + px;
+    color: #D83C3C;
+    overflow: hidden;
+    cursor: pointer;
+    
+    &:before {
+        position: relative;
+        z-index: 1;
+        vertical-align: middle;
+    }
+    &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 50%;
+        background: #000;
+        opacity: .5;
+    }
+    &.muted:before {
+        content: '\e011';
     }
 }
 //Peers grid

@@ -127,8 +127,15 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		$scope.peers = {};
 		$scope.local = null;
 	};
+    $scope.muteToggle = function(peerId){
+        var video = document.getElementById('video-'+ peerId);
+
+        video.muted = !$scope.peers[peerId].isMuted;
+        $scope.peers[peerId].isMuted = !$scope.peers[peerId].isMuted;
+    };
 	$scope.savePeer = function(peer){
 		var peerToSave = {};
+        peer.isMuted = false;
 		peerToSave[peer.ID] = peer;
 		angular.extend($scope.peers, peerToSave);
 	};
