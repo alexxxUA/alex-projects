@@ -20,7 +20,7 @@
 				{}
 			],
 			"properties": {
-				"order": 14,
+				"order": 7,
 				"id": 1,
 				"prevSize": 24,
 				"code": 57345,
@@ -50,7 +50,7 @@
 				{}
 			],
 			"properties": {
-				"order": 4,
+				"order": 1,
 				"id": 15,
 				"prevSize": 24,
 				"code": 57359,
@@ -80,7 +80,7 @@
 				{}
 			],
 			"properties": {
-				"order": 5,
+				"order": 2,
 				"id": 17,
 				"prevSize": 24,
 				"code": 57361,
@@ -110,7 +110,7 @@
 				{}
 			],
 			"properties": {
-				"order": 16,
+				"order": 8,
 				"id": 46,
 				"prevSize": 24,
 				"code": 57390,
@@ -140,7 +140,7 @@
 				{}
 			],
 			"properties": {
-				"order": 7,
+				"order": 3,
 				"id": 63,
 				"prevSize": 24,
 				"code": 57407,
@@ -170,7 +170,7 @@
 				{}
 			],
 			"properties": {
-				"order": 8,
+				"order": 4,
 				"id": 64,
 				"prevSize": 24,
 				"code": 57408,
@@ -200,7 +200,7 @@
 				{}
 			],
 			"properties": {
-				"order": 13,
+				"order": 6,
 				"id": 83,
 				"prevSize": 24,
 				"code": 57427,
@@ -214,16 +214,16 @@
 		{
 			"icon": {
 				"paths": [
-					"M938 170v768l-170-170h-598q-34 0-59-26t-25-60v-512q0-34 25-59t59-25h684q34 0 59 25t25 59z"
+					"M726 470v-86h-86v86h86zM554 470v-86h-84v86h84zM384 470v-86h-86v86h86zM854 86q34 0 59 25t25 59v512q0 34-25 60t-59 26h-598l-170 170v-768q0-34 25-59t59-25h684z"
 				],
 				"attrs": [
 					{}
 				],
 				"isMulticolor": false,
 				"tags": [
-					"mode_comment"
+					"textsms"
 				],
-				"defaultCode": 57581,
+				"defaultCode": 57441,
 				"grid": 24
 			},
 			"attrs": [
@@ -231,15 +231,45 @@
 			],
 			"properties": {
 				"order": 9,
-				"id": 237,
+				"id": 97,
 				"prevSize": 24,
-				"code": 57581,
-				"name": "mode_comment",
-				"ligatures": "mode_comment"
+				"code": 57441,
+				"name": "textsms",
+				"ligatures": "textsms"
 			},
 			"setIdx": 0,
 			"setId": 5,
-			"iconIdx": 237
+			"iconIdx": 97
+		},
+		{
+			"icon": {
+				"paths": [
+					"M86 896v-298l640-86-640-86v-298l896 384z"
+				],
+				"attrs": [
+					{}
+				],
+				"isMulticolor": false,
+				"tags": [
+					"send"
+				],
+				"defaultCode": 57479,
+				"grid": 24
+			},
+			"attrs": [
+				{}
+			],
+			"properties": {
+				"order": 10,
+				"id": 135,
+				"prevSize": 24,
+				"code": 57479,
+				"name": "send",
+				"ligatures": "send"
+			},
+			"setIdx": 0,
+			"setId": 5,
+			"iconIdx": 135
 		}
 	],
 	"height": 1024,

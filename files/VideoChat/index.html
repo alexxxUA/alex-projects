@@ -42,7 +42,7 @@
 				</div>
             </div>
 			<div class="chat-container">
-				<div class="chat-trigger" ng-class="{'unread' : isUnreadMsg, 'show-login' : isShowLogin}">
+				<div class="chat-trigger" ng-class="{'unread' : isUnreadMsg && !isChatOpen, 'show-login' : isShowLogin}">
 					<form name="chatForm" class="chat-login input-group" ng-submit="login()">
 						<input type="text" class="form-control" placeholder="Your name for chat" ng-model="myName" required>
 						<span class="input-group-btn">
@@ -70,7 +70,7 @@
 						<textarea type="text" class="form-control" ng-attr-placeholder="Dear {{myName}}, type your message here..." required 
 							ng-model="msg" ng-keyup="onMsgKeyUp($event)"></textarea>
 						<span class="input-group-btn">
-							<button class="btn btn-info" type="submit">Send</button>
+							<button class="btn btn-info icon-send" type="submit" title="Send message"></button>
 						</span>
 					</form>
 				</div>

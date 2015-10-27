@@ -1,15 +1,15 @@
 @font-face {
 	font-family: 'icomoon';
-	src:url('fonts/icomoon.eot?ahfn8u');
-	src:url('fonts/icomoon.eot?ahfn8u#iefix') format('embedded-opentype'),
-		url('fonts/icomoon.ttf?ahfn8u') format('truetype'),
-		url('fonts/icomoon.woff?ahfn8u') format('woff'),
-		url('fonts/icomoon.svg?ahfn8u#icomoon') format('svg');
+	src:url('fonts/icomoon.eot?6v63hb');
+	src:url('fonts/icomoon.eot?6v63hb#iefix') format('embedded-opentype'),
+		url('fonts/icomoon.ttf?6v63hb') format('truetype'),
+		url('fonts/icomoon.woff?6v63hb') format('woff'),
+		url('fonts/icomoon.svg?6v63hb#icomoon') format('svg');
 	font-weight: normal;
 	font-style: normal;
 }
 
-[class^="icon-"]:before, [class*=" icon-"]:before {
+[class^="icon-"], [class*=" icon-"] {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -44,6 +44,10 @@
 .icon-message:before {
 	content: "\e053";
 }
-.icon-mode_comment:before {
-	content: "\e0ed";
+.icon-textsms:before {
+	content: "\e061";
 }
+.icon-send:before {
+	content: "\e087";
+}
+
