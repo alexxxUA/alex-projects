@@ -9,6 +9,7 @@
 	<!-- <link rel="stylesheet" href="css/base_min.css"> -->
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/bootstrap_3.2.0.min.css">
+	<link rel="stylesheet" href="font/Icomoon/style.css">
 	<link rel="stylesheet" href="css/base.css">
 </head>
 
@@ -49,7 +50,7 @@
 						</span>
 					</form>
 
-					<label for="openChat" title="Show chat">Chat</label>
+					<label class="icon-message" for="openChat" title="Show chat"></label>
 					<input type="checkbox" id="openChat" ng-model="isChatOpen" ng-checked="isChatOpen" ng-change="chatTriggerChange()">
 				</div>
 				<div class="chat-wrap">
@@ -76,15 +77,9 @@
 			</div>
 		</div>
 		<footer class="connect-bar">
-			<div class="btn-connect ng-hide" title="Connect to the room" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC">
-				<img src="img/min/start-video-call.png" alt="Start video call">
-			</div>
-			<div class="btn-connect ng-hide" title="Connect to the room" ng-click="connect()" ng-show="isBrowserSuppWebRTC">
-				<img src="img/min/start-call.png" alt="Start call">
-			</div>
-			<div class="btn-leave" title="Leave room" ng-click="leave()">
-				<img src="img/min/end-call.png" alt="End call">
-			</div>
+			<div class="icon-videocam btn-connect ng-hide" title="Connect to the room" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
+			<div class="icon-call btn-connect ng-hide" title="Connect to the room" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
+			<div class="icon-call_end btn-leave" title="Leave room" ng-click="leave()"></div>
 		</footer>
 	</div>
 	<div class="script-section">

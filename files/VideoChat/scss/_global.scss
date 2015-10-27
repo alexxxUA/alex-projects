@@ -68,13 +68,13 @@ video {
         }
 		&.chat-open {
 			.chat-trigger {
-				label:before{
+				label:after{
 					border-right: 0;
 					border-left: 6px solid #FFF;
 					left: auto;
 					right: 8px;
 				}
-				&.unread:before {
+				&.unread:after {
 					display: none;
 				}
 			}
@@ -89,18 +89,30 @@ video {
 }
 .btn-connect {
 	margin: 0 20px;
+
+    &:before{
+        color: #2ECC71;
+    }
+}
+.btn-leave:before {
+    color: #C0392B;
+}
+.connect-bar {
+    .icon-videocam:before,
+    .icon-call_end:before{
+        font-size: 55px;
+    }
+    .icon-call:before{
+        font-size: 45px;
+    }
 }
 .btn-connect,
 .btn-leave {
-	position: relative;
+    position: relative;
 	z-index: 1;
 	display: inline-block;
-	width: 50px;
+    vertical-align: middle;
 	cursor: pointer;
-	
-	img {
-		width: 100%;
-	}
 }
 .connect-bar {
 	position: fixed;
@@ -252,7 +264,7 @@ $chatLoginWidth: 215px;
 		text-transform: uppercase;
 		box-shadow: 0 0 1px 0px #FFF;
 		
-		&:before{
+		&:after{
 			content: '';
 			width: 0;
 			height: 0;
@@ -263,6 +275,10 @@ $chatLoginWidth: 215px;
 			top: 11px;
 			left: 8px;
 		}
+        &:before{
+            font-size: 25px;
+            vertical-align: middle;
+        }
 	}
 }
 .chat-header {

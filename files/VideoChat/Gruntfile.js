@@ -70,7 +70,12 @@ module.exports = function (grunt) {
                     banner: '/* Generated date: <%= grunt.template.today("mm-dd-yyyy") %> */\n',
                 },
                 files: {
-                    'css/base_min.css': ['css/!(*_min.css)*.css']
+                    'css/base_min.css': [
+                        'css/reset.css',
+                        'css/bootstrap_3.2.0.min.css',
+                        'font/Icomoon/style.css',
+                        'css/base.css'
+                    ]
                 }
             }
         },
