@@ -12,6 +12,7 @@
 			devCss: [
 				'css/reset.css',
 				'css/bootstrap_3.2.0.min.css',
+				'css/animate.css',
 				'font/Icomoon/style.css',
 				'css/base.css'
 			],
@@ -57,16 +58,16 @@
 			<p>We hope, that your device will start support WebRTC soon... :)</p>
 		</div>
 	</div>
-	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen}">
+	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen, 'chat-closed': !isChatOpen}">
 		<div class="main-container">
             <div class="videos-container">
             	<div class="peers-container peers-{{objectSize(peers)}}">
-            	    <div class="video-wrap" ng-repeat="(key, value) in peers">
+            	    <div class="video-wrap animated" ng-repeat="(key, value) in peers" ng-class="{'flipInX': peers[key].isConnected, 'flipOutX': !peers[key].isConnected}">
                         <video autoplay id="video-{{key}}" ng-src="{{peers[key].trustStream}}"></video>
                         <!--<div class="icon-mic mute" ng-class="{'muted': peers[key].isMuted}" ng-click="muteToggle(key)"></div>-->
 					</div>
 				</div>
-				<div class="my-stream-container">
+				<div class="my-stream-container zoomInUp animated">
 					<video autoplay muted ng-src="{{local.trustStream}}"></video>
 				</div>
             </div>
@@ -88,7 +89,7 @@
 					</div>
 					<div class="chat-msgs" scroll-glue-bottom>
 						<ul class="msgs-list">
-							<li class="msg-item" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isOwn}">
+							<li class="msg-item bounceIn animated" ng-repeat="itemMsg in msgs" ng-class="{'local-msg' : itemMsg.isOwn}">
 								<span class="name">{{itemMsg.name}}</span>
 								<span class="msg" ng-bind-html="itemMsg.trustMsg"></span>
 								<span class="time">{{itemMsg.time | date : 'HH:mm'}}</span>
@@ -106,8 +107,8 @@
 			</div>
 		</div>
 		<footer class="connect-bar">
-			<div class="icon-videocam btn-connect ng-hide" title="Connect to the room with video" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
-			<div class="icon-call btn-connect ng-hide" title="Connect to the room with audio" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
+			<div class="icon-videocam btn-connect ng-hide slideInLeft animated" title="Connect to the room with video" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
+			<div class="icon-call btn-connect ng-hide slideInRight animated" title="Connect to the room with audio" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
 			<div class="icon-call_end btn-leave" title="Leave the room" ng-click="leave()"></div>
 		</footer>
 	</div>

@@ -54,9 +54,12 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 			});
 		});
 		comm.on('disconnect', function (peer) {
+            $timeout(function () {
+                $scope.peers[peer.ID].isConnected = false;
+            });
 			$timeout(function () {
 				delete $scope.peers[peer.ID];
-			});
+			}, 1000);
 		});
 	};
 	$scope.checkNotificationService = function (){
@@ -123,9 +126,9 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	};
 	$scope.leave = function () {
 		$scope.saveChatHistory();
+		$scope.local = null;
 		comm.leave();
 		$scope.peers = {};
-		$scope.local = null;
 	};
     $scope.muteToggle = function(peerId){
         var video = document.getElementById('video-'+ peerId);
@@ -136,6 +139,7 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 	$scope.savePeer = function(peer){
 		var peerToSave = {};
         peer.isMuted = false;
+        peer.isConnected = true;
 		peerToSave[peer.ID] = peer;
 		angular.extend($scope.peers, peerToSave);
 	};
@@ -164,8 +168,8 @@ app.controller('ChatController', function ($scope, $location, $sce, $log, $timeo
 		if(peer.stream)
 			peer.trustStream = $sce.trustAsResourceUrl(peer.stream);
 		else{
-			angular.forEach(peer, function (val, key) {
-				val.trustStream = $sce.trustAsResourceUrl(val.stream);
+			angular.forEach(peer, function (peerItem, key) {
+				peerItem.trustStream = $sce.trustAsResourceUrl(peerItem.stream);
 			});
 		}
 		return peer;

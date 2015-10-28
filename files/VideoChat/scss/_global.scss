@@ -89,12 +89,9 @@ video {
 }
 .btn-connect {
 	margin: 0 20px;
-
-    &:before{
-        color: #4DE88F;
-    }
+    color: #4DE88F;
 }
-.btn-leave:before {
+.btn-leave {
     color: #DA5446;
 }
 .connect-bar {
@@ -301,7 +298,16 @@ $chatLoginWidth: 215px;
 		line-height: 34px;
 		text-transform: uppercase;
 		box-shadow: 0 0 1px 0px #FFF;
+        
+        -moz-transition: all .1s ease-in-out;
+        -o-transition: all .1s ease-in-out;
+        -webkit-transition: all .1s ease-in-out;
+        transition: all .1s ease-in-out;
 		
+        &:hover{
+            padding-left: 30px;
+            padding-right: 30px;
+        }
 		&:after{
 			content: '';
 			width: 0;
