@@ -176,15 +176,16 @@ video {
   -webkit-align-content: center;
   align-content: center;
   -webkit-flex-wrap: wrap;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  -webkit-justify-content: center;
+  justify-content: center; }
 
-/* line 188, ../scss/_global.scss */
+/* line 189, ../scss/_global.scss */
 .video-peer-controls {
   position: relative;
-  width: 100%;
+  padding: 0 50px;
   height: 40px;
   margin-top: -40px;
-  overflow: hidden;
   opacity: 0;
   -moz-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
@@ -193,6 +194,7 @@ video {
 /* line 197, ../scss/_global.scss */
 .video-peer-controls:before {
   content: '';
+  border-radius: 15% 15% 0 0;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -200,63 +202,63 @@ video {
   right: 0;
   background: #000;
   opacity: .5; }
-/* line 207, ../scss/_global.scss */
+/* line 208, ../scss/_global.scss */
 .video-peer-controls:hover {
   opacity: 1; }
-/* line 210, ../scss/_global.scss */
+/* line 211, ../scss/_global.scss */
 .video-peer-controls > div {
   position: relative;
   z-index: 1; }
 
-/* line 216, ../scss/_global.scss */
+/* line 217, ../scss/_global.scss */
 .mute {
   font-size: 30px;
   color: #D83C3C;
   cursor: pointer;
   display: inline-block; }
-/* line 222, ../scss/_global.scss */
+/* line 223, ../scss/_global.scss */
 .mute:before {
   position: relative;
   z-index: 1;
   vertical-align: middle; }
-/* line 227, ../scss/_global.scss */
+/* line 228, ../scss/_global.scss */
 .mute.muted:before {
   content: '\e011'; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-1 .video-wrap {
   width: 100%;
   height: 100%; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-2 .video-wrap {
   width: 50%;
   height: 100%; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-3 .video-wrap {
   width: 33.33333%;
   height: 50%; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-4 .video-wrap {
   width: 33.33333%;
   height: 50%; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-5 .video-wrap {
   width: 33.33333%;
   height: 50%; }
 
-/* line 243, ../scss/_global.scss */
+/* line 244, ../scss/_global.scss */
 .peers-6 .video-wrap {
   width: 33.33333%;
   height: 50%; }
 
-/* line 248, ../scss/_global.scss */
+/* line 249, ../scss/_global.scss */
 .my-stream-container {
   height: 35%; }
-/* line 251, ../scss/_global.scss */
+/* line 252, ../scss/_global.scss */
 .my-stream-container video {
   height: 100%;
   -moz-transform: scaleX(-1);
@@ -264,7 +266,7 @@ video {
   -webkit-transform: scaleX(-1);
   transform: scaleX(-1); }
 
-/* line 256, ../scss/_global.scss */
+/* line 257, ../scss/_global.scss */
 .chat-wrap {
   border-radius: 5px;
   overflow: hidden;
@@ -272,7 +274,7 @@ video {
   height: 100%;
   position: relative; }
 
-/* line 263, ../scss/_global.scss */
+/* line 264, ../scss/_global.scss */
 .chat-container {
   width: 40%;
   position: absolute;
@@ -285,7 +287,7 @@ video {
   -webkit-transition: right 0.3s ease-in-out;
   transition: right 0.3s ease-in-out; }
 
-/* line 274, ../scss/_global.scss */
+/* line 275, ../scss/_global.scss */
 .chat-login {
   width: 215px;
   position: absolute;
@@ -299,16 +301,16 @@ video {
   -webkit-transition: right 0.3s ease-in-out;
   transition: right 0.3s ease-in-out; }
 
-/* line 285, ../scss/_global.scss */
+/* line 286, ../scss/_global.scss */
 .chat-trigger {
   position: absolute;
   z-index: 1;
   right: 100%;
   bottom: 36px; }
-/* line 291, ../scss/_global.scss */
+/* line 292, ../scss/_global.scss */
 .chat-trigger.show-login .chat-login {
   right: 0; }
-/* line 294, ../scss/_global.scss */
+/* line 295, ../scss/_global.scss */
 .chat-trigger:before {
   content: '';
   position: absolute;
@@ -328,19 +330,19 @@ video {
   -o-transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out; }
-/* line 310, ../scss/_global.scss */
+/* line 311, ../scss/_global.scss */
 .chat-trigger.unread:before {
   -moz-transform: scale(1);
   -ms-transform: scale(1);
   -webkit-transform: scale(1);
   transform: scale(1); }
-/* line 313, ../scss/_global.scss */
+/* line 314, ../scss/_global.scss */
 .chat-trigger.unread .icon-message:before {
   content: '\e061'; }
-/* line 318, ../scss/_global.scss */
+/* line 319, ../scss/_global.scss */
 .chat-trigger input {
   display: none; }
-/* line 321, ../scss/_global.scss */
+/* line 322, ../scss/_global.scss */
 .chat-trigger label {
   background: #5BC0DE;
   display: block;
@@ -357,11 +359,11 @@ video {
   -o-transition: all 0.2s ease-in-out;
   -webkit-transition: all 0.2s ease-in-out;
   transition: all 0.2s ease-in-out; }
-/* line 336, ../scss/_global.scss */
+/* line 337, ../scss/_global.scss */
 .chat-trigger label:hover {
   padding-left: 30px;
   padding-right: 30px; }
-/* line 340, ../scss/_global.scss */
+/* line 341, ../scss/_global.scss */
 .chat-trigger label:after {
   content: '';
   width: 0;
@@ -372,12 +374,12 @@ video {
   position: absolute;
   top: 11px;
   left: 8px; }
-/* line 351, ../scss/_global.scss */
+/* line 352, ../scss/_global.scss */
 .chat-trigger label:before {
   font-size: 25px;
   vertical-align: middle; }
 
-/* line 357, ../scss/_global.scss */
+/* line 358, ../scss/_global.scss */
 .chat-header {
   position: absolute;
   top: 0;
@@ -385,12 +387,12 @@ video {
   width: 100%;
   box-shadow: 0 0 1px 0px #545454;
   text-align: center; }
-/* line 365, ../scss/_global.scss */
+/* line 366, ../scss/_global.scss */
 .chat-header h4 {
   margin: 0;
   line-height: 34px; }
 
-/* line 370, ../scss/_global.scss */
+/* line 371, ../scss/_global.scss */
 .chat-msgs {
   position: absolute;
   top: 34px;
@@ -400,18 +402,18 @@ video {
   overflow-y: auto;
   padding: 5px; }
 
-/* line 379, ../scss/_global.scss */
+/* line 380, ../scss/_global.scss */
 .chat-send-msg {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%; }
-/* line 385, ../scss/_global.scss */
+/* line 386, ../scss/_global.scss */
 .chat-send-msg textarea {
   height: 70px;
   resize: none;
   border-radius: 0; }
-/* line 390, ../scss/_global.scss */
+/* line 391, ../scss/_global.scss */
 .chat-send-msg .btn {
   height: 100%;
   padding: 0 15px;
@@ -419,16 +421,16 @@ video {
   border-radius: 0;
   font-size: 20px; }
 
-/* line 405, ../scss/_global.scss */
+/* line 406, ../scss/_global.scss */
 .msgs-list {
   width: 100%; }
 
-/* line 408, ../scss/_global.scss */
+/* line 409, ../scss/_global.scss */
 .msg-item {
   position: relative;
   list-style: none;
   margin-bottom: 5px; }
-/* line 413, ../scss/_global.scss */
+/* line 414, ../scss/_global.scss */
 .msg-item .name {
   width: 100px;
   position: absolute;
@@ -442,7 +444,7 @@ video {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden; }
-/* line 427, ../scss/_global.scss */
+/* line 428, ../scss/_global.scss */
 .msg-item .msg {
   display: block;
   position: relative;
@@ -452,7 +454,7 @@ video {
   color: #FFF;
   background: #6989DF;
   border-radius: 5px; }
-/* line 437, ../scss/_global.scss */
+/* line 438, ../scss/_global.scss */
 .msg-item .msg:before {
   content: '';
   position: absolute;
@@ -463,14 +465,14 @@ video {
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
   border-right: 6px solid #6989DF; }
-/* line 448, ../scss/_global.scss */
+/* line 449, ../scss/_global.scss */
 .msg-item .msg a {
   color: #FFF;
   text-decoration: underline; }
-/* line 452, ../scss/_global.scss */
+/* line 453, ../scss/_global.scss */
 .msg-item .msg a:hover {
   text-decoration: none; }
-/* line 457, ../scss/_global.scss */
+/* line 458, ../scss/_global.scss */
 .msg-item .time {
   width: 50px;
   position: absolute;
@@ -479,13 +481,13 @@ video {
   padding: 4px 8px;
   text-align: right; }
 
-/* line 468, ../scss/_global.scss */
+/* line 469, ../scss/_global.scss */
 .local-msg .name {
   display: none; }
-/* line 471, ../scss/_global.scss */
+/* line 472, ../scss/_global.scss */
 .local-msg .msg {
   background: #5BC0DE; }
-/* line 474, ../scss/_global.scss */
+/* line 475, ../scss/_global.scss */
 .local-msg .msg:before {
   left: auto;
   right: -6px;
@@ -493,57 +495,57 @@ video {
   border-left: 6px solid #5BC0DE; }
 
 @media (max-width: 991px) {
-  /* line 484, ../scss/_global.scss */
+  /* line 485, ../scss/_global.scss */
   .chat-stream-container, .my-stream-container {
     width: auto; }
 
-  /* line 488, ../scss/_global.scss */
+  /* line 489, ../scss/_global.scss */
   .my-stream-container {
     padding: 10px; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-1 .video-wrap {
     width: 100%; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-2 .video-wrap {
     width: 50%; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-3 .video-wrap {
     width: 50%; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-4 .video-wrap {
     width: 50%; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-5 .video-wrap {
     width: 50%; }
 
-  /* line 500, ../scss/_global.scss */
+  /* line 501, ../scss/_global.scss */
   .peers-6 .video-wrap {
     width: 50%; } }
 @media (max-width: 737px) {
-  /* line 509, ../scss/_global.scss */
+  /* line 510, ../scss/_global.scss */
   .main-wrap.logged.chat-open .videos-container {
     width: 100%; }
-  /* line 512, ../scss/_global.scss */
+  /* line 513, ../scss/_global.scss */
   .main-wrap.logged.chat-open .chat-container {
     right: 1%; }
 
-  /* line 517, ../scss/_global.scss */
+  /* line 518, ../scss/_global.scss */
   .chat-trigger {
     position: fixed;
     right: 0px;
     bottom: 10px; }
 
-  /* line 522, ../scss/_global.scss */
+  /* line 523, ../scss/_global.scss */
   .chat-container {
     width: 98%;
     right: -98%; }
 
-  /* line 527, ../scss/_global.scss */
+  /* line 528, ../scss/_global.scss */
   .chat-login {
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;

@@ -183,19 +183,20 @@ video {
         @include align-items(center);
         @include align-content(center);
         @include flex-wrap(wrap);
+        @include justify-content(center);
     }
 }
 .video-peer-controls{
     position: relative;
-    width: 100%;
+    padding: 0 50px;
     height: 40px;
     margin-top: -40px;
-    overflow: hidden;
     opacity: 0;
     @include transition(all .3s ease-in-out);
     
     &:before{
         content: '';
+        border-radius: 15% 15% 0 0;
         position: absolute;
         top: 0;
         bottom: 0;
