@@ -45,7 +45,7 @@
 
 <body ng-controller="ChatController as chat">
 	<div class="alert-msgs-container">
-		<div class="browser-not-supported-msg alert alert-danger ng-hide" ng-show="!isBrowserSuppWebRTC && !isMacMobDevice">
+		<div class="browser-not-supported-msg alert alert-danger ng-hide zoomIn animated" ng-show="!isBrowserSuppWebRTC && !isMacMobDevice">
 			<p>Your browser doesn't support this Video chat application :(</p>
 			<p>In order to use this chat, you need to install one of these browsers: 
 				<a href="www.google.com/chrome/browser" class="alert-link" title="Chrome browser" target="_blank">Chrome</a>
@@ -53,18 +53,20 @@
 				<a href="www.mozilla.org/en-US/firefox/new/" class="alert-link" title="Firefox browser" target="_blank">Firefox</a>.
 			</p>
 		</div>
-		<div class="browser-not-supported-msg alert alert-danger ng-hide" ng-show="!isBrowserSuppWebRTC && isMacMobDevice">
+		<div class="browser-not-supported-msg alert alert-danger ng-hide zoomIn animated" ng-show="!isBrowserSuppWebRTC && isMacMobDevice">
 			<p>Your device doesn't support web technology, which used in this app :(</p>
 			<p>We hope, that your device will start support WebRTC soon... :)</p>
 		</div>
 	</div>
 	<div class="main-wrap" ng-class="{'connected': local.trustStream, 'logged': isLogget, 'chat-open' : isChatOpen, 'chat-closed': !isChatOpen}">
 		<div class="main-container">
-            <div class="videos-container">
+            <div class="videos-container noselect">
             	<div class="peers-container peers-{{objectSize(peers)}}">
             	    <div class="video-wrap animated" ng-repeat="(key, value) in peers" ng-class="{'flipInX': peers[key].isConnected, 'flipOutX': !peers[key].isConnected}">
                         <video autoplay id="video-{{key}}" ng-src="{{peers[key].trustStream}}"></video>
-                        <!--<div class="icon-mic mute" ng-class="{'muted': peers[key].isMuted}" ng-click="muteToggle(key)"></div>-->
+                        <div class="video-peer-controls">
+                            <div class="icon-mic mute" ng-class="{'muted': peers[key].isMuted}" ng-click="muteToggle(key)"></div>
+                        </div>
 					</div>
 				</div>
 				<div class="my-stream-container zoomInUp animated">
@@ -72,7 +74,7 @@
 				</div>
             </div>
 			<div class="chat-container">
-				<div class="chat-trigger" ng-class="{'unread' : isUnreadMsg && !isChatOpen, 'show-login' : isShowLogin}">
+				<div class="chat-trigger noselect" ng-class="{'unread' : isUnreadMsg && !isChatOpen, 'show-login' : isShowLogin}">
 					<form name="chatForm" class="chat-login input-group" ng-submit="login()">
 						<input type="text" class="form-control" placeholder="Your name for chat" ng-model="myName" required>
 						<span class="input-group-btn">
@@ -106,10 +108,10 @@
 				</div>
 			</div>
 		</div>
-		<footer class="connect-bar">
+		<footer class="connect-bar noselect">
 			<div class="icon-videocam btn-connect ng-hide slideInLeft animated" title="Connect to the room with video" ng-click="connect(true)" ng-show="isHasWebCam && isBrowserSuppWebRTC"></div>
 			<div class="icon-call btn-connect ng-hide slideInRight animated" title="Connect to the room with audio" ng-click="connect()" ng-show="isBrowserSuppWebRTC"></div>
-			<div class="icon-call_end btn-leave" title="Leave the room" ng-click="leave()"></div>
+			<div class="icon-call_end btn-leave swing animated" title="Leave the room" ng-click="leave()"></div>
 		</footer>
 	</div>
 	<div class="script-section">
