@@ -437,9 +437,9 @@ function AdminPanel(params){
 	this.aliasLineItem = _.template(
 		'<tr class="js-alias-table-item">'+
 			'<td><input type="hidden" name="alias_id" value="<%= _id %>">'+
-				'<input type="text" name="alias_url" value="<%= alias %>" data-before-edit="chat" class="js-alias-url">'+
+				'<input type="text" name="alias_url" value="<%= alias %>" data-before-edit="<%= alias %>" class="js-alias-url">'+
 			'</td><td>'+
-				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="VideoChat/index.html" class="js-alias-url alias-actual-url">'+
+				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="<%= path %>" class="js-alias-url alias-actual-url">'+
 			'</td><td class="alias-action-cont">'+
 				'<input type="button" value="Edit" class="js-alias-edid btn btn-xs btn-success">'+
 				'<input type="button" value="Remove" class="js-alias-remove btn btn-xs btn-danger">'+
@@ -474,12 +474,14 @@ AdminPanel.prototype.registerEvents = function(){
 AdminPanel.prototype.aliasInputBlur = function(e){
 	var $this = $(e.currentTarget),
 		$lineItem = $this.closest(this.aliasLineItemSel),
-		defaultValue = $this.data('before-edit'),
+		defaultValue = $this.attr('data-before-edit'),
 		curValue = $this.val(),
+		isEmpty = curValue == '',
 		isChanged = defaultValue !== curValue;
 
 	$this.toggleClass('changed', isChanged);
-	$lineItem.toggleClass('changed', !!(isChanged || $lineItem.find('.changed').length));
+	$this.toggleClass('empty', isEmpty);
+	$lineItem.toggleClass('changed', (isChanged || !!$lineItem.find('.changed').length) && !isEmpty && !$lineItem.find('.empty').length);
 }
 AdminPanel.prototype.getContextData = function($context){
 	var $elems = $context.find('[name]'),
@@ -509,6 +511,10 @@ AdminPanel.prototype.editAlias = function(e){
 		data: data,
 		success: function(res){
 			navigation.hideLoader();
+		},
+		error: function(err){
+			navigation.hideLoader();
+			console.log(err);
 		}
 	});
 }
@@ -526,6 +532,10 @@ AdminPanel.prototype.removeAlias = function(e){
 		success: function(res){
 			$lineItem.remove();
 			navigation.hideLoader();
+		},
+		error: function(err){
+			navigation.hideLoader();
+			console.log(err);
 		}
 	});
 }
@@ -540,12 +550,15 @@ AdminPanel.prototype.forceGeneratePlaylist = function(e){
 	e.preventDefault();
 	var $this = $(e.currentTarget);
 
+	navigation.showLoader();
 	$.ajax({
 		url: $this.attr('href'),
 		success: function(res){
+			navigation.hideLoader();
 			alert('Generation of playlists started!');
 		},
 		error: function(err){
+			navigation.hideLoader();
 			alert('Generation of playlists failed!');
 		}
 	})
@@ -757,6 +770,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 	e.preventDefault();
 
 	var $form = $(this),
+		$inputs = $form.find('input:not([type="submit"]), textarea'),
 		formAction = $form.attr('action'),
 		formData = $form.serialize(),
 		formBeforeSend = $form.attr('ajax-before'),
@@ -781,6 +795,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 				executeFunctionByName(formBeforeSend, window, xhr, opts, $form);
 		},
 		success: function(res) {
+			$inputs.val('');
 			navigation.hideLoader();
 			if(typeof formSuccess !== 'undefined' && formSuccess.length)
 				executeFunctionByName(formSuccess, window, res, $form);

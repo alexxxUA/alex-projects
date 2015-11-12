@@ -12,7 +12,8 @@ html
 	body(class= user && user.isLogged == true ? 'user-logged' : '')
 		#section-container
 			#header
-				h1=mainTitle
+				h1
+					a(href="/", title="Go to home page")=mainTitle
 				block facebookLogin
 			#content(class='clearfix')
 				#dynamicContent
