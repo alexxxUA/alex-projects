@@ -378,6 +378,9 @@ to { color: #92F099; }
     .panel-heading{
         padding: 10px;
     }
+    #errorPage h1 {
+        font-size: 70px;
+    }
 }
 .js-upload-section .panel{
 	position: relative;
