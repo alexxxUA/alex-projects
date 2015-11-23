@@ -9,6 +9,7 @@ var	express	= require('express'),
 global.filesP = path.join(__dirname, 'files');
 
 var cf = require('./config/config.js'),
+	aliases = require('./app_parts/setRouteAliases.js'),
 	routes = require('./app_parts/routes.js'),
 	playlist = require('./app_parts/playListUpdater.js');
 
@@ -30,14 +31,17 @@ app.set('views', path.join(__dirname, 'views'));
 //set path to static files
 app.use(express.static(path.join(__dirname, 'static'), {maxAge: cf.oneDay}));
 
-//Init Explorer app and routes
-routes.init(app);
+//Init aliases
+aliases.init(app, function(){
+    //Init Explorer app and routes
+    routes.init(app);
+});
 
 //Init playlist updater
 playlist.init();
 
 //listen server
-app.listen(cf.port, cf.ip, function(err){
+app.listen(cf.port, 'localhost', function(err){
 	if(err) throw error;
 
 	console.log('Server started on: '+ cf.ip +':'+ cf.port);

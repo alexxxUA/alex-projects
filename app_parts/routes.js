@@ -7,7 +7,7 @@ var mime = require('mime'),
 	cf = require('./../config/config.js'),
 	auth = require('./auth.js'),
 	read = require('./readFileFolder.js'),
-	User = require('./user.js'),
+	User = require('./user_schema.js'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js');
 

@@ -1,5 +1,5 @@
 var fbParser = require('fb-signed-parser'),
-	User = require('./user.js'),
+	User = require('./user_schema.js'),
 	cf = require('./../config/config.js');
 
 var auth = {

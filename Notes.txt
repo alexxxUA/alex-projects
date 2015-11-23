@@ -1,0 +1,6 @@
+Update Mongo DB:
+
+    Set admin flag:
+        mongo
+        use explorer
+        db.users.update({'email': 'aluaex@gmail.com'}, {$set: {isAdmin: true}})
