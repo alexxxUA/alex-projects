@@ -426,23 +426,23 @@ FileExplorer.prototype.deleted = function(request, $form){
 /* ADMIN CLASS */
 function AdminPanel(params){
 	this.forceGenerSel = '.js-force-generate-playlists';
-	this.aliasInputSel = '.js-alias-url';
-	this.aliasLineItemSel = '.js-alias-table-item';
-	this.aliasEditSel = '.js-alias-edid';
-	this.aliasRemoveSel = '.js-alias-remove';
-
-	this.removeAliasUrl = '/removeAlias';
-	this.updateAliasUrl = '/updateAlias';
+    this.aliasTableSel = '.js-alias-table';
+    this.usersTableSel = '.js-users-table';
+	this.onInputChangeSel = '.js-input-change';
+    this.dataHolderSel = '.js-data-holder';
+	this.dataLineItemSel = '.js-data-line-item';
+	this.dataEditSel = '.js-data-edid';
+	this.dataRemoveSel = '.js-data-remove';
 
 	this.aliasLineItem = _.template(
-		'<tr class="js-alias-table-item">'+
+		'<tr class="'+ this.dataLineItemSel.slice(1) +' table-action-cell">'+
 			'<td><input type="hidden" name="alias_id" value="<%= _id %>">'+
-				'<input type="text" name="alias_url" value="<%= alias %>" data-before-edit="<%= alias %>" class="js-alias-url">'+
+				'<input type="text" name="alias_url" value="<%= alias %>" data-before-edit="<%= alias %>" class="'+ this.onInputChangeSel.slice(1) +'">'+
 			'</td><td>'+
-				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="<%= path %>" class="js-alias-url alias-actual-url">'+
+				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="<%= path %>" class="'+ this.onInputChangeSel.slice(1) +' alias-actual-url">'+
 			'</td><td class="alias-action-cont">'+
-				'<input type="button" value="Edit" class="js-alias-edid btn btn-xs btn-success">'+
-				'<input type="button" value="Remove" class="js-alias-remove btn btn-xs btn-danger">'+
+				'<input type="button" value="Edit" class="'+ this.dataEditSel.slice(1) +' btn btn-xs btn-success">'+
+				'<input type="button" value="Remove" class="'+ this.dataRemoveSel.slice(1) +' btn btn-xs btn-danger">'+
 			'</td>'+
 		'</tr>');
 
@@ -465,15 +465,15 @@ AdminPanel.prototype.registerEvents = function(){
 	//Generate playlist
 	$(document).on('click', this.forceGenerSel, $.proxy(this.forceGeneratePlaylist, this));
 	//On edit alias
-	$(document).on('keyup blur', this.aliasInputSel, $.proxy(this.aliasInputBlur, this));
+	$(document).on('keyup blur', this.onInputChangeSel, $.proxy(this.dataInputBlur, this));
 	//Edit alias
-	$(document).on('click', this.aliasEditSel, $.proxy(this.editAlias, this));
+	$(document).on('click', this.dataEditSel, $.proxy(this.editData, this));
 	//Remove alias
-	$(document).on('click', this.aliasRemoveSel, $.proxy(this.removeAlias, this));
+	$(document).on('click', this.dataRemoveSel, $.proxy(this.removeData, this));
 }
-AdminPanel.prototype.aliasInputBlur = function(e){
+AdminPanel.prototype.dataInputBlur = function(e){
 	var $this = $(e.currentTarget),
-		$lineItem = $this.closest(this.aliasLineItemSel),
+		$lineItem = $this.closest(this.dataLineItemSel),
 		defaultValue = $this.attr('data-before-edit'),
 		curValue = $this.val(),
 		isEmpty = curValue == '',
@@ -494,20 +494,21 @@ AdminPanel.prototype.getContextData = function($context){
 	});
 	return data;
 }
-AdminPanel.prototype.getAliasLineData = function(e){
+AdminPanel.prototype.getLineData = function(e){
 	var $this = $(e.currentTarget),
-		$lineItem = $this.closest(this.aliasLineItemSel);
+		$lineItem = $this.closest(this.dataLineItemSel);
 	
 	return this.getContextData($lineItem);
 }
-AdminPanel.prototype.editAlias = function(e){
-	var data = this.getAliasLineData(e);
+AdminPanel.prototype.editData = function(e){
+	var data = this.getLineData(e),
+        url = this.getHolderDataAttr(e, 'edit-url');
 	
 	navigation.showLoader();
 
 	$.ajax({
 		type: 'GET',
-		url: this.updateAliasUrl,
+		url: url,
 		data: data,
 		success: function(res){
 			navigation.hideLoader();
@@ -518,16 +519,22 @@ AdminPanel.prototype.editAlias = function(e){
 		}
 	});
 }
-AdminPanel.prototype.removeAlias = function(e){
+
+AdminPanel.prototype.getHolderDataAttr = function(e, dataType){
+    return $(e.currentTarget).closest(this.dataHolderSel).data(dataType);
+}
+
+AdminPanel.prototype.removeData = function(e){
 	var $this = $(e.currentTarget),
-		$lineItem = $this.closest(this.aliasLineItemSel),
-		data = this.getAliasLineData(e);
+		$lineItem = $this.closest(this.dataLineItemSel),
+        url = this.getHolderDataAttr(e, 'remove-url'),
+		data = this.getLineData(e);
 	
 	navigation.showLoader();
 
 	$.ajax({
 		type: 'GET',
-		url: this.removeAliasUrl,
+		url: url,
 		data: data,
 		success: function(res){
 			$lineItem.remove();
@@ -542,7 +549,7 @@ AdminPanel.prototype.removeAlias = function(e){
 AdminPanel.prototype.addAlias = function(res, $form){
 	var that = adminPanel,
 		newAlias = that.aliasLineItem(res),
-		$lastAliasItem = $(that.aliasLineItemSel).last();
+		$lastAliasItem = $(that.aliasTableSel +' '+ that.dataLineItemSel).last();
 
 	$lastAliasItem.after(newAlias);
 }
@@ -628,7 +635,7 @@ var Tmpl = {
 
         updateSection($context);
         $params.each(function(){
-            updateSection(jQuery(this));
+            updateSection($(this));
         });
     }
 }
@@ -742,7 +749,7 @@ var Validator = {
 }
 
 //RegExp selector
-jQuery.expr[':'].regex = function(elem, index, match) {
+$.expr[':'].regex = function(elem, index, match) {
     var matchParams = match[3].split(','),
         validLabels = /^(data|css):/,
         attr = {
@@ -751,7 +758,7 @@ jQuery.expr[':'].regex = function(elem, index, match) {
         },
         regexFlags = 'ig',
         regex = new RegExp(matchParams.join('').replace(/^\s+|\s+$/g,''), regexFlags);
-    return regex.test(jQuery(elem)[attr.method](attr.property));
+    return regex.test($(elem)[attr.method](attr.property));
 }
 
 //Execute function from string

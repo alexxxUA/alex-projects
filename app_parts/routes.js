@@ -124,6 +124,14 @@ function init(app){
 			res.send();
 		});
 	});
+    
+    app.get('/removeUser', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		User.findByIdAndRemove(req.query.user_id, function(err){
+			if(err) throw err;
+
+			res.send();
+		});
+	});
 	
 	app.get('/updateAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		Aliases.findOne({alias: req.query.alias_url}, function(err, result){
@@ -145,6 +153,17 @@ function init(app){
 				});
 			}
 		});
+	});
+    
+    app.get('/updateUser', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+        User.findById(req.query.user_id, function(err, user){
+            if(err) throw err;
+
+            user.isAdmin = req.query.user_isadmin;
+            user.save();
+
+            res.send();
+        });
 	});
 	
 	app.get('/addAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
