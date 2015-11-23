@@ -30,6 +30,8 @@ th{
     font: bold 20px arial;
     text-align: center;
     margin: 0;
+    position: relative;
+    z-index: 1;
 }
 #content{
     padding: 0 50px 50px;
@@ -369,6 +371,13 @@ to { color: #92F099; }
 	.user-logged .fb-log {
 		margin: 11px 0 0;
 	}
+    .reset-padding {
+        padding: 0;
+    }
+    .panel-body,
+    .panel-heading{
+        padding: 10px;
+    }
 }
 .js-upload-section .panel{
 	position: relative;
@@ -423,14 +432,14 @@ to { color: #92F099; }
 .alias-action-title {
 	width: 20%;
 }
-.js-alias-url {
+.js-input-change {
 	display: block;
 	width: 100%;
 	border: none;
 	border-bottom: 1px solid transparent;
 	background: transparent;
 }
-.js-alias-url:focus {
+.js-input-change:focus {
 	outline: 0;
 	border-color: #4CB6C7;
 }
@@ -441,10 +450,10 @@ to { color: #92F099; }
 .table-action-cell input {
 	margin: 0 2px;
 }
-.js-alias-edid {
+.js-data-edid {
 	display: none;
 }
-.changed .js-alias-edid {
+.changed .js-data-edid {
 	display: inline-block;
 }
 .js-force-generate-playlists,
