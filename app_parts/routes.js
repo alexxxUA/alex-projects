@@ -8,6 +8,7 @@ var mime = require('mime'),
 	auth = require('./auth.js'),
 	read = require('./readFileFolder.js'),
 	User = require('./user_schema.js'),
+	Aliases = require('./aliases_schema.js'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js');
 
@@ -33,10 +34,15 @@ function init(app){
 	});
 
 	app.get('/admin', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		res.render('adminPanel.jade', {
-				title: 'Admin panel',
-				user: res.user,
-				cf: cf
+		Aliases.find({}, function(err, aliases){
+			if(err) throw err;
+			
+			res.render('adminPanel.jade', {
+					title: 'Admin panel',
+					user: res.user,
+					cf: cf,
+					aliases: aliases
+			});
 		});
 	});
 
@@ -94,6 +100,39 @@ function init(app){
 			else
 				res.send("Success!");
 		});
+	});
+	
+	app.get('/removeAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		Aliases.findByIdAndRemove(req.query.alias_id, function(err){
+			if(err) throw err;
+
+			res.send();
+		});
+	});
+	
+	app.get('/updateAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		Aliases.findById(req.query.alias_id, function(err, alias){
+			if(err) throw err;
+			
+			alias.alias = req.query.alias_url;
+			alias.path = req.query.alias_real_url;
+			alias.save();
+
+			res.send();
+		});
+	});
+	
+	app.get('/addAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		var alias = new Aliases({
+			alias: req.query.alias_url,
+			path: req.query.alias_real_url
+		});
+		
+		alias.save(function(err, col){
+			if(err) throw err;
+			
+			res.send(col);
+		})
 	});
 
 	app.get('/proxy', function(req, res){

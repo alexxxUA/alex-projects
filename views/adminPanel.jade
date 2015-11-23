@@ -4,5 +4,42 @@ block facebookLogin
 block pageConfigValues
 	include pageConfigValues
 block adminPanel
-	div.force-generate-playlist
-		a.js-force-generate-playlists.btn.btn-success(href="/playlistForceGenerate", title="Force generate playlists") Force generate playlists
+	div.col-md-3
+		div.panel.panel-info
+			div.panel-heading
+				h3.panel-title Server actions
+			div.panel-body
+				a.js-force-generate-playlists.btn.btn-success.btn-sm(href='/playlistForceGenerate', title='Force generate playlists') Force generate playlists
+		div.panel.panel-info.add-alias-pan
+			div.panel-heading
+				h3.panel-title New alias URL
+			div.panel-body
+				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias')
+					.form-group
+						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url', data-validate-type='notEmpty')
+					.form-group
+						input.form-control.input-sm(type='text', name='alias_real_url', placeholder='Actual relative url', data-validate-type='notEmpty')
+					input.btn.btn-success.btn-sm(type='submit', value='ADD')
+	div.col-md-9.aliases-list-container
+		div.panel.panel-info
+			div.panel-heading
+				h3.panel-title URL aliases
+			div.panel-body
+				table.table.table-hover.table-bordered.table-condensed
+					thead
+						tr
+							th.alias-url-title Alies relative url
+							th.alias-actual-url-title Actual relative url
+							th.alias-action-title Actions
+						tbody
+							-for(var i=0; i< aliases.length; i++)
+								tr.js-alias-table-item
+									td
+										input(type='hidden', name='alias_id', value='#{aliases[i].id}')
+										input.js-alias-url(type='text', name='alias_url' value='#{aliases[i].alias}', data-before-edit='#{aliases[i].alias}')
+									td
+										input.js-alias-url.alias-actual-url(type='text', name='alias_real_url', value='#{aliases[i].path}', data-before-edit='#{aliases[i].path}')
+									td.alias-action-cont
+										input.js-alias-edid.btn.btn-xs.btn-success(type='button', value='Edit')
+										input.js-alias-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
+				

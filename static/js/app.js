@@ -423,28 +423,132 @@ FileExplorer.prototype.deleted = function(request, $form){
 	fileExplorer.hideContextMenu();
 }
 
-var AdminPanel = {
-	forceGenerSel: '.js-force-generate-playlists',
-	init: function(){
-		this.registerEvents();
-	},
-	registerEvents: function(){
-		$(document).on('click', this.forceGenerSel, $.proxy(this.forceGeneratePlaylist, this));
-	},
-	forceGeneratePlaylist: function(e){
-		e.preventDefault();
-		var $this = $(e.currentTarget);
+/* ADMIN CLASS */
+function AdminPanel(params){
+	this.forceGenerSel = '.js-force-generate-playlists';
+	this.aliasInputSel = '.js-alias-url';
+	this.aliasLineItemSel = '.js-alias-table-item';
+	this.aliasEditSel = '.js-alias-edid';
+	this.aliasRemoveSel = '.js-alias-remove';
 
-		$.ajax({
-			url: $this.attr('href'),
-			success: function(res){
-				alert('Generation of playlists started!');
-			},
-			error: function(err){
-				alert('Generation of playlists failed!');
-			}
-		})
+	this.removeAliasUrl = '/removeAlias';
+	this.updateAliasUrl = '/updateAlias';
+
+	this.aliasLineItem = _.template(
+		'<tr class="js-alias-table-item">'+
+			'<td><input type="hidden" name="alias_id" value="<%= _id %>">'+
+				'<input type="text" name="alias_url" value="<%= alias %>" data-before-edit="chat" class="js-alias-url">'+
+			'</td><td>'+
+				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="VideoChat/index.html" class="js-alias-url alias-actual-url">'+
+			'</td><td class="alias-action-cont">'+
+				'<input type="button" value="Edit" class="js-alias-edid btn btn-xs btn-success">'+
+				'<input type="button" value="Remove" class="js-alias-remove btn btn-xs btn-danger">'+
+			'</td>'+
+		'</tr>');
+
+	//Init entry params
+	this.initParams(params);
+
+	//Init
+	this.init();
+}
+AdminPanel.prototype.initParams = function(params){
+	for(var param in params){
+		if (params.hasOwnProperty(param))
+			this[param] = params[param];
 	}
+}
+AdminPanel.prototype.init = function(){
+	this.registerEvents();
+}
+AdminPanel.prototype.registerEvents = function(){
+	//Generate playlist
+	$(document).on('click', this.forceGenerSel, $.proxy(this.forceGeneratePlaylist, this));
+	//On edit alias
+	$(document).on('keyup blur', this.aliasInputSel, $.proxy(this.aliasInputBlur, this));
+	//Edit alias
+	$(document).on('click', this.aliasEditSel, $.proxy(this.editAlias, this));
+	//Remove alias
+	$(document).on('click', this.aliasRemoveSel, $.proxy(this.removeAlias, this));
+}
+AdminPanel.prototype.aliasInputBlur = function(e){
+	var $this = $(e.currentTarget),
+		$lineItem = $this.closest(this.aliasLineItemSel),
+		defaultValue = $this.data('before-edit'),
+		curValue = $this.val(),
+		isChanged = defaultValue !== curValue;
+
+	$this.toggleClass('changed', isChanged);
+	$lineItem.toggleClass('changed', !!(isChanged || $lineItem.find('.changed').length));
+}
+AdminPanel.prototype.getContextData = function($context){
+	var $elems = $context.find('[name]'),
+		data = {};
+	
+	$elems.each(function(){
+		var $this = $(this);
+
+		data[$this.attr('name')] = $this.val();
+	});
+	return data;
+}
+AdminPanel.prototype.getAliasLineData = function(e){
+	var $this = $(e.currentTarget),
+		$lineItem = $this.closest(this.aliasLineItemSel);
+	
+	return this.getContextData($lineItem);
+}
+AdminPanel.prototype.editAlias = function(e){
+	var data = this.getAliasLineData(e);
+	
+	navigation.showLoader();
+
+	$.ajax({
+		type: 'GET',
+		url: this.updateAliasUrl,
+		data: data,
+		success: function(res){
+			navigation.hideLoader();
+		}
+	});
+}
+AdminPanel.prototype.removeAlias = function(e){
+	var $this = $(e.currentTarget),
+		$lineItem = $this.closest(this.aliasLineItemSel),
+		data = this.getAliasLineData(e);
+	
+	navigation.showLoader();
+
+	$.ajax({
+		type: 'GET',
+		url: this.removeAliasUrl,
+		data: data,
+		success: function(res){
+			$lineItem.remove();
+			navigation.hideLoader();
+		}
+	});
+}
+AdminPanel.prototype.addAlias = function(res, $form){
+	var that = adminPanel,
+		newAlias = that.aliasLineItem(res),
+		$lastAliasItem = $(that.aliasLineItemSel).last();
+
+	$lastAliasItem.after(newAlias);
+}
+AdminPanel.prototype.forceGeneratePlaylist = function(e){
+	e.preventDefault();
+	var $this = $(e.currentTarget);
+
+	$.ajax({
+		url: $this.attr('href'),
+		success: function(res){
+			alert('Generation of playlists started!');
+		},
+		error: function(err){
+			alert('Generation of playlists failed!');
+		}
+	})
 }
 
 var Tmpl = {
@@ -516,7 +620,6 @@ var Tmpl = {
     }
 }
 
-
 var Validator = {
 	fieldClass: 'form-group',
 	errorClass: 'data-error',
@@ -527,7 +630,8 @@ var Validator = {
 	},
 	registerEvents: function(){
 		var obj = this;
-		$(document).delegate('[data-validate-type]', 'blur', $.proxy(obj, 'validate'));
+		$(document).on('blur', '[data-validate-type]', $.proxy(obj, 'validate'));
+		$(document).on('keyup', '.data-error [data-validate-type]', $.proxy(obj, 'validate'));
 	},
 	valRegExps: {
 		numb: /^\b\d+\b$/i,
@@ -676,21 +780,21 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 			if(typeof formBeforeSend !== 'undefined' && formBeforeSend.length)
 				executeFunctionByName(formBeforeSend, window, xhr, opts, $form);
 		},
-		success: function(request) {
+		success: function(res) {
 			navigation.hideLoader();
 			if(typeof formSuccess !== 'undefined' && formSuccess.length)
-				executeFunctionByName(formSuccess, window, request, $form);
+				executeFunctionByName(formSuccess, window, res, $form);
 		},
 		error: function(err){
 			if(typeof formError !== 'undefined' && formError.length)
-				executeFunctionByName(formError, window, request, $form);
+				executeFunctionByName(formError, window, err, $form);
 			navigation.hideLoader();
 			console.log(err);
 		}
 	});
 });
 
+Validator.init();
 var navigation = new Navigation();
 var fileExplorer = new FileExplorer();
-Validator.init();
-AdminPanel.init();
+var adminPanel = new AdminPanel();
