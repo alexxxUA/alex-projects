@@ -23,14 +23,14 @@ block adminPanel
 	div.col-md-9.aliases-list-container
 		div.panel.panel-info
 			div.panel-heading
-				h3.panel-title URL aliases
+				h3.panel-title Alias URLs
 			div.panel-body
 				table.table.table-hover.table-bordered.table-condensed
 					thead
 						tr
 							th.alias-url-title Alies relative url
 							th.alias-actual-url-title Actual relative url
-							th.alias-action-title Actions
+							th.alias-action-title.table-action-cell Actions
 						tbody
 							-for(var i=0; i< aliases.length; i++)
 								tr.js-alias-table-item
@@ -39,7 +39,37 @@ block adminPanel
 										input.js-alias-url(type='text', name='alias_url' value='#{aliases[i].alias}', data-before-edit='#{aliases[i].alias}')
 									td
 										input.js-alias-url.alias-actual-url(type='text', name='alias_real_url', value='#{aliases[i].path}', data-before-edit='#{aliases[i].path}')
-									td.alias-action-cont
+									td.alias-action-cont.table-action-cell
 										input.js-alias-edid.btn.btn-xs.btn-success(type='button', value='Edit')
 										input.js-alias-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
+		div.panel.panel-info
+			div.panel-heading
+				h3.panel-title Users
+			div.panel-body
+				table.table.table-hover.table-bordered.table-condensed.user-table
+					thead
+						tr
+							th.user-name-title Name
+							th.user-email-url-title Email
+							th.user-isadmin-title.center Is admin
+							th.user-action-title.table-action-cell Actions
+						tbody
+							-for(var i=0; i< users.length; i++)
+								-var isAdminOptionsMap = [{name: 'No', value: false}, {name: 'Yes', value: true}];
+								tr.js-alias-table-item
+									td
+										input(type='hidden', name='user_id', value='#{users[i].id}')
+										span=users[i].name
+									td
+										span=users[i].email
+									td.center
+										select
+											-for(var j=0; j<isAdminOptionsMap.length; j++)
+												-if(isAdminOptionsMap[j].value == users[i].isAdmin)
+													option(value="#{users[i].isAdmin}", selected)=isAdminOptionsMap[j].name
+												-else
+													option(value="#{users[i].isAdmin}")=isAdminOptionsMap[j].name
+									td.user-action-cont.table-action-cell
+										input.js-user-edid.btn.btn-xs.btn-success(type='button', value='Edit')
+										input.js-user-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
 				
