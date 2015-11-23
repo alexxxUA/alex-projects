@@ -228,6 +228,3 @@ function init(app){
 setAliasMap();
 
 module.exports.init = init;
-
-
-
