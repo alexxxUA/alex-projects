@@ -398,6 +398,10 @@ to { color: #92F099; }
 	right: 50px;
 	top: 16px;
 }
+.login-container > * {
+	position: relative;
+	z-index: 2;
+}
 .user-logged .login-container {
 	top: 5px;
 }
