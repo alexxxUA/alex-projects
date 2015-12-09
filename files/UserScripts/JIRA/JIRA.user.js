@@ -208,7 +208,7 @@ Templates.prototype.initAssociateParams = function(){
                         '<input type="submit" value="Add">'+
                     '</form>';
     this._paramsDialog = '<form class="'+ this.applyTemplParamsFormClass +'">'+
-                            '<h3>Fill out templates parameters</h3>'+
+                            '<h3>Fill out parameters for template "<%= templName %>".</h3>'+
                             '<% for(var i=0; i<params.length; i++){ %>'+
                                 '<textarea name="<%= params[i] %>" placeholder="Value for parameter <%= params[i] %>"></textarea>'+
                             '<% } %>'+
