@@ -8,6 +8,7 @@
 // @updateURL	 http://avasin.ml/UserScripts/JIRA/JIRA.user.js
 // ==/UserScript==
 
+var $ = jQuery;
 /* Extend Jquery with serializeObject method for forms */
 $.fn.serializeObject = function(){
 	var o = {},
@@ -162,6 +163,8 @@ var _T = {
 /* TEMPLATES CLASS */
 var Templates = function(params){
 	this.isLog = true;
+	
+	this.defaultTempls = {};
 
 	this.commentSel = 'textarea';
 	this.templContainerClass = 'templ-cont';
@@ -227,6 +230,7 @@ Templates.prototype.initAssociateParams = function(){
 						'</form>';
 }
 Templates.prototype.init = function(){
+	this.addDefaultTemplates();
 	this.registerEvents();
 	this.addCustomStyles();
 	this.addTemplButton();
@@ -262,6 +266,12 @@ Templates.prototype.addCustomStyles = function(){
 	);
 
 	this.$head.append($styles);
+}
+Templates.prototype.addDefaultTemplates = function(){
+	var isNoSavedTempls = $.isEmptyObject(this.getSavedTempls());
+	
+	if(isNoSavedTempls)
+		GM_setValue('templates', JSON.stringify(this.defaultTempls));
 }
 Templates.prototype.addTemplButton = function(){
 	var templButton = this.getTemplButton();
@@ -299,10 +309,10 @@ Templates.prototype.onApplyParams = function(e){
 	modal.hide();
 }
 Templates.prototype.getTemlByName = function(name){
-	return JSON.parse(localStorage.templates)[name];
+	return JSON.parse(GM_getValue('templates'))[name];
 }
 Templates.prototype.getSavedTempls = function(){
-	return typeof localStorage.templates != 'undefined' ? JSON.parse(localStorage.templates) : {};
+	return typeof GM_getValue('templates') != 'undefined' ? JSON.parse(GM_getValue('templates')) : {};
 }
 Templates.prototype.getTemplButton = function(){
 	return templatesHtml = _T.getT(this._templButton, {templates: this.getSavedTempls()});    
@@ -332,10 +342,20 @@ Templates.prototype.saveTempl = function(data){
 
 	savedTempl[$.trim(data.name)] = data.value;
 
-	localStorage.templates = JSON.stringify(savedTempl);
+	GM_setValue('templates', JSON.stringify(savedTempl));
 
 	modal.hide();
 }
 
 var modal = new Modal();
-var templates = new Templates();
+var templates = new Templates({
+	defaultTempls: {
+		Send_to_review: 'Hi <%= reviewer_name %>,\n'+
+						'Please review te code.\n'+
+						'Thanks in advance.',
+		Code_approved: 'Code looks good.\n'+
+						'No comments or objections',
+		Implemented: '<%= implemented_stuff %> has been implemented.\n\n'+
+					'Thanks,\nAlexey.'
+	}
+});
