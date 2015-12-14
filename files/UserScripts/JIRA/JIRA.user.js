@@ -8,21 +8,22 @@
 // @updateURL	 http://avasin.ml/UserScripts/JIRA/JIRA.user.js
 // ==/UserScript==
 
+var $ = jQuery;
 /* Extend Jquery with serializeObject method for forms */
 $.fn.serializeObject = function(){
-    var o = {},
-        a = this.serializeArray();
-    $.each(a, function() {
-        if (o[this.name] !== undefined) {
-            if (!o[this.name].push) {
-                o[this.name] = [o[this.name]];
-            }
-            o[this.name].push(this.value || '');
-        } else {
-            o[this.name] = this.value || '';
-        }
-    });
-    return o;
+	var o = {},
+		a = this.serializeArray();
+	$.each(a, function() {
+		if (o[this.name] !== undefined) {
+			if (!o[this.name].push) {
+				o[this.name] = [o[this.name]];
+			}
+			o[this.name].push(this.value || '');
+		} else {
+			o[this.name] = this.value || '';
+		}
+	});
+	return o;
 };
 
 /* MODAL CLASS */
@@ -36,7 +37,7 @@ var Modal = function(params){
 
 	//Init entry params
 	this.initParams(params);
-	
+
 	//Base init
 	this.init();
 }
@@ -112,35 +113,42 @@ Modal.prototype.hide = function(){
 
 var _T = {
     cache: {},
-    getT: function(str, data){
-        try{
-            var fn = !/\W/.test(str) ?
-                this.cache[str] = this.cache[str] ||
-                this.getT(document.getElementById(str).innerHTML) :
+    escape: function(str){
+		return str.replace(/\r/g, "-r-")
+					.replace(/\t/g, "-t-")
+					.replace(/\n/g, "-n-");
+	},
+	unEscape: function(str){
+		return str.replace(/-r-/g, "\r")
+					.replace(/-t-/g, "\t")
+					.replace(/-n-/g, "\n");
+	},
+	getT: function(str, data){
+		var that = this;
+		try{
+			var fn = !/\W/.test(str) ?
+				this.cache[str] = this.cache[str] ||
+				this.getT(document.getElementById(str).innerHTML) :
 
-                new Function("obj",
-                "var p=[],print=function(){p.push.apply(p,arguments);};" +
-                "with(obj){p.push('" +
-                str
-                    .replace(/\r/g, "-r-")
-                    .replace(/\t/g, "-t-")
-                    .replace(/\n/g, "-n-")
-                    .split("<%").join("\t")
-                    .replace(/((^|%>)[^\t]*)'/g, "$1\r")
-                    .replace(/\t=(.*?)%>/g, "',$1,'")
-                    .split("\t").join("');")
-                    .split("%>").join("p.push('")
-                    .split("\r").join("\\'")
-                             
-                    + "');}return p.join('');");
-            debugger;
-            return data ? fn( data ) : fn;
-        }
-        catch(e){
-            console.error(e.message /* + '\n' + e.stack*/);
-            return '';
-        }
-    },
+				new Function("obj",
+				"var p=[],print=function(){p.push.apply(p,arguments);};" +
+				"with(obj){p.push('" +
+				that.escape(str)						
+					.split("<%").join("\t")
+					.replace(/((^|%>)[^\t]*)'/g, "$1\r")
+					.replace(/\t=(.*?)%>/g, "',$1,'")
+					.split("\t").join("');")
+					.split("%>").join("p.push('")
+					.split("\r").join("\\'")
+					+ "');}return p.join('');");
+
+			return data ? that.unEscape( fn(data) ) : that.unEscape(fn);
+		}
+		catch(e){
+			console.error(e.message /* + '\n' + e.stack*/);
+			return '';
+		}
+	},
     getTemplParamsNames: function(templString){
         var params = templString.match(/<%=.*?%>/gm);
         
@@ -157,22 +165,24 @@ var _T = {
 
 /* TEMPLATES CLASS */
 var Templates = function(params){
-    this.isLog = true;
+	this.isLog = true;
+	
+	this.defaultTempls = {};
 
-    this.commentSel = 'textarea';
-    this.templContainerClass = 'templ-cont';
-    this.templListClass = 'templ-list';
-    this.noTemplMsgClass = 'empty-templ-msg';
-    this.templItemClass = 'js-templ-item';
-    this.templAddClass = 'js-templ-action-add';
-    this.addTemlFormClass = 'js-add-form';
-    this.applyTemplParamsFormClass = 'js-apply-params';
-    
-    this.templItemSel = '[data-templ]';
-    
-    this.$head = $('head');
-    
-    //Init entry params
+	this.commentSel = 'textarea';
+	this.templContainerClass = 'templ-cont';
+	this.templListClass = 'templ-list';
+	this.noTemplMsgClass = 'empty-templ-msg';
+	this.templItemClass = 'js-templ-item';
+	this.templAddClass = 'js-templ-action-add';
+	this.addTemlFormClass = 'js-add-form';
+	this.applyTemplParamsFormClass = 'js-apply-params';
+
+	this.templItemSel = '[data-templ]';
+
+	this.$head = $('head');
+
+	//Init entry params
 	this.initParams(params);
 
 	//Init associate params
@@ -182,7 +192,7 @@ var Templates = function(params){
 	this.init();
 }
 Templates.prototype.initParams = function(params){
-	for(var param in params){
+	for(var param in params){	
 		if (params.hasOwnProperty(param))
 			this[param] = params[param];
 	}
@@ -233,27 +243,28 @@ Templates.prototype.initAssociateParams = function(){
                         '</form>';
 }
 Templates.prototype.init = function(){
+	this.addDefaultTemplates();
 	this.registerEvents();
-    this.addCustomStyles();
+	this.addCustomStyles();
 	this.addTemplButton();
 };
 Templates.prototype.log = function(msg){
-    if(this.isLog)
-        console.info(msg);
+	if(this.isLog)
+		console.info(msg);
 }
 Templates.prototype.registerEvents = function(){
     //Add template link (open modal dialog with form)
 	$(document).on('click', '.'+ this.templAddClass, $.proxy(this, 'openAddTemplModal'));
-    
+
     //Add form handler
     $(document).on('submit', '.'+ this.addTemlFormClass, $.proxy(this, 'addTempl'));
-    
+
     //Apply params handler
     $(document).on('submit', '.'+ this.applyTemplParamsFormClass, $.proxy(this, 'onApplyParams'));
-    
+
     //Template item
     $(document).on('click', this.templItemSel, $.proxy(this, 'applyTemplItem'));
-    
+
     //Show/hide template options
     $(document).on('mouseenter', '.'+ this.templContainerClass, $.proxy(this, 'showOptions'))
                 .on('mouseleave', '.'+ this.templContainerClass, $.proxy(this, 'hideOptions'));
@@ -278,6 +289,12 @@ Templates.prototype.addCustomStyles = function(){
 
     this.$head.append($styles);
 }
+Templates.prototype.addDefaultTemplates = function(){
+    var isNoSavedTempls = $.isEmptyObject(this.getSavedTempls());
+
+    if(isNoSavedTempls)
+        GM_setValue('templates', JSON.stringify(this.defaultTempls));
+}
 Templates.prototype.addTemplButton = function(){
     var that = this;
 
@@ -285,8 +302,8 @@ Templates.prototype.addTemplButton = function(){
         var $this = $(this),
             uniqueClass = 'comment-'+ new Date().getTime(),
             templButton = that.getTemplButton(uniqueClass);
-        
-        $this.addClass(uniqueClass);        
+
+        $this.addClass(uniqueClass);
         $(templButton).insertBefore(this);
     });
 }
@@ -296,9 +313,9 @@ Templates.prototype.applyTemplItem = function(e){
         templName = $this.attr('data-templ'),
         templ = this.getTemlByName(templName),
         templParams = _T.getTemplParamsNames(templ);
-    
+
     this.hideOptions();
-    
+
     if(templParams.length)
         this.showParamsDialog(templName, templParams);
     else
@@ -312,12 +329,12 @@ Templates.prototype.applyTempl = function(templName, data){
     this.$activeComment.val(oldValue + _T.getT(templ, data));
 }
 Templates.prototype.onApplyParams = function(e){
-    e.preventDefault();
-    var $this = $(e.currentTarget),
-        data = $this.serializeObject();
-    
-    this.applyTempl(data.templName, data);
-    modal.hide();
+	e.preventDefault();
+	var $this = $(e.currentTarget),
+		data = $this.serializeObject();
+
+	this.applyTempl(data.templName, data);
+	modal.hide();
 }
 Templates.prototype.showOptions = function(e){
     var $this = $(e.currentTarget),
@@ -330,10 +347,10 @@ Templates.prototype.hideOptions = function(e){
     $('.'+ this.templContainerClass).removeClass('active');
 }
 Templates.prototype.getTemlByName = function(name){
-    return JSON.parse(localStorage.templates)[name];
+	return JSON.parse(GM_getValue('templates'))[name];
 }
 Templates.prototype.getSavedTempls = function(){
-    return typeof localStorage.templates != 'undefined' ? JSON.parse(localStorage.templates) : {};
+	return typeof GM_getValue('templates') != 'undefined' ? JSON.parse(GM_getValue('templates')) : {};
 }
 Templates.prototype.getTemplButton = function(className){
     var data = {
@@ -343,9 +360,9 @@ Templates.prototype.getTemplButton = function(className){
     return templatesHtml = _T.getT(this._templButton, data);    
 }
 Templates.prototype.openAddTemplModal = function(e){
-    e.preventDefault();
+	e.preventDefault();
 
-    modal.show(this._newTeml);
+	modal.show(this._newTeml);
 }
 Templates.prototype.addTempl = function(e){
     e.preventDefault();
@@ -358,38 +375,31 @@ Templates.prototype.addTempl = function(e){
     this.saveTempl(data);
 }
 Templates.prototype.showParamsDialog = function(templName, params){
-    var data = {
-        templName: templName,
-        params: params
-    }
-    modal.show(_T.getT(this._paramsDialog, data));
+	var data = {
+		templName: templName,
+		params: params
+	}
+	modal.show(_T.getT(this._paramsDialog, data));
 }
 Templates.prototype.saveTempl = function(data){
-    var savedTempl = this.getSavedTempls();
-    
-    savedTempl[$.trim(data.name)] = data.value;
-    
-    localStorage.templates = JSON.stringify(savedTempl);
-    
-    modal.hide();
+	var savedTempl = this.getSavedTempls();
+
+	savedTempl[$.trim(data.name)] = data.value;
+
+	GM_setValue('templates', JSON.stringify(savedTempl));
+
+	modal.hide();
 }
 
 var modal = new Modal();
-var templates = new Templates();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+var templates = new Templates({
+	defaultTempls: {
+		Send_to_review: 'Hi <%= reviewer_name %>,\n\n'+
+						'Please review te code.\n\n'+
+						'Thanks in advance.',
+		Code_approved: 'Code looks good.\n'+
+						'No comments or objections',
+		Implemented: '<%= implemented_stuff %> has been implemented.\n\n'+
+					'Thanks,\nAlexey.'
+	}
+});
