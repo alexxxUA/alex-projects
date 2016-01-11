@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      5.1
+// @version      5.2
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
@@ -318,7 +318,7 @@ var FS = new Proxy({
 	isBrowserProxy: true,
 	slideTime: 200,
 	torrentImgUrl: 'https://maxcdn.icons8.com/Color/PNG/48/Logos/utorrent-48.png',
-	rutorSearchUrl: 'http://rutor.org/search/',
+	rutorSearchUrl: 'http://new-rutor.org/search/',
     //internalProxyUrl: 'http://192.168.0.135:8888/proxy',
 	externalProxyUrl: 'http://94.45.65.94:3128',  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 	fsDomain: 'http://fs.to',
