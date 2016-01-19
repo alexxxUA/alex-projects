@@ -176,9 +176,12 @@ var Templates = function(params){
 	this.templItemClass = 'js-templ-item';
 	this.templAddClass = 'js-templ-action-add';
 	this.addTemlFormClass = 'js-add-form';
+	this.editTemlFormClass = 'js-edit-form';
 	this.applyTemplParamsFormClass = 'js-apply-params';
 
 	this.templItemSel = '[data-templ]';
+	this.editTemplItemSel = '[data-edit-templ]';
+	this.delTemplItemSel = '[data-del-templ]';
 
 	this.$head = $('head');
 
@@ -199,15 +202,15 @@ Templates.prototype.initParams = function(params){
 }
 Templates.prototype.initAssociateParams = function(){
 	//Set params based on another params
-    this.$comments = $(this.commentSel);
-    
     this._templButton = '<div class="'+ this.templContainerClass +'" data-class-id="<%= className %>">'+
                             '<div class="'+ this.templListClass +'">'+
                                 '<% if(! $.isEmptyObject(templates) ){ %>'+
                                     '<ul>'+
                                         '<% for(var key in templates){ %>'+
                                             '<li class="'+ this.templItemClass +'">'+
-                                                '<a href="#" data-templ="<%= key %>"> <%= key %></a>'+
+                                                '<a href="#" data-templ="<%= key %>"><%= key %></a>'+
+												'<a href="#" data-edit-templ="<%= key %>">Edit</a>'+
+												'<a href="#" data-del-templ="<%= key %>">Remove</a>'+
                                             '</li>'+
                                         '<% } %>'+
                                     '</ul>'+
@@ -223,17 +226,29 @@ Templates.prototype.initAssociateParams = function(){
                             '<input class="templName" type="text" name="name" placeholder="Name of template" required>'+
                         '</h2>'+
                         '<div class="jira-dialog-main-section">'+
-                            '<textarea name="value" placeholder="Template" required></textarea>'+
+                            '<textarea class="locked" name="value" placeholder="Template" required></textarea>'+
                         '</div>'+
                         '<div class="buttons-container">'+
                             '<input class="button" type="submit" value="Add">'+
+                        '</div>'+
+                    '</form>';
+	this._editTeml = '<form class="'+ this.editTemlFormClass +' aui">'+
+                        '<h2 class="jira-dialog-heading">'+
+                            'Edit template: '+
+                            '<input class="templName" type="text" name="name" placeholder="Name of template" value="<%= name %>" required>'+
+                        '</h2>'+
+                        '<div class="jira-dialog-main-section">'+
+                            '<textarea class="locked" name="value" placeholder="Template" required><%= templ %></textarea>'+
+                        '</div>'+
+                        '<div class="buttons-container">'+
+                            '<input class="button" type="submit" value="Edit">'+
                         '</div>'+
                     '</form>';
     this._paramsDialog = '<form class="'+ this.applyTemplParamsFormClass +' aui">'+
                             '<h2 class="jira-dialog-heading">Fill out parameters for template "<%= templName %>".</h2>'+
                             '<div class="jira-dialog-main-section">'+
                                 '<% for(var i=0; i<params.length; i++){ %>'+
-                                    '<textarea name="<%= params[i] %>" placeholder="<%= params[i] %>"></textarea>'+
+                                    '<textarea class="locked" name="<%= params[i] %>" placeholder="<%= params[i] %>"></textarea>'+
                                 '<% } %>'+
                                 '<input type="hidden" name="templName" value="<%= templName %>">'+
                             '</div>'+
@@ -246,13 +261,16 @@ Templates.prototype.init = function(){
 	this.addDefaultTemplates();
 	this.registerEvents();
 	this.addCustomStyles();
-	this.addTemplButton();
+	this.addTemplBtns();
 };
 Templates.prototype.log = function(msg){
 	if(this.isLog)
 		console.info(msg);
 }
 Templates.prototype.registerEvents = function(){
+	//Init templates on mouse hover on textarea
+	$(document).on('mouseenter', this.commentSel +':not(.loaded):not(.locked)', $.proxy(this, 'addTemplBtn'));
+
     //Add template link (open modal dialog with form)
 	$(document).on('click', '.'+ this.templAddClass, $.proxy(this, 'openAddTemplModal'));
 
@@ -262,8 +280,14 @@ Templates.prototype.registerEvents = function(){
     //Apply params handler
     $(document).on('submit', '.'+ this.applyTemplParamsFormClass, $.proxy(this, 'onApplyParams'));
 
-    //Template item
+    //Apply template item
     $(document).on('click', this.templItemSel, $.proxy(this, 'applyTemplItem'));
+	
+	//Edit template item
+	$(document).on('click', this.editTemplItemSel, $.proxy(this, 'editTemplItem'));
+	
+	//Remove template item
+	$(document).on('click', this.delTemplItemSel, $.proxy(this, 'delTemplItem'));
 
     //Show/hide template options
     $(document).on('mouseenter', '.'+ this.templContainerClass, $.proxy(this, 'showOptions'))
@@ -284,7 +308,7 @@ Templates.prototype.addCustomStyles = function(){
         '.jira-dialog-main-section {padding: 5px 10px 0;}'+
         '.jira-dialog-main-section textarea {width: 99%; max-width: 99%; margin-bottom: 5px; display:block; padding:1%;}'+
         '.templName {border-width:0 0 1px; border-color:#000; font-size:20px; background:transparent; color:#333; width:200px;}'+
-        '.'+ this.addTemlFormClass +' textarea{height: 300px}'
+        '.'+ this.addTemlFormClass +' textarea, .'+ this.editTemlFormClass +' textarea{height: 300px}'
     );
 
     this.$head.append($styles);
@@ -295,17 +319,20 @@ Templates.prototype.addDefaultTemplates = function(){
     if(isNoSavedTempls)
         GM_setValue('templates', JSON.stringify(this.defaultTempls));
 }
-Templates.prototype.addTemplButton = function(){
+Templates.prototype.addTemplBtns = function(){
     var that = this;
 
-    this.$comments.each(function(){
-        var $this = $(this),
-            uniqueClass = 'comment-'+ new Date().getTime(),
-            templButton = that.getTemplButton(uniqueClass);
-
-        $this.addClass(uniqueClass);
-        $(templButton).insertBefore(this);
+    $(this.commentSel +':not(.loaded):not(.locked)').each(function(){
+		that.addTemplBtn({currentTarget: this});
     });
+}
+Templates.prototype.addTemplBtn = function(e){
+	var $this = $(e.currentTarget),
+		uniqueClass = 'comment-'+ new Date().getTime(),
+		templButton = this.getTemplButton(uniqueClass);
+
+	$this.addClass(uniqueClass +' loaded');
+	$(templButton).insertBefore(e.currentTarget);
 }
 Templates.prototype.applyTemplItem = function(e){
     e.preventDefault();
@@ -321,6 +348,24 @@ Templates.prototype.applyTemplItem = function(e){
     else
         this.applyTempl(templName);
 }
+Templates.prototype.editTemplItem = function(e){
+	e.preventDefault();
+	
+	var $this = $(e.currentTarget),
+		templName = $this.attr('data-edit-templ'),
+		templ = this.getTemlByName(templName);
+	
+	this.hideOptions();
+
+	modal.show(_T.getT(this._editTeml, {
+		name: templName,
+		templ: templ
+	}));
+};
+Templates.prototype.delTemplItem = function(e){
+	e.preventDefault();
+
+};
 Templates.prototype.applyTempl = function(templName, data){
     var data = data ? data : {},
         templ = this.getTemlByName(templName),
