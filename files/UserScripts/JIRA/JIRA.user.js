@@ -179,6 +179,7 @@ var Templates = function(params){
 	this.templAddClass = 'js-templ-action-add';
 	this.addTemlFormClass = 'js-add-form';
 	this.applyTemplParamsFormClass = 'js-apply-params';
+	this.commentAttr = 'data-comm';
 
 	this.templItemSel = '[data-templ]';
 	this.editTemplItemSel = '[data-edit-templ]';
@@ -203,9 +204,9 @@ Templates.prototype.initParams = function(params){
 }
 Templates.prototype.initAssociateParams = function(){
 	//Set params based on another params
-    this._templButton = '<div class="'+ this.templContainerClass +'" data-class-id="<%= className %>">'+
+    this._templButton = '<div class="'+ this.templContainerClass +'" '+ this.commentAttr +'="<%= uniqueAttr %>">'+
                             '<div class="'+ this.templListClass +'">'+
-                                '<% if(! $.isEmptyObject(templates) ){ %>'+
+                                '<% if(! jQuery.isEmptyObject(templates) ){ %>'+
                                     '<ul>'+
                                         '<% for(var key in templates){ %>'+
                                             '<li class="'+ this.templItemClass +'">'+
@@ -272,7 +273,7 @@ Templates.prototype.log = function(msg){
 }
 Templates.prototype.registerEvents = function(){
 	//Init templates on mouse hover on textarea
-	$(document).on('mouseenter', this.commentSel +':not(.loaded):not(.locked)', $.proxy(this, 'addTemplBtn'));
+	$(document).on('mouseenter', this.commentSel +':not(['+ this.commentAttr +']):not(.locked)', $.proxy(this, 'addTemplBtn'));
 
     //Add template link (open modal dialog with form)
 	$(document).on('click', '.'+ this.templAddClass, $.proxy(this, 'openAddTemplModal'));
@@ -328,16 +329,16 @@ Templates.prototype.addDefaultTemplates = function(){
 Templates.prototype.addTemplBtns = function(){
     var that = this;
 
-    $(this.commentSel +':not(.loaded):not(.locked)').each(function(){
+    $(this.commentSel +':not(['+ this.commentAttr +']):not(.locked)').each(function(){
 		that.addTemplBtn({currentTarget: this});
     });
 }
 Templates.prototype.addTemplBtn = function(e){
 	var $this = $(e.currentTarget),
-		uniqueClass = 'comment-'+ new Date().getTime(),
-		templButton = this.getTemplButton(uniqueClass);
+		uniqueAttr = 'c-'+ new Date().getTime(),
+		templButton = this.getTemplButton(uniqueAttr);
 
-	$this.addClass(uniqueClass +' loaded');
+	$this.attr(this.commentAttr, uniqueAttr);
 	$(templButton).insertBefore(e.currentTarget);
 }
 Templates.prototype.applyTemplItem = function(e){
@@ -392,10 +393,10 @@ Templates.prototype.onApplyParams = function(e){
 }
 Templates.prototype.showOptions = function(e){
     var $this = $(e.currentTarget),
-        commentClass = $this.data('class-id');
+        commentId = $this.attr(this.commentAttr);
     
     $this.addClass('active');
-    this.$activeComment = $('.'+ commentClass);
+    this.$activeComment = $(this.commentSel +'['+ this.commentAttr +'="'+ commentId +'"]');
 }
 Templates.prototype.hideOptions = function(e){
     $('.'+ this.templContainerClass).removeClass('active');
@@ -406,10 +407,10 @@ Templates.prototype.getTemlByName = function(name){
 Templates.prototype.getSavedTempls = function(){
 	return typeof GM_getValue('templates') != 'undefined' ? JSON.parse(GM_getValue('templates')) : {};
 }
-Templates.prototype.getTemplButton = function(className){
+Templates.prototype.getTemplButton = function(uniqueAttr){
     var data = {
         templates: this.getSavedTempls(),
-        className: className
+        uniqueAttr: uniqueAttr
     }
     return templatesHtml = _T.getT(this._templButton, data);    
 }
@@ -427,6 +428,7 @@ Templates.prototype.addTempl = function(e){
     data.name = ($.trim(data.name)).replace(/\s/g, '_');
     
     this.saveTempl(data);
+	this.refreshButtons();
 }
 Templates.prototype.showParamsDialog = function(templName, params){
 	var data = {
@@ -443,6 +445,7 @@ Templates.prototype.delTempl = function(templName){
 	GM_setValue('templates', JSON.stringify(savedTempl));
 
 	modal.hide();
+	this.refreshButtons();
 }
 Templates.prototype.saveTempl = function(data){
 	var savedTempl = this.getSavedTempls();
@@ -453,12 +456,19 @@ Templates.prototype.saveTempl = function(data){
 
 	modal.hide();
 }
-
+Templates.prototype.removeButtons = function(){
+	$('.'+ this.templContainerClass).remove();
+	$('.'+ this.commentSel).attr(this.commentAttr, null);
+}
+Templates.prototype.refreshButtons = function(){
+	this.removeButtons();
+	this.addTemplBtns();
+}
 var modal = new Modal();
 var templates = new Templates({
 	defaultTempls: {
 		Send_to_review: 'Hi <%= reviewer_name %>,\n\n'+
-						'Please review te code.\n\n'+
+						'Please review the code.\n\n'+
 						'Thanks in advance.',
 		Code_approved: 'Code looks good.\n'+
 						'No comments or objections',
