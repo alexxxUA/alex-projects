@@ -313,11 +313,11 @@ Templates.prototype.addCustomStyles = function(){
         '.'+ this.templContainerClass +' a{text-decoration:underline; color:#FFF;}'+
         '.'+ this.templContainerClass +' a:hover{text-decoration:none;}'+
         '.'+ this.templContainerClass +':before{content:""; width:12px; height:30px; display:block; background:#3B73AF; border-radius:50% 0 0 50%; cursor:pointer}'+
-        '.'+ this.templListClass +'{z-index:1; position:absolute; left:12px; top:0; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; transform:scale(0, 0) translate3d(-20%,-50%,0); transform-origin:5% 20%;}'+        
+        '.'+ this.templListClass +'{z-index:1; position:absolute; left:12px; top:0; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; display: none;}'+        
         'body .'+ this.templListClass +' ul{margin:0; padding:0 0 0 15px;}'+
         '.'+ this.templAddClass +'{display:block; text-align:center; margin-top:10px;}'+
         '.'+ this.noTemplMsgClass +'{text-align:center}'+
-        '.'+ this.templContainerClass +'.active .'+ this.templListClass +'{transform:scale(1, 1) translate3d(0,0,0);}'+
+        '.'+ this.templContainerClass +'.active .'+ this.templListClass +'{display: block;}'+
         '.jira-dialog-main-section {padding: 5px 10px 0;}'+
         '.jira-dialog-main-section textarea {width: 99%; max-width: 99%; margin-bottom: 5px; display:block; padding:1%;}'+
         '.templName {border-width:0 0 1px; border-color:#000; font-size:20px; background:transparent; color:#333; width:200px;}'+
