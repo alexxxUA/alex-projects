@@ -113,6 +113,7 @@ Modal.prototype.hide = function(){
 
 var _T = {
     cache: {},
+	splitParamSymb: '_',
     escape: function(str){
 		return str.replace(/\r/g, "-r-")
 					.replace(/\t/g, "-t-")
@@ -160,7 +161,15 @@ var _T = {
             params[i] =  params[i].replace(/<%=\s*|\s*%>/g, '');
         
         return params;
-    }
+    },
+	updateTemplateParams: function(string){
+		var that = this,
+			regExp = /(?:<%=)(.*)?(?:%>)/gm;		
+
+		return string.replace(regExp, function(match, g1){
+			return '<%= ' + ($.trim(g1)).replace(/\s+/g, that.splitParamSymb) +' %>';
+		});
+	}
 };
 
 /* TEMPLATES CLASS */
@@ -426,7 +435,9 @@ Templates.prototype.addTempl = function(e){
     
     //Update name
     data.name = ($.trim(data.name)).replace(/\s/g, '_');
-    
+	//Update template params
+	data.value = _T.updateTemplateParams(data.value);
+
     this.saveTempl(data);
 	this.refreshButtons();
 }
