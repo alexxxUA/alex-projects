@@ -482,7 +482,7 @@ var templates = new Templates({
 						'Please review the code.\n\n'+
 						'Thanks in advance.',
 		Code_approved: 'Code looks good.\n'+
-						'No comments or objections',
+						'No comments or objections.',
 		Implemented: '<%= implemented_stuff %> has been implemented.\n\n'+
 					'Thanks,\nAlexey.'
 	}
