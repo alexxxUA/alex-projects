@@ -71,6 +71,15 @@ Modal.prototype.createDom = function(){
 Modal.prototype.registerEvents = function(){
 	$(document).on('click', '.'+ this.closeClass, $.proxy(this, 'hide'));
 	$(document).on('click', '.'+ this.bgClass, $.proxy(this, 'hide'));
+	$(document).on('keydown', '.'+ this.modalClass, $.proxy(this, 'onKeyPress'));
+}
+Modal.prototype.onKeyPress = function(e){
+	switch(e.keyCode){
+		//Escape key pressed
+		case 27:
+			this.hide();
+			break;
+	}
 }
 Modal.prototype.updatePosition = function(){
 	var $modal = $('.'+ this.modalClass);
