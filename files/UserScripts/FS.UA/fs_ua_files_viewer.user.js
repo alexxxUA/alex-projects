@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      5.3
+// @version      5.4
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
@@ -98,8 +98,8 @@ function Proxy(params){
 	this.internalProxyUrl = 'http://avasin.ml/proxy';
 	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 
-	this.browserProxyDomain = 'http://cloud.lntu.info';
-	this.browserProxyPath = '/browse.php?';
+	this.browserProxyDomain = 'http://smenip.ru'; //'http://cloud.lntu.info'
+	this.browserProxyPath = '/proxi/browse.php?'; //'/browse.php?'
 
 	this.isBrowserProxy = false;
 	this.readSpeed = 600; //Symbols per minute
