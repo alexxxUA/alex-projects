@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      5.2
+// @version      5.3
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
@@ -97,7 +97,10 @@ function Proxy(params){
 	this.ajaxImgUrl = 'http://avasin.ml/img/ajax-loader.gif';
 	this.internalProxyUrl = 'http://avasin.ml/proxy';
 	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
-	this.browserProxyUrl = 'http://www.anonym.pp.ua/browse.php?';
+
+	this.browserProxyDomain = 'http://cloud.lntu.info';
+	this.browserProxyPath = '/browse.php?';
+
 	this.isBrowserProxy = false;
 	this.readSpeed = 600; //Symbols per minute
 
@@ -124,6 +127,7 @@ Proxy.prototype.initAssociateParams = function(){
 	//Set params based on another params
 	this.$ajaxLoader = $('<div class="'+ this.ajaxLoaderClass +'"><img src="'+ this.ajaxImgUrl +'"></div>');
 	this.$ajaxError = $('<div class="'+ this.ajaxErrorClass +'"></div>');
+	this.browserProxyUrl = this.browserProxyDomain + this.browserProxyPath;
 }
 Proxy.prototype.baseInit = function(){
 	this.initAjaxLoader();
@@ -182,11 +186,14 @@ Proxy.prototype.removeScriptFromString = function(string){
 	return string.replace(/<.*?script.*?>.*?<\/.*?script.*?>/igm, '');
 }
 Proxy.prototype.cleanHref = function(href){
-	var newHref = href.replace(/\/browse\.php\?u=/, '');
-	newHref = newHref.replace(/http\:\/\/www\.anonym\.pp\.ua/, '');
-	newHref = newHref.replace(/&.*$/g, '');
+	var regExpPath = this.getRegExpFromString(this.browserProxyPath +'u='),
+		regExpDomain = this.getRegExpFromString(this.browserProxyDomain);
+	
+	href = href.replace(regExpPath, '');
+	href = href.replace(regExpDomain, '');
+	href = href.replace(/&.*$/gm, '');
 
-	return newHref;
+	return href;
 }
 Proxy.prototype.cleanLinks = function($html){
 	var that = this,
@@ -200,6 +207,14 @@ Proxy.prototype.cleanLinks = function($html){
 
 	return $html;
 }
+Proxy.prototype.getRegExpFromString = function(str){
+	var str = str.replace(/\:/gm, '\\:');
+	str = str.replace(/\//gm, '\\/');
+	str = str.replace(/\./gm, '\\.');
+	str = str.replace(/\?/gm, '\\?');
+
+	return new RegExp(str);
+} 
 Proxy.prototype.getEstimatedReadTime = function(string){
 	return (string.length / this.readSpeed * 60000).toFixed() ;
 }
