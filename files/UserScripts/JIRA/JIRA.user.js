@@ -60,17 +60,46 @@ Modal.prototype.addCustomStyles = function(){
 		'.'+ this.modalClass +' video{width: auto;height: auto;max-width: 100%;max-height: 100%;}'+
 		'.'+ this.bgClass +'{position: fixed;width: 100%;height: 100%;background: #000;z-index: 99999;top: 0;opacity: 0.5;display: none;}'+
 		'.'+ this.bgClass +'.'+ this.activeClass +'{display: block;}'+
-		'.'+ this.closeClass +'{position: absolute;right: 10px;top: 5px;color: #000;font: normal 20px arial;cursor: pointer; z-index:5;}'
+		'.'+ this.closeClass +'{position: absolute;right: 10px;top: 5px;color: #000;font: normal 20px arial;cursor: pointer; z-index:5;}'+
+		'.'+ this.closeClass +':hover,.'+ this.closeClass +':focus,.'+ this.closeClass +':active{text-decoration: none;}'
 	);
 	$('head').append($styles);
 }	
 Modal.prototype.createDom = function(){
 	$('body').append('<div class="'+ this.bgClass +'"></div>')
-		.append('<div class="'+ this.modalClass +' jira-dialog"><div class="'+ this.closeClass +'">✖</div><div class="'+ this.contentClass +' jira-dialog-content "></div></div>')
+		.append('<div class="'+ this.modalClass +' jira-dialog"><a href="#" class="'+ this.closeClass +'">✖</a><div class="'+ this.contentClass +' jira-dialog-content "></div></div>')
 }
 Modal.prototype.registerEvents = function(){
 	$(document).on('click', '.'+ this.closeClass, $.proxy(this, 'hide'));
 	$(document).on('click', '.'+ this.bgClass, $.proxy(this, 'hide'));
+	$(document).on('keydown', '.'+ this.modalClass, $.proxy(this, 'onKeyPress'));
+}
+Modal.prototype.onKeyPress = function(e){
+	var $this = $(document.activeElement),
+		$context = $this.closest('.'+ this.modalClass),
+		$focusableElements = $context.find(':focusable'),
+		$firstFocusable = $focusableElements.first(),
+		$lastFocusable = $focusableElements.last();
+
+	switch(e.keyCode){
+		//Escape key pressed
+		case 27:
+			this.hide();
+			break;
+		//Tab key pressed
+		case 9:
+			//Shift + Tab on first element in popup
+			if($this[0] == $firstFocusable[0] && e.shiftKey){
+				e.preventDefault();
+				$lastFocusable.focus();
+			}
+			//Tab on last element in popup
+			else if($this[0] == $lastFocusable[0] && !e.shiftKey){
+				e.preventDefault();
+				$firstFocusable.focus();	
+			}
+			break;
+	}
 }
 Modal.prototype.updatePosition = function(){
 	var $modal = $('.'+ this.modalClass);
@@ -87,7 +116,7 @@ Modal.prototype.show = function(content, callback){
 
 	$bg.addClass(this.activeClass);
     $modal.addClass(this.activeClass).find('.'+ this.contentClass).html(content);
-    $modal.find(':focusable:first').focus();
+    $modal.find(':focusable:eq(1)').focus();
 	this.videoReady();
 	if(callback) callback();
 }
@@ -105,7 +134,9 @@ Modal.prototype.removeVideos = function(){
 		$(this).remove();
 	});
 }
-Modal.prototype.hide = function(){
+Modal.prototype.hide = function(e){
+	if(e) e.preventDefault();
+
 	this.removeVideos();
 	$('.'+ this.bgClass).removeClass(this.activeClass);
 	$('.'+ this.modalClass).removeClass(this.activeClass).css({'height':'', 'margin-top':''}).find('.'+ this.contentClass).html('');
