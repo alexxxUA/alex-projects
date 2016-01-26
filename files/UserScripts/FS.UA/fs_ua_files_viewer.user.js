@@ -1,14 +1,71 @@
 // ==UserScript==
-// @name         FS.UA files viewer
-// @version      5.5
-// @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
-// @author       Alexey
-// @match        http://brb.to/*
-// @match        https://brb.to/*
-// @match        http://fs.to/*
-// @match        https://fs.to/*
-// @updateURL	 http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
+// @name			FS.UA files viewer
+// @version			5.6
+// @description		FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
+// @author			Alexey
+// @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
+// @match			http://brb.to/*
+// @match			https://brb.to/*
+// @match			http://fs.to/*
+// @match			https://fs.to/*
+// @updateURL		http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
 // ==/UserScript==
+
+var $ = jQuery;
+
+//Metadata plugin
+$.extend({
+	metadata : {
+		defaults : {
+			type: 'class',
+			name: 'metadata',
+			cre: /({.*})/,
+			single: 'metadata'
+		},
+		setType: function( type, name ){
+			this.defaults.type = type;
+			this.defaults.name = name;
+		},
+		get: function( elem, opts ){
+			var settings = $.extend({},this.defaults,opts);
+			// check for empty string in single property
+			if ( !settings.single.length ) settings.single = 'metadata';
+			
+			var data = $.data(elem, settings.single);
+			// returned cached data if it already exists
+			if ( data ) return data;
+			
+			data = "{}";
+			
+			if ( settings.type == "class" ) {
+				var m = settings.cre.exec( elem.className );
+				if ( m )
+					data = m[1];
+			} else if ( settings.type == "elem" ) {
+				if( !elem.getElementsByTagName )
+					return undefined;
+				var e = elem.getElementsByTagName(settings.name);
+				if ( e.length )
+					data = $.trim(e[0].innerHTML);
+			} else if ( elem.getAttribute != undefined ) {
+				var attr = elem.getAttribute( settings.name );
+				if ( attr )
+					data = attr;
+			}
+			
+			if ( data.indexOf( '{' ) <0 )
+			data = "{" + data + "}";
+			
+			data = eval("(" + data + ")");
+			
+			$.data( elem, settings.single, data );
+			return data;
+		}
+	}
+});
+$.fn.metadata = function( opts ){
+	return $.metadata.get( this[0], opts );
+};
 
 /* MODAL CLASS */
 var Modal = function(params){
@@ -47,6 +104,8 @@ Modal.prototype.addCustomStyles = function(){
 		'.'+ this.bgClass +'.'+ this.activeClass +'{display: block;}'+
 		'.'+ this.closeClass +'{position: absolute;right: 10px;top: 5px;color: #C9F2F9;font: normal 20px arial;cursor: pointer;}'
 	);
+	
+	$styles.attr('data-id', unsafeWindow.FS_PROXY.dataId);
 	$('head').append($styles);
 }	
 Modal.prototype.createDom = function(){
@@ -394,6 +453,7 @@ var FS = new Proxy({
 			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 100; width: 35px; height: 35px;}'+
 			'.rutor-poster-link + .rutor-poster-link {top: 30px;}'
 		);
+		$styles.attr('data-id', unsafeWindow.FS_PROXY.dataId);
         this.$head.append($styles);
     },
 	loadCss: function(){
