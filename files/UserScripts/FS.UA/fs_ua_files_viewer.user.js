@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name			FS.UA files viewer
-// @version			5.6
+// @version			5.7
 // @description		FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author			Alexey
 // @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
@@ -477,9 +477,10 @@ var FS = new Proxy({
 			'</video>';
 	},
 	getRutorLink: function(title){
-		var cleanTitle = this.getCleanTitle(title);
+		var cleanTitle = this.getCleanTitle(title),
+			escapedTitle = cleanTitle.replace(/\s+/g, '%20');
 
-		return '<a href="'+ this.rutorSearchUrl + cleanTitle +'" title="'+ title +'" class="rutor-poster-link" target="_blank">'+
+		return '<a href="'+ this.rutorSearchUrl + escapedTitle +'#index" title="'+ cleanTitle +'" class="rutor-poster-link" target="_blank">'+
 					'<img src="'+ this.torrentImgUrl +'">'+
 				'</a>';
 	},
@@ -502,9 +503,7 @@ var FS = new Proxy({
 		});
     },
 	getCleanTitle: function(title){
-		var newTitle = title.replace(/\n+|\t+|\v+/g, '');	//Remove "enters" and "tabs"
-
-		return newTitle.replace(/\s+/g, '%20'); //Convert spaces
+		return title.replace(/\n+|\t+|\v+/g, '');	//Remove "enters" and "tabs"
 	},
 	showRutorLinks: function(){
 		var that = this,
