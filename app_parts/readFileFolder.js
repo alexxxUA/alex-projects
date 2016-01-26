@@ -45,7 +45,7 @@ function readFolder(req, res){
 				dir.push(reqDirs[j]);
 			}
 			dom.dirTree.push({
-				link: path.normalize(dir.join('/') + '/'),
+				link: dir.join('/') + '/',
 				title: decodeURI(reqDirs[i])
 			});
 		}
@@ -59,17 +59,18 @@ function readFolder(req, res){
 			finishReadDir();
 
 		files.forEach(function(file, i){
-			var stat = fs.statSync(path.join(p, file));
+			var stat = fs.statSync(path.join(p, file)),
+				normalizedPath = path.join(req.path, file).replace(/\\/g, '/');
 
 			if(stat.isDirectory()){
 				dom.dirs.push({
-					link: path.join(req.path, file +'/'),
+					link: normalizedPath +'/',
 					title: file
 				});
 			}
 			else if(stat.isFile()){
 				dom.files.push({
-					link: path.join(req.path, file),
+					link: normalizedPath,
 					title: file,
 					imageName: fileTypeIcon.get(file)
 				});
