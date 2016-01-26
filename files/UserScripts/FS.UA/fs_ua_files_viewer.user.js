@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         FS.UA files viewer
-// @version      5.4
+// @version      5.5
 // @description  FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author       Alexey
 // @match        http://brb.to/*
+// @match        https://brb.to/*
 // @match        http://fs.to/*
+// @match        https://fs.to/*
 // @updateURL	 http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
 // ==/UserScript==
 
@@ -95,8 +97,8 @@ function Proxy(params){
 	this.ajaxLoaderClass = 'js-ajax-loader';
 	this.ajaxErrorClass = 'js-ajax-error';
 	this.ajaxImgUrl = 'http://avasin.ml/img/ajax-loader.gif';
-	this.internalProxyUrl = 'http://avasin.ml/proxy';
-	this.externalProxyUrl = 'http://213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
+	this.internalProxyUrl = location.protocol +'//avasin.ml/proxy';
+	this.externalProxyUrl = location.protocol +'//213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 
 	this.browserProxyDomain = 'http://smenip.ru'; //'http://cloud.lntu.info'
 	this.browserProxyPath = '/proxi/browse.php?'; //'/browse.php?'
