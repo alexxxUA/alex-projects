@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         JIRA templates
-// @version      0.1
+// @version      1.0
 // @description  Quick templates for JIRA (can be used on any textarea elements) 
-// @author       Alexey
+// @author       Alexey Vasin
 // @match        https://menswearhouse.atlassian.net/*
 // @match        http://jira.ontrq.com/*
 // @updateURL	 http://avasin.ml/UserScripts/JIRA/JIRA.user.js
@@ -67,7 +67,7 @@ Modal.prototype.addCustomStyles = function(){
 }	
 Modal.prototype.createDom = function(){
 	$('body').append('<div class="'+ this.bgClass +'"></div>')
-		.append('<div class="'+ this.modalClass +' jira-dialog"><a href="#" class="'+ this.closeClass +'">✖</a><div class="'+ this.contentClass +' jira-dialog-content "></div></div>')
+		.append('<div class="'+ this.modalClass +' jira-dialog"><a href="#" class="'+ this.closeClass +'" title="Close popup. Tip: you can also use Esc button.">✖</a><div class="'+ this.contentClass +' jira-dialog-content "></div></div>')
 }
 Modal.prototype.registerEvents = function(){
 	$(document).on('click', '.'+ this.closeClass, $.proxy(this, 'hide'));
@@ -193,6 +193,15 @@ var _T = {
         
         return params;
     },
+	getTemplParamsObj: function(templString){
+		var paramsArray = this.getTemplParamsNames(templString),
+			paramsObj = {};
+		
+		for(var i=0; i<paramsArray.length; i++)
+			paramsObj[paramsArray[i]] = false;
+		
+		return paramsObj;
+	},
 	updateTemplateParams: function(string){
 		var that = this,
 			regExp = /(?:<%=)(.*)?(?:%>)/gm;		
@@ -219,11 +228,14 @@ var Templates = function(params){
 	this.templAddClass = 'js-templ-action-add';
 	this.addTemlFormClass = 'js-add-form';
 	this.applyTemplParamsFormClass = 'js-apply-params';
+	this.saveDefaultsFormClass = 'js-save-default-params';
 	this.commentAttr = 'data-comm';
+	this.templNameAttr = 'data-templ-name';
 
-	this.templItemSel = '[data-templ]';
-	this.editTemplItemSel = '[data-edit-templ]';
-	this.delTemplItemSel = '[data-del-templ]';
+	this.applyTemplClass = 'js-apply-templ';
+	this.editTemplClass = 'js-edit-templ';
+	this.delTemplClass = 'js-del-templ';
+	this.confTemplClass = 'js-conf-templ';
 
 	this.$head = $('head');
 
@@ -249,12 +261,15 @@ Templates.prototype.initAssociateParams = function(){
                                 '<% if(! jQuery.isEmptyObject(templates) ){ %>'+
                                     '<ul>'+
                                         '<% for(var key in templates){ %>'+
-                                            '<li class="'+ this.templItemClass +'">'+
-                                                '<a class="'+ this.templItemLinkClass +'" href="#" data-templ="<%= key %>"><%= key %></a>'+
-												'<span class="'+ this.templItemActionsClass +'">('+
-													'<a href="#" data-edit-templ="<%= key %>">edit</a>/'+
-													'<a href="#" data-del-templ="<%= key %>">del</a>'+
-												')</span>'+
+                                            '<li class="'+ this.templItemClass +'" '+ this.templNameAttr +'="<%= key %>">'+
+                                                '<a class="'+ this.templItemLinkClass +' '+ this.applyTemplClass +'" href="#" title="Apply template item."><%= key %></a>'+
+												'<span class="'+ this.templItemActionsClass +'">'+
+													'<% if(!jQuery.isEmptyObject(defaults[key])){ %>'+
+														'<a href="#" class="'+ this.confTemplClass +' aui-icon aui-icon-small aui-iconfont-configure" title="Configure default parameters in template.">conf</a> '+
+													'<% } %>'+
+													'<a href="#" class="'+ this.editTemplClass +' aui-icon aui-icon-small aui-iconfont-edit" title="Edit template item.">edit</a> '+
+													'<a href="#" class="'+ this.delTemplClass +' aui-icon aui-icon-small aui-iconfont-delete" title="Remove template item.">del</a>'+
+												'</span>'+
                                             '</li>'+
                                         '<% } %>'+
                                     '</ul>'+
@@ -288,11 +303,36 @@ Templates.prototype.initAssociateParams = function(){
                             '<input class="button" type="submit" value="Edit">'+
                         '</div>'+
                     '</form>';
+	this._confTeml = '<form class="'+ this.saveDefaultsFormClass +' aui">'+
+                        '<h2 class="jira-dialog-heading">Edit default parameters for "<%= templName %>".</h2>'+
+                        '<div class="jira-dialog-main-section">'+
+							'<ul class="defaults-list">'+
+								'<% for(var param in params){ %>'+
+									'<li>'+
+										'<label for="label-<%= param %>"><%= param %>:</label>'+
+										'<textarea id="label-<%= param %>" class="locked" name="<%= param %>" placeholder="<%= param %>">'+
+											'<% if(params[param]){ %>'+
+												'<%= params[param] %>'+
+											'<% } %>'+
+										'</textarea>'+
+									'</li>'+
+								'<% } %>'+
+							'</ul>'+
+							'<input type="hidden" name="templName" value="<%= templName %>">'+
+                        '</div>'+
+                        '<div class="buttons-container">'+
+                            '<input class="button" type="submit" value="Save">'+
+                        '</div>'+
+                    '</form>';
     this._paramsDialog = '<form class="'+ this.applyTemplParamsFormClass +' aui">'+
                             '<h2 class="jira-dialog-heading">Fill out parameters for template "<%= templName %>".</h2>'+
                             '<div class="jira-dialog-main-section">'+
-                                '<% for(var i=0; i<params.length; i++){ %>'+
-                                    '<textarea class="locked" name="<%= params[i] %>" placeholder="<%= params[i] %>"></textarea>'+
+                                '<% for(var param in params){ %>'+
+                                    '<textarea class="locked" name="<%= param %>" placeholder="<%= param %>">'+
+										'<% if(params[param]){ %>'+
+											'<%= params[param] %>'+
+										'<% } %>'+
+									'</textarea>'+
                                 '<% } %>'+
                                 '<input type="hidden" name="templName" value="<%= templName %>">'+
                             '</div>'+
@@ -323,15 +363,21 @@ Templates.prototype.registerEvents = function(){
 
     //Apply template params handler
     $(document).on('submit', '.'+ this.applyTemplParamsFormClass, $.proxy(this, 'onApplyParams'));
+	
+	//Apply template default parameters hendler
+    $(document).on('submit', '.'+ this.saveDefaultsFormClass, $.proxy(this, 'onSaveDefaults'));
 
     //Apply template item
-    $(document).on('click', this.templItemSel, $.proxy(this, 'applyTemplItem'));
+    $(document).on('click', '.'+ this.applyTemplClass, $.proxy(this, 'onApplyTemplItem'));
 	
 	//Edit template item
-	$(document).on('click', this.editTemplItemSel, $.proxy(this, 'editTemplItem'));
+	$(document).on('click', '.'+ this.editTemplClass, $.proxy(this, 'onEditTemplItem'));
 	
 	//Remove template item
-	$(document).on('click', this.delTemplItemSel, $.proxy(this, 'onDelTemplItem'));
+	$(document).on('click', '.'+ this.delTemplClass, $.proxy(this, 'onDelTemplItem'));
+	
+	//Config default params for template item
+	$(document).on('click', '.'+ this.confTemplClass, $.proxy(this, 'onConfTemplItem'));
 
     //Show/hide template options
     $(document).on('mouseenter', '.'+ this.templContainerClass, $.proxy(this, 'showOptions'))
@@ -345,17 +391,27 @@ Templates.prototype.addCustomStyles = function(){
         '.'+ this.templContainerClass +' a:hover{text-decoration:none;}'+
         '.'+ this.templContainerClass +':before{content:""; width:12px; height:30px; display:block; background:#3B73AF; border-radius:50% 0 0 50%; cursor:pointer}'+
         '.'+ this.templListClass +'{z-index:1; position:absolute; left:12px; top:0; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; display: none;}'+        
-        'body .'+ this.templListClass +' ul{margin:0; padding:0 0 0 15px;}'+
+        'body .'+ this.templListClass +' ul{margin:0; padding:0;}'+
         '.'+ this.templAddClass +'{display:block; text-align:center; margin-top:10px;}'+
         '.'+ this.noTemplMsgClass +'{text-align:center}'+
         '.'+ this.templContainerClass +'.active .'+ this.templListClass +'{display: block;}'+
         '.jira-dialog-main-section {padding: 5px 10px 0;}'+
-        '.jira-dialog-main-section textarea {width: 99%; max-width: 99%; margin-bottom: 5px; display:block; padding:1%;}'+
+        '.jira-dialog-main-section textarea {width: 99%; max-width: 99%; margin-bottom: 5px; display:block; padding:1%; box-sizing:border-box;}'+
         '.templName {border-width:0 0 1px; border-color:#000; font-size:20px; background:transparent; color:#333; width:200px;}'+
         '.'+ this.addTemlFormClass +' textarea{height: 300px}'+
 		'.'+ this.templItemLinkClass +',.'+ this.templItemActionsClass +'{display: inline-block; vertical-align: top;}'+
-		'.'+ this.templItemLinkClass +'{width: 70%;}'+
-		'.'+ this.templItemActionsClass +'{width: 30%; text-align: right;}'
+		'.'+ this.templItemLinkClass +'{max-width: 73%; float:left;}'+
+		'.'+ this.templItemActionsClass +'{text-align:right; float:right;}'+
+		'.defaults-list{padding:0; list-style-type:none;}'+
+		'.defaults-list li{overflow: hidden;}'+
+		'.defaults-list label{float: left; width: 28%; padding-right: 2%; text-align: right;}'+
+		'.defaults-list textarea{float: left; width: 70%;}'+
+		'.'+ this.templItemActionsClass +' .'+ this.delTemplClass +'{color:#FF887F;}'+
+		'.'+ this.templItemActionsClass +' .'+ this.editTemplClass +'{color: #64FD6A;}'+
+		'.'+ this.templItemClass +'{border-top:1px solid transparent; border-bottom:1px solid transparent; overflow: hidden; padding: 0 2px;}'+
+		'.'+ this.templItemClass +':hover{border-color:#fff;}'+
+		'.'+ this.templItemClass +' a{text-decoration:none;}'+
+		'.'+ this.templItemClass +' a:hover{text-shadow:0 0 1px #FFF;}'
     );
 
     this.$head.append($styles);
@@ -363,8 +419,10 @@ Templates.prototype.addCustomStyles = function(){
 Templates.prototype.addDefaultTemplates = function(){
     var isNoSavedTempls = $.isEmptyObject(this.getSavedTempls());
 
-    if(isNoSavedTempls)
-        GM_setValue('templates', JSON.stringify(this.defaultTempls));
+    if(isNoSavedTempls){
+		for(var templ in this.defaultTempls)
+			this.saveTempl(templ, this.defaultTempls[templ])
+	}
 }
 Templates.prototype.addTemplBtns = function(){
     var that = this;
@@ -381,25 +439,22 @@ Templates.prototype.addTemplBtn = function(e){
 	$this.attr(this.commentAttr, uniqueAttr);
 	$(templButton).insertBefore(e.currentTarget);
 }
-Templates.prototype.applyTemplItem = function(e){
+Templates.prototype.onApplyTemplItem = function(e){
     e.preventDefault();
-    var $this = $(e.currentTarget),
-        templName = $this.attr('data-templ'),
+    var templName = this.getTemplNameFromParent(e),
         templ = this.getTemlByName(templName),
-        templParams = _T.getTemplParamsNames(templ);
+        templParams = this.getTemplDefaults(templName);
 
     this.hideOptions();
 
-    if(templParams.length)
+    if(!$.isEmptyObject(templParams))
         this.showParamsDialog(templName, templParams);
     else
         this.applyTempl(templName);
 }
-Templates.prototype.editTemplItem = function(e){
+Templates.prototype.onEditTemplItem = function(e){
 	e.preventDefault();
-	
-	var $this = $(e.currentTarget),
-		templName = $this.attr('data-edit-templ'),
+	var templName = this.getTemplNameFromParent(e),
 		templ = this.getTemlByName(templName);
 	
 	this.hideOptions();
@@ -408,20 +463,33 @@ Templates.prototype.editTemplItem = function(e){
 		name: templName,
 		templ: templ
 	}));
-};
+}
 Templates.prototype.onDelTemplItem = function(e){
 	e.preventDefault();
-	var $this = $(e.currentTarget),
-		templName = $this.attr('data-del-templ');
+	var templName = this.getTemplNameFromParent(e);
 	
 	this.delTempl(templName);
-};
-Templates.prototype.applyTempl = function(templName, data){
-    var data = data ? data : {},
-        templ = this.getTemlByName(templName),
-        oldValue = this.$activeComment.val();
-
-    this.$activeComment.val(oldValue + _T.getT(templ, data));
+}
+Templates.prototype.onConfTemplItem = function(e){
+	e.preventDefault();
+	var templName = this.getTemplNameFromParent(e),
+		templParams = this.getTemplDefaults(templName);
+	
+	this.hideOptions();
+	
+	modal.show(_T.getT(this._confTeml, {
+		templName: templName,
+		params: templParams
+	}));
+}
+Templates.prototype.onSaveDefaults = function(e){
+	e.preventDefault();
+	var $this = $(e.currentTarget),
+		data = $this.serializeObject(),
+		templName = data.templName;
+	
+	delete data.templName;
+	this.saveTemplDefaults(templName, data);
 }
 Templates.prototype.onApplyParams = function(e){
 	e.preventDefault();
@@ -430,6 +498,13 @@ Templates.prototype.onApplyParams = function(e){
 
 	this.applyTempl(data.templName, data);
 	modal.hide();
+}
+Templates.prototype.applyTempl = function(templName, data){
+    var data = data ? data : {},
+        templ = this.getTemlByName(templName),
+        oldValue = this.$activeComment.val();
+
+    this.$activeComment.val(oldValue + _T.getT(templ, data));
 }
 Templates.prototype.showOptions = function(e){
     var $this = $(e.currentTarget),
@@ -441,15 +516,30 @@ Templates.prototype.showOptions = function(e){
 Templates.prototype.hideOptions = function(e){
     $('.'+ this.templContainerClass).removeClass('active');
 }
+Templates.prototype.getTemplNameFromParent = function(e){
+	var $this = $(e.currentTarget),
+		$templItem = $this.closest('.'+ this.templItemClass);
+	
+	return $templItem.attr(this.templNameAttr);
+}
 Templates.prototype.getTemlByName = function(name){
-	return JSON.parse(GM_getValue('templates'))[name];
+	return this.getSavedTempls()[name];
 }
 Templates.prototype.getSavedTempls = function(){
-	return typeof GM_getValue('templates') != 'undefined' ? JSON.parse(GM_getValue('templates')) : {};
+	var templs = GM_getValue('templates');
+	return typeof templs != 'undefined' ? JSON.parse(templs) : {};
+}
+Templates.prototype.getSavedDefaults = function(){
+	var defaults = GM_getValue('templ-defaults');
+	return typeof defaults != 'undefined' ? JSON.parse(defaults) : {};
+}
+Templates.prototype.getTemplDefaults = function(name){
+	return this.getSavedDefaults()[name];
 }
 Templates.prototype.getTemplButton = function(uniqueAttr){
     var data = {
         templates: this.getSavedTempls(),
+		defaults: this.getSavedDefaults(),
         uniqueAttr: uniqueAttr
     }
     return templatesHtml = _T.getT(this._templButton, data);    
@@ -462,14 +552,16 @@ Templates.prototype.openAddTemplModal = function(e){
 Templates.prototype.addTempl = function(e){
     e.preventDefault();
     var $this = $(e.currentTarget),
-        data = $this.serializeObject();
-    
-    //Update name
-    data.name = ($.trim(data.name)).replace(/\s/g, '_');
-	//Update template params
-	data.value = _T.updateTemplateParams(data.value);
+        data = $this.serializeObject(),
+		templName = ($.trim(data.name)).replace(/\s/g, '_'),
+		templString = _T.updateTemplateParams(data.value),
+		paramsObj = _T.getTemplParamsObj(templString);
 
-    this.saveTempl(data);
+	//Save dafaults if parameters object is not empty
+	if(!$.isEmptyObject(paramsObj))
+		this.saveTemplDefaults(templName, paramsObj);
+
+    this.saveTempl(templName, templString);
 	this.refreshButtons();
 }
 Templates.prototype.showParamsDialog = function(templName, params){
@@ -489,10 +581,19 @@ Templates.prototype.delTempl = function(templName){
 	modal.hide();
 	this.refreshButtons();
 }
-Templates.prototype.saveTempl = function(data){
+Templates.prototype.saveTemplDefaults = function(templName, params){
+	var defaults = this.getSavedDefaults();
+	
+	defaults[templName] = params;
+	
+	GM_setValue('templ-defaults', JSON.stringify(defaults));
+	
+	modal.hide();
+}
+Templates.prototype.saveTempl = function(templName, templString){
 	var savedTempl = this.getSavedTempls();
 
-	savedTempl[$.trim(data.name)] = data.value;
+	savedTempl[templName] = templString;
 
 	GM_setValue('templates', JSON.stringify(savedTempl));
 
