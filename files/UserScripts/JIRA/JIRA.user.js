@@ -4,8 +4,8 @@
 // @description		Quick templates for JIRA (can be used on any textarea elements) 
 // @author			Alexey Vasin
 // @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
-// @match			https://menswearhouse.atlassian.net/*
-// @match			http://jira.ontrq.com/*
+// @include			/https?\:\/\/menswearhouse\.atlassian\.net.*/
+// @include			/https?\:\/\/jira\.ontrq\.com.*/
 // @grant			GM_setValue
 // @grant			GM_getValue
 // @updateURL		http://avasin.ml/UserScripts/JIRA/JIRA.user.js

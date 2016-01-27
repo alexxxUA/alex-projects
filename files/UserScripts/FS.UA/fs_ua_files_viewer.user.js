@@ -1,13 +1,11 @@
 // ==UserScript==
 // @name			FS.UA files viewer
-// @version			5.7
+// @version			5.8
 // @description		FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author			Alexey
 // @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
-// @match			http://brb.to/*
-// @match			https://brb.to/*
-// @match			http://fs.to/*
-// @match			https://fs.to/*
+// @include			/https?\:\/\/brb\.to.*/
+// @include			/https?\:\/\/fs\.to.*/
 // @updateURL		http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
 // ==/UserScript==
 
