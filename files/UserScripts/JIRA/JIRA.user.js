@@ -84,6 +84,7 @@ try{
 	}
 	Modal.prototype.onKeyPress = function(e){
 		var $this = $(document.activeElement),
+			$closestForm = $this.closest('form'),
 			$context = $this.closest('.'+ this.modalClass),
 			$focusableElements = $context.getFocusable(),
 			$firstFocusable = $focusableElements.first(),
@@ -107,6 +108,10 @@ try{
 					$firstFocusable.focus();	
 				}
 				break;
+			//Enter key pressed
+			case 13:
+				//Ctrl + Enter will submit the form
+				if(e.ctrlKey) $closestForm.trigger('submit');
 		}
 	}
 	Modal.prototype.updatePosition = function(){
@@ -232,6 +237,9 @@ try{
 		this.noTemplMsgClass = 'empty-templ-msg';
 		this.templItemLinkClass = 'templ-item-link';
 		this.templItemActionsClass = 'templ-item-actions';
+		this.confirmDelTemplClass = 'js-confirm-del';
+		this.notDelTemplClass = 'js-cansel-del';
+		this.confirmDelHolderClass = 'js-confirm-del-holder';
 		this.templItemClass = 'js-templ-item';
 		this.templAddClass = 'js-templ-action-add';
 		this.addTemlFormClass = 'js-add-form';
@@ -239,6 +247,7 @@ try{
 		this.saveDefaultsFormClass = 'js-save-default-params';
 		this.commentAttr = 'data-comm';
 		this.templNameAttr = 'data-templ-name';
+		this.activeClass = 'active';
 
 		this.applyTemplClass = 'js-apply-templ';
 		this.editTemplClass = 'js-edit-templ';
@@ -271,7 +280,11 @@ try{
 											'<% for(var key in templates){ %>'+
 												'<li class="'+ this.templItemClass +'" '+ this.templNameAttr +'="<%= key %>">'+
 													'<a class="'+ this.templItemLinkClass +' '+ this.applyTemplClass +'" href="#" title="Apply template item."><%= key %></a>'+
-													'<span class="'+ this.templItemActionsClass +'">'+
+													'<span class="'+ this.confirmDelHolderClass +'">'+
+														'<a href="#" class="'+ this.confirmDelTemplClass +'">Yes</a> | '+
+														'<a href="#" class="'+ this.notDelTemplClass +'">No</a>'+
+													'</span>'+
+													'<span class="'+ this.templItemActionsClass +' '+ this.activeClass +'">'+
 														'<% if(!jQuery.isEmptyObject(defaults[key])){ %>'+
 															'<a href="#" class="'+ this.confTemplClass +' aui-icon aui-icon-small aui-iconfont-configure" title="Configure default parameters in template.">conf</a> '+
 														'<% } %>'+
@@ -381,8 +394,14 @@ try{
 		//Edit template item
 		$(document).on('click', '.'+ this.editTemplClass, $.proxy(this.onEditTemplItem, this));
 
+		//Show confirm for removing template item
+		$(document).on('click', '.'+ this.delTemplClass, $.proxy(this.showConfirm, this));
+		
+		//Hide confirm for removing template item
+		$(document).on('click', '.'+ this.notDelTemplClass, $.proxy(this.hideConfirm, this));
+		
 		//Remove template item
-		$(document).on('click', '.'+ this.delTemplClass, $.proxy(this.onDelTemplItem, this));
+		$(document).on('click', '.'+ this.confirmDelTemplClass, $.proxy(this.onDelTemplItem, this));
 
 		//Config default params for template item
 		$(document).on('click', '.'+ this.confTemplClass, $.proxy(this.onConfTemplItem, this));
@@ -409,7 +428,8 @@ try{
 			'.'+ this.addTemlFormClass +' textarea{height: 300px}'+
 			'.'+ this.templItemLinkClass +',.'+ this.templItemActionsClass +'{display: inline-block; vertical-align: top;}'+
 			'.'+ this.templItemLinkClass +'{max-width: 73%; float:left;}'+
-			'.'+ this.templItemActionsClass +'{text-align:right; float:right;}'+
+			'.'+ this.templItemActionsClass +',.'+ this.confirmDelHolderClass +'{text-align:right; float:right; white-space:nowrap; overflow:hidden; transition:width 0.2s ease-in-out; width: 0;}'+
+			'.'+ this.templItemActionsClass + '.'+ this.activeClass +',.'+ this.confirmDelHolderClass +'.'+ this.activeClass +'{width: 25%;}'+
 			'.defaults-list{padding:0; list-style-type:none;}'+
 			'.defaults-list li{overflow: hidden;}'+
 			'.defaults-list label{float: left; width: 28%; padding-right: 2%; text-align: right;}'+
@@ -471,6 +491,26 @@ try{
 			name: templName,
 			templ: templ
 		}));
+	}
+	Templates.prototype.showConfirm = function(e){
+		e.preventDefault();
+		var $this = $(e.currentTarget),
+			$templItem = $this.closest('.'+ this.templItemClass),
+			$templItemActions = $templItem.find('.'+ this.templItemActionsClass),
+			$confirmHolder = $templItem.find('.'+ this.confirmDelHolderClass);
+		
+		$templItemActions.removeClass(this.activeClass);
+		$confirmHolder.addClass(this.activeClass);
+	}
+	Templates.prototype.hideConfirm = function(e){
+		e.preventDefault();
+		var $this = $(e.currentTarget),
+			$templItem = $this.closest('.'+ this.templItemClass),
+			$templItemActions = $templItem.find('.'+ this.templItemActionsClass),
+			$confirmHolder = $templItem.find('.'+ this.confirmDelHolderClass);
+		
+		$templItemActions.addClass(this.activeClass);
+		$confirmHolder.removeClass(this.activeClass);
 	}
 	Templates.prototype.onDelTemplItem = function(e){
 		e.preventDefault();
@@ -623,8 +663,7 @@ try{
 							'Thanks in advance.',
 			Code_approved: 'Code looks good.\n'+
 							'No comments or objections.',
-			Implemented: '<%= implemented_stuff %> has been implemented.\n\n'+
-						'Thanks,\nAlexey.'
+			Implemented: '<%= implemented_stuff %> has been implemented.'
 		}
 	});
 }
