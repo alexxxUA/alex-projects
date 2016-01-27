@@ -3,7 +3,8 @@
 // @version			1.0
 // @description		Quick templates for JIRA (can be used on any textarea elements) 
 // @author			Alexey Vasin
-// @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
+// @require			https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
+// @require			https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2014-11-29/FileSaver.min.js
 // @include			/https?\:\/\/menswearhouse\.atlassian\.net.*/
 // @include			/https?\:\/\/jira\.ontrq\.com.*/
 // @grant			GM_setValue
@@ -211,7 +212,7 @@ try{
 				paramsObj = {};
 
 			for(var i=0; i<paramsArray.length; i++)
-				paramsObj[paramsArray[i]] = false;
+				paramsObj[paramsArray[i]] = '';
 
 			return paramsObj;
 		},
@@ -242,12 +243,16 @@ try{
 		this.confirmDelHolderClass = 'js-confirm-del-holder';
 		this.templItemClass = 'js-templ-item';
 		this.templAddClass = 'js-templ-action-add';
+		this.templImportExportClass = 'js-import-export-btn'
 		this.addTemlFormClass = 'js-add-form';
 		this.applyTemplParamsFormClass = 'js-apply-params';
 		this.saveDefaultsFormClass = 'js-save-default-params';
 		this.commentAttr = 'data-comm';
 		this.templNameAttr = 'data-templ-name';
 		this.activeClass = 'active';
+		
+		this.exportTemplsBtnClass = 'js-export-templs';
+		this.importTemplsBtnClass = 'js-import-templs';
 
 		this.applyTemplClass = 'js-apply-templ';
 		this.editTemplClass = 'js-edit-templ';
@@ -297,7 +302,10 @@ try{
 									'<% }else{ %>'+
 										'<div class="'+ this.noTemplMsgClass +'">You dont have any templates yet.</div>'+
 									'<% } %>'+
-									'<a href="#" title="Add new template" class="'+ this.templAddClass +'">Add template</a>'+
+									'<div class="add-templ-holder">'+
+										'<a href="#" title="Add new template" class="'+ this.templAddClass +' aui-button small-btn">Add template</a>'+
+										'<a href="#" title="Import/Export templates" class="'+ this.templImportExportClass +' aui-button small-btn">Import/Export</a>'+
+									'</div>'+
 								'</div>'+
 							'</div>';
 		this._newTeml = '<form class="'+ this.addTemlFormClass +' aui">'+
@@ -332,7 +340,7 @@ try{
 										'<li>'+
 											'<label for="label-<%= param %>"><%= param %>:</label>'+
 											'<textarea id="label-<%= param %>" class="locked" name="<%= param %>" placeholder="<%= param %>">'+
-												'<% if(params[param]){ %>'+
+												'<% if(params[param].length){ %>'+
 													'<%= params[param] %>'+
 												'<% } %>'+
 											'</textarea>'+
@@ -361,6 +369,18 @@ try{
 									'<input class="button" type="submit" value="Apply">'+
 								'</div>'+
 							'</form>';
+		this._importExport = '<h2 class="jira-dialog-heading">Import/Export templates.</h2>'+
+							'<div class="jira-dialog-main-section">'+
+								'<div class="import-box">'+
+									'<div class="import-btn-holder" title="Import templates">'+
+										'<span class="import-btn-fallback aui-button small-btn">Import templates</span>'+
+										'<input class="'+ this.importTemplsBtnClass +'" type="file">'+
+									'</div>'+
+								'</div>'+
+								'<div class="export-box">'+
+									'<a href="#" title="Export templates" class="'+ this.exportTemplsBtnClass +' aui-button small-btn">Export templates</a>'+
+								'</div>'+
+							'</div>';
 	}
 	Templates.prototype.init = function(){
 		this.addDefaultTemplates();
@@ -378,6 +398,15 @@ try{
 
 		//Add template link (open modal dialog with form)
 		$(document).on('click', '.'+ this.templAddClass, $.proxy(this.openAddTemplModal, this));
+		
+		//Import/Export template btn (open modal dialog with form)
+		$(document).on('click', '.'+ this.templImportExportClass, $.proxy(this.openImportExportModal, this));
+		
+		//Export templates
+		$(document).on('click', '.'+ this.exportTemplsBtnClass, $.proxy(this.exportTempls, this));
+		
+		//Importtemplates
+		$(document).on('change', '.'+ this.importTemplsBtnClass, $.proxy(this.getFile, this));
 
 		//Add template handler
 		$(document).on('submit', '.'+ this.addTemlFormClass, $.proxy(this.addTempl, this));
@@ -413,9 +442,8 @@ try{
 
 	Templates.prototype.addCustomStyles = function(){
 		var $styles = $("<style/>").html(
-			'.'+ this.templContainerClass +'{position:absolute; margin:0 0 0 -12px;}'+
-			'.'+ this.templContainerClass +' a{text-decoration:underline; color:#FFF;}'+
-			'.'+ this.templContainerClass +' a:hover{text-decoration:none;}'+
+			'.'+ this.templContainerClass +'{position:absolute; margin:0 0 0 -12px; z-index:999;}'+
+			'.'+ this.templContainerClass +' a{color:#FFF;}'+
 			'.'+ this.templContainerClass +':before{content:""; width:12px; height:30px; display:block; background:#3B73AF; border-radius:50% 0 0 50%; cursor:pointer}'+
 			'.'+ this.templListClass +'{z-index:1; position:absolute; left:12px; top:0; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; display: none;}'+        
 			'body .'+ this.templListClass +' ul{margin:0; padding:0;}'+
@@ -439,7 +467,15 @@ try{
 			'.'+ this.templItemClass +'{border-top:1px solid transparent; border-bottom:1px solid transparent; overflow: hidden; padding: 0 2px;}'+
 			'.'+ this.templItemClass +':hover{border-color:#fff;}'+
 			'.'+ this.templItemClass +' a{text-decoration:none;}'+
-			'.'+ this.templItemClass +' a:hover{text-shadow:0 0 1px #FFF;}'
+			'.'+ this.templItemClass +' a:hover{text-shadow:0 0 1px #FFF;}'+
+			'.aui-button.small-btn{height:auto; padding:2px 5px; color:#000;}'+
+			'.add-templ-holder{text-align:center; border-top:1px solid #CCC; padding-top:10px; margin-top:10px;}'+
+			'.export-box, .import-box{width:50%; display:inline-block; vertical-align:top; box-sizing:border-box; padding:25px 10px; margin-bottom:5px;}'+
+			'.import-box{border-right:1px solid #CCC;}'+
+			'.'+ this.importTemplsBtnClass +'{width:100%;}'+
+			'.import-btn-holder:hover .import-btn-fallback{background:#e9e9e9; border-color:#999;}'+
+			'.import-btn-holder{position:relative; display:inline-block; overflow:hidden;}'+
+			'.'+ this.importTemplsBtnClass +'{position:absolute; width:300%; top:0; right:0; font-size:25px; opacity:0; cursor:pointer;}'
 		);
 
 		this.$head.append($styles);
@@ -592,10 +628,26 @@ try{
 		}
 		return templatesHtml = _T.getT(this._templButton, data);    
 	}
+	Templates.prototype.getCurDate = function(){
+		var today = new Date(),
+			dd = today.getDate(),
+			mm = today.getMonth()+1,
+			yyyy = today.getFullYear();
+
+		dd = dd<10 ? '0'+dd : dd;
+		mm = mm<10 ? '0'+mm : mm;
+
+		return dd+'.'+mm+'.'+yyyy;
+	}
 	Templates.prototype.openAddTemplModal = function(e){
 		e.preventDefault();
 
 		modal.show(this._newTeml);
+	}
+	Templates.prototype.openImportExportModal = function(e){
+		e.preventDefault();
+		
+		modal.show(this._importExport);
 	}
 	Templates.prototype.addTempl = function(e){
 		e.preventDefault();
@@ -620,16 +672,30 @@ try{
 		delete savedTempl[templName];
 
 		GM_setValue('templates', JSON.stringify(savedTempl));
-
-		modal.hide();
+		
+		this.delDefaults(templName);
 		this.refreshButtons();
 	}
-	Templates.prototype.saveTemplDefaults = function(templName, params){
+	Templates.prototype.delDefaults = function(templName){
 		var defaults = this.getSavedDefaults();
 
-		defaults[templName] = params;
+		delete defaults[templName];
 
 		GM_setValue('templ-defaults', JSON.stringify(defaults));
+	}
+	Templates.prototype.saveTemplDefaults = function(templName, params){
+		var allDefaults = this.getSavedDefaults(),
+			defaults = allDefaults[templName];
+
+		if(!$.isEmptyObject(defaults)){
+			for(var param in params)
+				defaults[param] = params[param];
+		}
+		else{
+			allDefaults[templName] = params;
+		}
+
+		GM_setValue('templ-defaults', JSON.stringify(allDefaults));
 
 		modal.hide();
 	}
@@ -646,6 +712,51 @@ try{
 		GM_setValue('templates', JSON.stringify(savedTempls));
 
 		modal.hide();
+	}
+	Templates.prototype.exportTempls = function(e){
+		e.preventDefault();
+		var today = this.getCurDate(),
+			data = {
+				templates: this.getSavedTempls(),
+				defaults: this.getSavedDefaults()
+			};
+
+		var blob = new Blob([JSON.stringify(data)],{
+			type: 'text/plain;charset=utf-8'
+		});
+
+		saveAs(blob, 'Templates_'+ today +'.json');
+	}
+	Templates.prototype.importTempls = function(fileName, string){
+		try{
+			var data = JSON.parse(string);
+
+			//Save templates
+			for(var templ in data.templates)
+				this.saveTempl(templ, data.templates[templ]);
+
+			//Save defaults
+			for(var defaultsItem in data.defaults)
+				this.saveTemplDefaults(defaultsItem, data.defaults[defaultsItem]);
+			
+			this.refreshButtons();
+		}
+		catch(e){
+			alert('Error in reading "'+ fileName +'"!');
+		}
+	}
+	Templates.prototype.getFile = function(e){
+		e.preventDefault();
+		var that = this,
+			input = e.currentTarget,
+			file = input.files[0],
+			reader = new FileReader();
+
+		reader.addEventListener("load", function(event) {
+			that.importTempls(file.name, event.target.result);
+			input.value = null;
+		});
+		reader.readAsText(file);
 	}
 	Templates.prototype.removeButtons = function(){
 		$('.'+ this.templContainerClass).remove();
