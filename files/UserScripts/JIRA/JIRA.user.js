@@ -325,7 +325,7 @@ try{
 							'</div>'+
 						'</form>';
 		this._confTeml = '<form class="'+ this.saveDefaultsFormClass +' aui">'+
-							'<h2 class="jira-dialog-heading">Edit default parameters for "<%= templName %>".</h2>'+
+							'<h2 class="jira-dialog-heading">Default parameters value for "<%= templName %>".</h2>'+
 							'<div class="jira-dialog-main-section">'+
 								'<ul class="defaults-list">'+
 									'<% for(var param in params){ %>'+
@@ -423,7 +423,7 @@ try{
 			'.'+ this.noTemplMsgClass +'{text-align:center}'+
 			'.'+ this.templContainerClass +'.active .'+ this.templListClass +'{display: block;}'+
 			'.jira-dialog-main-section {padding: 5px 10px 0;}'+
-			'.jira-dialog-main-section textarea {width: 99%; max-width: 99%; margin-bottom: 5px; display:block; padding:1%; box-sizing:border-box;}'+
+			'.jira-dialog-main-section textarea {width: 100%; max-width: 100%; margin-bottom: 5px; display:block; padding:1%; box-sizing:border-box;}'+
 			'.templName {border-width:0 0 1px; border-color:#000; font-size:20px; background:transparent; color:#333; width:200px;}'+
 			'.'+ this.addTemlFormClass +' textarea{height: 300px}'+
 			'.'+ this.templItemLinkClass +',.'+ this.templItemActionsClass +'{display: inline-block; vertical-align: top;}'+
@@ -432,8 +432,8 @@ try{
 			'.'+ this.templItemActionsClass + '.'+ this.activeClass +',.'+ this.confirmDelHolderClass +'.'+ this.activeClass +'{width: 25%;}'+
 			'.defaults-list{padding:0; list-style-type:none;}'+
 			'.defaults-list li{overflow: hidden;}'+
-			'.defaults-list label{float: left; width: 28%; padding-right: 2%; text-align: right;}'+
-			'.defaults-list textarea{float: left; width: 70%;}'+
+			'.defaults-list label{float:left; width:28%; padding-right:2%; text-align:right; word-break:break-all;}'+
+			'.defaults-list textarea{float:left; width:70%; max-width:70%;}'+
 			'.'+ this.templItemActionsClass +' .'+ this.delTemplClass +'{color:#FF887F;}'+
 			'.'+ this.templItemActionsClass +' .'+ this.editTemplClass +'{color: #64FD6A;}'+
 			'.'+ this.templItemClass +'{border-top:1px solid transparent; border-bottom:1px solid transparent; overflow: hidden; padding: 0 2px;}'+
