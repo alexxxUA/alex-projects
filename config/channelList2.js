@@ -4,7 +4,7 @@ var channelList = [
 	{dName: 'Platinum TV', sName: 'Platinum TV', flags: ''},
 	{dName: 'XXL', sName: 'XXL', flags: ''},
 	{dName: 'Satisfaction', sName: 'Satisfaction', flags: 'hd'},
-	{dName: 'Redlight Premium', sName: 'Redlight Premium', flags: ''},
+	{dName: 'Redlight', sName: 'Redlight', flags: 'hd'},
 	{dName: 'Exotica TV', sName: 'Exotica TV', flags: ''},
 	{dName: 'O-la-la', sName: 'O-la-la', flags: ''},
 	{dName: 'SCT', sName: 'SCT', flags: ''}

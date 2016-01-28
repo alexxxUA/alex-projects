@@ -51,8 +51,8 @@ var channelList = [
 	{dName: 'English Club TV', sName: 'English Club TV|EnglishClub TV', flags: ''},
 
 	//Фильмы
-	{dName: 'Fox', sName: 'Fox', flags: ''},
-	{dName: 'Fox Life', sName: 'Fox Life', flags: ''},
+	{dName: 'Fox', sName: 'Fox', flags: 'hd req'},
+	{dName: 'Fox Life', sName: 'Fox Life', flags: 'hd req'},
 	{dName: 'TV 1000', sName: 'TV 1000|TV1000', flags: 'req'},
 	{dName: 'TV 1000 ACTION', sName: 'TV 1000 ACTION|TV 1000 Action East', flags: 'req'},
 	{dName: 'TV1000 Comedy', sName: 'TV1000 Comedy', flags: 'hd req'},

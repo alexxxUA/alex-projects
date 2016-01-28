@@ -171,7 +171,7 @@ Channel.prototype = {
 				that.failed(channel);
 				return;
 			}
-			var regExp = new RegExp('(?:this.loadPlayer\\((?:"|\'))([0-9a-f]+)', 'im'),
+			var regExp = new RegExp('(?:this\.(?:loadPlayer|loadTorrent)\\((?:"|\'))(.+)?(?:"|\')', 'im'),
 				chanId = resp.body.match(regExp);
 
 			callback(chanId && chanId[1] ? chanId[1] : false);
