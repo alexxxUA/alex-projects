@@ -23,6 +23,7 @@ var processors = [
 
 //Paths
 var P = {
+	liveReload: ['./css/**/*.css', './js/**/*.js', './*.html'],
 	imgMin: {
 		src: './img/src/*',
 		dest: './img/dest'
@@ -44,7 +45,7 @@ var P = {
 		dest: './js'
 	},
 	scss: {
-		src: './scss/*.scss',
+		src: './scss/**/*.scss',
 		dest: './css'
 	}
 };
@@ -70,7 +71,7 @@ gulp.task('compass', function() {
 			sass: 'scss',
 			javascript: 'js',
 			image: 'img',
-			style: 'expanded',
+			style: 'expanded', //nested, expanded, compact, or compressed
 			bundleExec: true,
 			relative: true,
 			sourcemap: true,
@@ -125,7 +126,7 @@ gulp.task('watch', function () {
 	gulp.watch(P.cssMin.src, ['css-min']);
 	gulp.watch(P.jsMin.src, ['js-min']);
 	
-	gulp.watch(['./css/*.css', './js/*.js', './*.html'], function(e){
+	gulp.watch(P.liveReload, function(e){
 		gulp.src(e.path)
 			.pipe(plumber(plumberErrorHandler))
 			.pipe(browserSync.stream())
