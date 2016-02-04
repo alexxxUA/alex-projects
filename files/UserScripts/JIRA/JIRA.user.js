@@ -79,9 +79,9 @@ try{
 			.append('<div class="'+ this.modalClass +' jira-dialog"><a href="#" class="'+ this.closeClass +'" title="Close popup. Tip: you can also use Esc button.">✖</a><div class="'+ this.contentClass +' jira-dialog-content "></div></div>')
 	}
 	Modal.prototype.registerEvents = function(){
-		$(document).on('click', '.'+ this.closeClass, $.proxy(this.hide, this));
-		$(document).on('click', '.'+ this.bgClass, $.proxy(this.hide, this));
-		$(document).on('keydown', '.'+ this.modalClass, $.proxy(this.onKeyPress, this));
+		$(document).on('click', '.'+ this.closeClass, $.proxy(this.hide, this))
+					.on('click', '.'+ this.bgClass, $.proxy(this.hide, this))
+					.on('keydown', '.'+ this.modalClass, $.proxy(this.onKeyPress, this));
 	}
 	Modal.prototype.onKeyPress = function(e){
 		var $this = $(document.activeElement),
@@ -393,51 +393,50 @@ try{
 			console.info(msg);
 	}
 	Templates.prototype.registerEvents = function(){
-		var $document = $(document);
 		//Init templates on mouse hover on textarea
-		$document.on('mouseenter', this.commentSel +':not(['+ this.commentAttr +']):not(.locked)', $.proxy(this, 'addTemplBtn'));
+		$(document).on('mouseenter', this.commentSel +':not(['+ this.commentAttr +']):not(.locked)', $.proxy(this, 'addTemplBtn'))
 
-		//Add template link (open modal dialog with form)
-		$document.on('click', '.'+ this.templAddClass, $.proxy(this.openAddTemplModal, this));
-		
-		//Import/Export template btn (open modal dialog with form)
-		$document.on('click', '.'+ this.templImportExportClass, $.proxy(this.openImportExportModal, this));
-		
-		//Export templates
-		$document.on('click', '.'+ this.exportTemplsBtnClass, $.proxy(this.exportTempls, this));
-		
-		//Importtemplates
-		$document.on('change', '.'+ this.importTemplsBtnClass, $.proxy(this.getFile, this));
+					//Add template link (open modal dialog with form)
+					.on('click', '.'+ this.templAddClass, $.proxy(this.openAddTemplModal, this))
 
-		//Add template handler
-		$document.on('submit', '.'+ this.addTemlFormClass, $.proxy(this.addTempl, this));
+					//Import/Export template btn (open modal dialog with form)
+					.on('click', '.'+ this.templImportExportClass, $.proxy(this.openImportExportModal, this))
 
-		//Apply template params handler
-		$document.on('submit', '.'+ this.applyTemplParamsFormClass, $.proxy(this.onApplyParams, this));
+					//Export templates
+					.on('click', '.'+ this.exportTemplsBtnClass, $.proxy(this.exportTempls, this))
 
-		//Apply template default parameters hendler
-		$document.on('submit', '.'+ this.saveDefaultsFormClass, $.proxy(this.onSaveDefaults, this));
+					//Importtemplates
+					.on('change', '.'+ this.importTemplsBtnClass, $.proxy(this.getFile, this))
 
-		//Apply template item
-		$document.on('click', '.'+ this.applyTemplClass, $.proxy(this.onApplyTemplItem, this));
+					//Add template handler
+					.on('submit', '.'+ this.addTemlFormClass, $.proxy(this.addTempl, this))
 
-		//Edit template item
-		$document.on('click', '.'+ this.editTemplClass, $.proxy(this.onEditTemplItem, this));
+					//Apply template params handler
+					.on('submit', '.'+ this.applyTemplParamsFormClass, $.proxy(this.onApplyParams, this))
 
-		//Show confirm for removing template item
-		$document.on('click', '.'+ this.delTemplClass, $.proxy(this.showConfirm, this));
-		
-		//Hide confirm for removing template item
-		$document.on('click', '.'+ this.notDelTemplClass, $.proxy(this.hideConfirm, this));
-		
-		//Remove template item
-		$document.on('click', '.'+ this.confirmDelTemplClass, $.proxy(this.onDelTemplItem, this));
+					//Apply template default parameters hendler
+					.on('submit', '.'+ this.saveDefaultsFormClass, $.proxy(this.onSaveDefaults, this))
 
-		//Config default params for template item
-		$document.on('click', '.'+ this.confTemplClass, $.proxy(this.onConfTemplItem, this));
+					//Apply template item
+					.on('click', '.'+ this.applyTemplClass, $.proxy(this.onApplyTemplItem, this))
 
-		//Show/hide template options
-		$document.on('mouseenter', '.'+ this.templContainerClass, $.proxy(this.showOptions, this))
+					//Edit template item
+					.on('click', '.'+ this.editTemplClass, $.proxy(this.onEditTemplItem, this))
+
+					//Show confirm for removing template item
+					.on('click', '.'+ this.delTemplClass, $.proxy(this.showConfirm, this))
+
+					//Hide confirm for removing template item
+					.on('click', '.'+ this.notDelTemplClass, $.proxy(this.hideConfirm, this))
+
+					//Remove template item
+					.on('click', '.'+ this.confirmDelTemplClass, $.proxy(this.onDelTemplItem, this))
+
+					//Config default params for template item
+					.on('click', '.'+ this.confTemplClass, $.proxy(this.onConfTemplItem, this))
+
+					//Show/hide template options
+					.on('mouseenter', '.'+ this.templContainerClass, $.proxy(this.showOptions, this))
 					.on('mouseleave', '.'+ this.templContainerClass, $.proxy(this.hideOptions, this));
 	}
 
