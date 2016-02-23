@@ -1,9 +1,0 @@
-[INFO - 10.8.2015 15:17] Playlist updated.
-Updated: 58
-Required failed: 1
-Failed: 3
-Failed channel list:
-	1. Discovery Investigation
-	2. Discovery World
-	3. SET HD
-
