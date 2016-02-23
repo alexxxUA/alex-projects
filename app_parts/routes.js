@@ -1,4 +1,4 @@
-var mime = require('mime'),
+var mime = require('mime-types'),
 	fs 	= require('fs'),
 	mkdirp = require('mkdirp'),
 	rmdir = require('rimraf'),
@@ -206,8 +206,7 @@ function init(app){
 					name: pathArray[pathArray.length-1],
 					total: stat.size,
 					mtime: new Date(stat.mtime.toUTCString()),
-					type: mime.lookup(p),
-					charset: mime.charsets.lookup(this.type)
+					contentType: mime.contentType(path.extname(p))
 				}
 
 				if(stat.isDirectory()){
