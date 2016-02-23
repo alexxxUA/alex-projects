@@ -4,6 +4,7 @@ var needle = require('needle'),
 	prependFile = require('prepend-file'),
 	_ = require('underscore'),
 	cheerio = require('cheerio'),
+	mkdirp = require('mkdirp'),
 	cf = require('./../config/config.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList;
@@ -21,6 +22,7 @@ function Channel(params){
 	this.validList = '';
 
 	this.generateInterval = '60'; //Value in minutes
+	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
 	this.report = {
@@ -59,9 +61,10 @@ Channel.prototype = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function(channelsArray) {
-		this.playlistPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.playListName);
-		this.logPath = path.join(filesP, '/UpdateChanList/LastValidPlaylist/server/'+ this.logName);
-
+		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
+		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
+		
+		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
 		this.setChannelListConfig();
 		this.getValidPlaylist();
@@ -87,6 +90,11 @@ Channel.prototype = {
 			reqFailedList: []
 		};
 		this.channelCounter = 0;
+	},
+	createFolder: function(folderPath){
+		var fullFolderPath =  path.join(filesP, folderPath);
+
+		mkdirp(fullFolderPath);
 	},
 	storeGenerator: function(){
 		//Push playlist generator instance to global prototype property for further regeneration
