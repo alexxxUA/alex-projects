@@ -7,6 +7,13 @@
 	<title>Video chat</title>
 	<link rel="shortcut icon" href="img/min/favicon.ico" type="image/x-icon">
 	<script>
+		function redirectToHttps(){
+			var href = location.href;
+			if(href.indexOf('https') == -1){
+				var href = href.replace('http', 'https');
+				window.location.href = href;
+			}
+		}
 		var sourceLoader = {
 			isDev: location.search.split('dev=')[1] == 'true' ? true : false,
 			devCss: [
@@ -41,6 +48,9 @@
 					document.write('<script src="'+ jsArray[i] +'"><\/script>');
 			}
 		}
+		//Redirect to https if we no there for live only
+		if(!sourceLoader.isDev)
+			redirectToHttps();
 		//Load css files
 		sourceLoader.loadCss();
 	</script>
