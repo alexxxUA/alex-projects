@@ -12,6 +12,7 @@ var mime = require('mime'),
 	Aliases = require('./aliases_schema.js'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js'),
+	emailServer = require('./sendMail.js'),
 	aliasesMap = {};
 
 function setAliasMap(){
@@ -179,6 +180,24 @@ function init(app){
 			setAliasMap();
 			res.send(col);
 		})
+	});
+	
+	app.get('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		var mail = req.query.mail,
+			to = req.query.to;
+
+		server.send({
+		   from: 'Test mail engine',
+		   to: to,
+		   subject: 'Test mail',
+		   attachment: 	[{data: mail, alternative: true}]
+		},	function(err, message) {
+				if(err){
+					res.status('500').send('Email was not send.\n'+ err);
+				}else{
+					res.send('Message successfully sended!');
+				}
+			});
 	});
 
 	app.get('/proxy', function(req, res){
