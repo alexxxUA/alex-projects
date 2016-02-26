@@ -1,7 +1,7 @@
 var ip = require('ip');
 
 var config = {
-	isLocal: false,
+	isLocal: true,
 	port: 8888,
 	ip: ip.address(),
 	mongoUrl: 'localhost:27017/explorer',

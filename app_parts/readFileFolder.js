@@ -111,7 +111,7 @@ function readFile(req, res, file){
 				'Accept-Ranges': 'bytes',
 				'Content-Length': chunkSize,
 				'Last-Modified': file.mtime.toUTCString(),
-				'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
+				'Content-Type': file.contentType ? file.contentType : ''
 			});
 			fs.createReadStream(p, {start: start, end: end}).pipe(res);
 
@@ -120,7 +120,7 @@ function readFile(req, res, file){
 			res.writeHead(200, {
 				'Content-Length': file.total,
 				'Last-Modified': file.mtime.toUTCString(),
-				'Content-Type': file.type + (file.charset ? '; charset=' + file.charset : '')
+				'Content-Type': file.contentType ? file.contentType : ''
 			});
 			fs.createReadStream(p).pipe(res);
 		}

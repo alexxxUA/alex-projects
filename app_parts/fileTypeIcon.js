@@ -1,8 +1,8 @@
-﻿var mime = require('mime');
+var mime = require('mime-types');
 
 function get(name){
 	var mimeType = mime.lookup(name),
-		fileType = mimeType.split('/')[0],
+		fileType = mimeType ? mimeType.split('/')[0] : '',
 		fileExt = name.split('.')[name.split('.').length-1],
 		imgName = '';
 

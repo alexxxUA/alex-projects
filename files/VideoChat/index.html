@@ -7,6 +7,13 @@
 	<title>Video chat</title>
 	<link rel="shortcut icon" href="img/min/favicon.ico" type="image/x-icon">
 	<script>
+		function redirectToHttps(){
+			var href = location.href;
+			if(href.indexOf('https') == -1){
+				var href = href.replace('http', 'https');
+				window.location.href = href;
+			}
+		}
 		var sourceLoader = {
 			isDev: location.search.split('dev=')[1] == 'true' ? true : false,
 			devCss: [
@@ -18,7 +25,7 @@
 			],
 			devJs: [
 				'https://cdn.webrtc-experiment.com/DetectRTC.js',
-				'http://cdn.icecomm.io/icecomm.js',
+				'https://cdn.icecomm.io/icecomm.js',
 				'app/librarys/angular1.3.16.min.js',
 				'app/librarys/scrollglue.js',
 				'app/app.js',
@@ -28,7 +35,7 @@
 			prodCss: ['font/Icomoon/style.css', 'css/base_min.css'],
 			prodJs: [
 				'https://cdn.webrtc-experiment.com/DetectRTC.js',
-				'http://cdn.icecomm.io/icecomm.js',
+				'https://cdn.icecomm.io/icecomm.js',
 				'app/app_min.js'],
 			loadCss: function(){
 				var cssArray = this.isDev ? this.devCss : this.prodCss;
@@ -41,6 +48,9 @@
 					document.write('<script src="'+ jsArray[i] +'"><\/script>');
 			}
 		}
+		//Redirect to https if we no there for live only
+		if(!sourceLoader.isDev)
+			redirectToHttps();
 		//Load css files
 		sourceLoader.loadCss();
 	</script>
