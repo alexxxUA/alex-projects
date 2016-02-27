@@ -931,7 +931,16 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 				executeFunctionByName(formSuccess, window, res, $form);
 		},
 		error: function(err){
-			var msg = err.responseText != '' ? err.responseText : 'Network error.';
+			var msg = err.responseText;
+
+			switch(err.status){
+				case 0:
+					msg = 'Network error.'
+					break;
+				case 404:
+					msg = 'Wrong url/request or access denied.'
+					break;
+			}
 
 			if(typeof formError !== 'undefined' && formError.length)
 				executeFunctionByName(formError, window, err, $form);
