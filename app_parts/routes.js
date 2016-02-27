@@ -197,7 +197,7 @@ function init(app){
 		if(method == 'url'){
 			needle.get(mailUrl ,function(err, resp) {
 				if (err || resp.statusCode == 404 || resp.statusCode == 500){
-					res.status('500').send('Email not found by specified url.');
+					res.status('500').send('Content not found by specified url.');
 					return;
 				}
 				mail = legacy.decode(resp.raw, 'utf8', {
