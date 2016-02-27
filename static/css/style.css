@@ -123,7 +123,9 @@ th{
     height: 31px;
     text-align: center;
     z-index: 100000;
-    left: 50%;  top: 50%;  margin: -16px 0 0 -16px;
+    left: 50%;
+	top: 50%;
+	margin: 5px 0 0 5px;
     display: none;
 }
 #errorPage{
@@ -353,35 +355,6 @@ to { color: #92F099; }
 .visible{
 	visibility: visible !important;
 }
-@media (max-width: 768px) {
-	#content {
-		padding: 0 10px 10px;
-	}
-	div.login-container {
-		right: 10px;
-		left: 10px;
-	}
-	div.user-info {
-		float: left;
-		margin: 0;
-	}
-	.fb-log {
-		float: right;
-	}
-	.user-logged .fb-log {
-		margin: 11px 0 0;
-	}
-    .reset-padding {
-        padding: 0;
-    }
-    .panel-body,
-    .panel-heading{
-        padding: 10px;
-    }
-    #errorPage h1 {
-        font-size: 70px;
-    }
-}
 .js-upload-section .panel{
 	position: relative;
 }
@@ -463,9 +436,15 @@ to { color: #92F099; }
 .changed .js-data-edid {
 	display: inline-block;
 }
-.js-force-generate-playlists,
+.server-actions-holder a,
 .add-alias-pan input{
 	width: 100%;
+}
+.server-actions-holder a {
+	margin-top: 10px;
+}
+.server-actions-holder a:first-child {
+	margin-top: 0;
 }
 .add-alias-pan input[type="text"] {
 	margin-bottom: 4px;
@@ -478,4 +457,125 @@ to { color: #92F099; }
 }
 .user-table th.table-action-cell {
 	width: 20%;
+}
+.send-email-form .btn{
+	width: 100%;
+}
+.send-email-form textarea {
+	height: 450px;
+	max-height: 80vh;
+	resize: none;
+	margin: 15px 0;
+}
+.modal {
+	display: none;
+	position: fixed;
+	width: 1000px;
+	top: 5%;
+	left: 50%;
+	margin: 0 0 0 -500px;
+	z-index: 99999;
+	background: #ECECEC;
+    box-shadow: 0 0 0px 1px #FFF;
+	border-radius: 5px;
+	right: auto;
+	bottom: auto;
+	max-height: 90vh;
+	overflow-y: auto;
+}
+.modal.active {
+    display: block;
+}
+.modal .container {
+    width: 100%;
+    height: 100%;
+    padding: 3% 30px 3% 3%;
+    box-sizing: border-box;
+    text-align: center;
+}
+.modal video {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+.b-modal {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 99999;
+    top: 0;
+    opacity: 0.5;
+    display: none;
+}
+.b-modal.active {
+    display: block;
+}
+.close {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+	opacity: 1;
+    font: normal 20px arial;
+    cursor: pointer;
+}
+[id$="-dialog"]{
+	display: none;
+}
+.js-ajax-msg {
+    position: fixed;
+    display: none;
+    left: 50%;
+    top: 50%;
+    z-index: 999999;
+    min-width: 100px;
+    max-width: 200px;
+    color: #e6e6e6;
+    background: #00980c;
+    border-radius: 0 10px 10px;
+    padding: 10px;
+    text-align: center;
+    margin: 12px 0 0 12px;
+}
+.js-ajax-msg.error {
+	background: #00013F;
+	color: #FF7D7D;
+}
+@media (max-width: 1000px) {
+	.modal {
+		left: 2%;
+		right: 2%;
+		margin: 0;
+		width: 96%;
+	}
+}
+@media (max-width: 768px) {
+	#content {
+		padding: 0 10px 10px;
+	}
+	div.login-container {
+		right: 10px;
+		left: 10px;
+	}
+	div.user-info {
+		float: left;
+		margin: 0;
+	}
+	.fb-log {
+		float: right;
+	}
+	.user-logged .fb-log {
+		margin: 11px 0 0;
+	}
+    .reset-padding {
+        padding: 0;
+    }
+    .panel-body,
+    .panel-heading{
+        padding: 10px;
+    }
+    #errorPage h1 {
+        font-size: 70px;
+    }
 }

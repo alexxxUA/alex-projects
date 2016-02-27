@@ -5,7 +5,9 @@ var config = {
 	oneDay: 86400000,
 	FBappId: process.env.FB_APP_ID,
 	FBsecret: process.env.FB_SECRET,
-	FBv: process.env.FB_VERSION
+	FBv: process.env.FB_VERSION,
+	email: process.env.EMAIL_LOGIN,
+	emailPass: process.env.EMAIL_PASS
 }
 
 module.exports = config;

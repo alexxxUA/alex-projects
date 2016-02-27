@@ -186,18 +186,18 @@ function init(app){
 		var mail = req.query.mail,
 			to = req.query.to;
 
-		server.send({
-		   from: 'Test mail engine',
-		   to: to,
-		   subject: 'Test mail',
-		   attachment: 	[{data: mail, alternative: true}]
-		},	function(err, message) {
-				if(err){
-					res.status('500').send('Email was not send.\n'+ err);
-				}else{
-					res.send('Message successfully sended!');
-				}
-			});
+		emailServer.send({
+			text: 'Test text',
+			from: 'Test mail engine',
+			to: to,
+			subject: 'Test mail',
+			attachment: 	[{data: mail, alternative: true}]
+		}, function(err, message) {
+			if(err)
+				res.status('500').send('Email was not send.\n'+ err);
+			else
+				res.send('Message successfully sended!');
+		});
 	});
 
 	app.get('/proxy', function(req, res){

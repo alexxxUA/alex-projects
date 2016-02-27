@@ -2,8 +2,10 @@ function Navigation(param){
 	var defaults = {
 		dynContSelector: '#dynamicContent',
 		loaderSelector: '#loading',
+		ajaxMsgSelector: '.js-ajax-msg',
 		link: '.js-dynamicReload',
-		reloads: 0
+		reloads: 0,
+		readSpeed: 600 //Symbols per minute
 	};
 	param = param ? param : defaults;
 
@@ -15,6 +17,8 @@ function Navigation(param){
 	this.init();
 }
 Navigation.prototype.init = function(){
+	this.$ajaxLoader = $(this.loaderSelector);
+	this.$ajaxMsgHolder = $(this.ajaxMsgSelector);
 	this.registerEvents();
 }
 Navigation.prototype.registerEvents = function(){
@@ -48,16 +52,51 @@ Navigation.prototype.getLoaderPos = function(e){
 		xPosLoad = e.pageX+7;
 	$(this.loaderSelector).css({'top' : yPosLoad+17, 'left' : xPosLoad+17, 'display' : 'block'});
 }
-Navigation.prototype.showLoader = function(){
-	var that = this;
+Navigation.prototype.showMsg = function(msg, isError){
+	var that = this,
+		estimatedTime = that.getEstimatedReadTime(msg),
+		isError = isError ? isError : false;
 
-	$(window).on('mousemove', function(e){
-		that.getLoaderPos(e);
-	});
+	this.hideMsg();
+	this.hideLoader();
+
+	setTimeout(function(){
+		$(window).on('mousemove', $.proxy(that.setLoaderPos, that));
+		that.$ajaxMsgHolder.text(msg).toggleClass('error', isError).show();
+
+		//Hide error after timeout
+		that.errTimeOut = setTimeout(function(){
+			that.hideMsg();
+		}, estimatedTime);
+	}, 200);
+}
+Navigation.prototype.hideMsg = function(){
+	clearTimeout(this.errTimeOut);
+	this.$ajaxMsgHolder.hide().text('').removeClass('error');
+	$(window).off('mousemove');
+}
+Navigation.prototype.showLoader = function(){
+	this.hideMsg();
+	this.hideLoader();
+
+	$(window).on('mousemove', $.proxy(this.setLoaderPos, this));
+	this.$ajaxLoader.show();
 }
 Navigation.prototype.hideLoader = function(){
+	this.$ajaxLoader.hide();
 	$(window).off('mousemove');
-	$(this.loaderSelector).css('display', 'none');
+}
+Navigation.prototype.setLoaderPos = function(e){
+	var position = {
+		'top' : e.pageY - $(window).scrollTop(),
+		'left' : e.pageX - $(window).scrollLeft()
+	}
+
+	this.$ajaxLoader.css(position);
+	this.$ajaxMsgHolder.css(position);
+}
+Navigation.prototype.getEstimatedReadTime = function(string){
+	return (string.length / this.readSpeed * 60000).toFixed() ;
 }
 Navigation.prototype.loadDom = function(url){
 	var that = this;
@@ -570,6 +609,88 @@ AdminPanel.prototype.forceGeneratePlaylist = function(e){
 		}
 	})
 }
+AdminPanel.prototype.emailSended = function(res, $form){
+	navigation.showMsg(res);
+}
+
+/* MODAL CLASS */
+var Modal = function(params){
+	this.modalLinkAttr = 'data-dialog';
+	this.bgClass = 'b-modal';
+	this.modalClass = 'modal';
+	this.contentClass = 'container';
+	this.closeClass = 'close';
+	this.activeClass = 'active';
+	this.contentWidth = 900;
+
+	//Init entry params
+	this.initParams(params);
+	
+	//Base init
+	this.init();
+}
+
+Modal.prototype.initParams = function(params){
+	for(var param in params){
+		if (params.hasOwnProperty(param))
+			this[param] = params[param];
+	}
+}
+Modal.prototype.init = function(param){
+	this.createDom();
+	this.registerEvents();
+}	
+Modal.prototype.createDom = function(){
+	$('body').append('<div class="'+ this.bgClass +'"></div>')
+		.append('<div class="'+ this.modalClass +'"><div class="'+ this.closeClass +'">✖</div><div class="'+ this.contentClass +'"></div></div>')
+}
+Modal.prototype.registerEvents = function(){
+	$(document).on('click', '['+ this.modalLinkAttr +']', $.proxy(this, 'onShow'));
+	$(document).on('click', '.'+ this.closeClass, $.proxy(this, 'hide'));
+	$(document).on('click', '.'+ this.bgClass, $.proxy(this, 'hide'));
+}
+Modal.prototype.updatePosition = function(){
+	var $modal = $('.'+ this.modalClass);
+
+	if($modal.height() >= window.innerHeight){
+		$modal.height(window.innerHeight - 150);
+	}
+
+	$modal.css({'margin-top': - $modal.height()/2});
+}
+Modal.prototype.onShow = function(e){
+	e.preventDefault();
+	var $this = $(e.currentTarget),
+		modalId = $this.attr(this.modalLinkAttr),
+		$modal = $('#'+ modalId);
+	
+	this.show($modal.html());
+}
+Modal.prototype.show = function(content, callback){
+	$('.'+ this.bgClass).addClass(this.activeClass);
+	$('.'+ this.modalClass).addClass(this.activeClass).find('.'+ this.contentClass).html(content);
+	this.videoReady();
+	if(callback) callback();
+}
+Modal.prototype.videoReady = function(){
+	$('.'+ this.modalClass +' video').each(function(){
+		$(this).one('loadeddata', function(){
+			modal.updatePosition();
+		});
+	});
+}
+Modal.prototype.removeVideos = function(){
+	$('.'+ this.modalClass +' video').each(function(){
+		this.pause();
+		this.src = '';
+		$(this).remove();
+	});
+}
+Modal.prototype.hide = function(){
+	this.removeVideos();
+	$('.'+ this.bgClass).removeClass(this.activeClass);
+	$('.'+ this.modalClass).removeClass(this.activeClass).css({'height':'', 'margin-top':''}).find('.'+ this.contentClass).html('');
+}
 
 var Tmpl = {
     cache: {},
@@ -777,6 +898,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 	e.preventDefault();
 
 	var $form = $(this),
+		isNoReset = $form.data('no-reset'),
 		$inputs = $form.find('input:not([type="submit"]), textarea'),
 		formAction = $form.attr('action'),
 		formData = $form.serialize(),
@@ -802,16 +924,19 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 				executeFunctionByName(formBeforeSend, window, xhr, opts, $form);
 		},
 		success: function(res) {
-			$inputs.val('');
+			if(!isNoReset)
+				$inputs.val('');
 			navigation.hideLoader();
 			if(typeof formSuccess !== 'undefined' && formSuccess.length)
 				executeFunctionByName(formSuccess, window, res, $form);
 		},
 		error: function(err){
+			var msg = err.responseText != '' ? err.responseText : 'Network error.';
+
 			if(typeof formError !== 'undefined' && formError.length)
 				executeFunctionByName(formError, window, err, $form);
 			navigation.hideLoader();
-			console.log(err);
+			navigation.showMsg(msg, true);
 		}
 	});
 });
@@ -820,3 +945,4 @@ Validator.init();
 var navigation = new Navigation();
 var fileExplorer = new FileExplorer();
 var adminPanel = new AdminPanel();
+var modal = new Modal();

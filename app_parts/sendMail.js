@@ -1,8 +1,9 @@
-var email = require("emailjs");
+var email = require("emailjs"),
+	cf = require('./../config/config.js');
 
 module.exports = email.server.connect({
-					   user: "product.db.helper@gmail.com",
-					   password: "produ80938858233ct",
+					   user: cf.email,
+					   password: cf.emailPass,
 					   host: "smtp.gmail.com",
 					   ssl: true
 					});
