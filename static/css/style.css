@@ -115,7 +115,7 @@ th{
     height: 24px;
 }
 #loading {
-    position: absolute;
+    position: fixed;
     padding: 2px;
     color: #FFF;
     opacity: 0.90;
