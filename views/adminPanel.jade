@@ -74,7 +74,7 @@ block adminPanel
 										input.js-data-edid.btn.btn-xs.btn-success(type='button', value='Edit')
 										input.js-data-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
 	div#email-dialog
-		form.send-email-form(action='/sendMail', ajax='true', ajax-success='adminPanel.emailSended', data-no-reset='true')
+		form.send-email-form(method='POST', action='/sendMail', ajax='true', ajax-success='adminPanel.emailSended', data-no-reset='true')
 			h3 Send email
 			input.form-control(type='text', name='to', placeholder='Recipient(s)', required)
 			.input-group.js-input-group

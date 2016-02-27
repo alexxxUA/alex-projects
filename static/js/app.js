@@ -926,6 +926,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 	e.preventDefault();
 
 	var $form = $(this),
+		method = $form.attr('method'),
 		isNoReset = $form.data('no-reset'),
 		$inputs = $form.find('input:not([type="submit"]), textarea'),
 		formAction = $form.attr('action'),
@@ -943,7 +944,7 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 	}
 
 	$.ajax({
-		type: "GET",
+		type: method ? method : 'GET',
 		url: formAction,
 		data: formData,
 		beforeSend: function(xhr, opts){

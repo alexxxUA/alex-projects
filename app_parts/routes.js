@@ -184,11 +184,11 @@ function init(app){
 		})
 	});
 	
-	app.get('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		var mail = req.query.mail,
-			mailUrl = req.query['mail-url'],
-			to = req.query.to,
-			method = req.query.method;
+	app.post('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+		var mail = req.body.mail,
+			mailUrl = req.body['mail-url'],
+			to = req.body.to,
+			method = req.body.method;
 		
 		function callback(err, msg){
 			if(err) res.status('500').send('Email was not send.\n'+ err);
