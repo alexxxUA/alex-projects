@@ -195,7 +195,7 @@ function init(app){
 			else res.send('Message successfully sended!');
 		}
 		if(method == 'url'){
-			needle.get(mailUrl ,function(err, resp) {
+			needle.get(mailUrl, function(err, resp) {
 				if (err || resp.statusCode == 404 || resp.statusCode == 500){
 					res.status('500').send('Content not found by specified url.');
 					return;
