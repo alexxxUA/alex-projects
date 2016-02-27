@@ -915,7 +915,13 @@ function executeFunctionByName(functionName, context , args) {
 	return context[func].apply(this, args);
 }
 
-//Ajax form submit abort
+//Ajax form submit
+$(document).delegate('form[ajax="true"]', 'keydown', function(e){
+	if(e.keyCode == 13 && e.ctrlKey){
+		//Click for native html5 validation
+		$(e.currentTarget).find(':submit').click();
+	}
+});
 $(document).delegate('form[ajax="true"]', 'submit', function(e){
 	e.preventDefault();
 
