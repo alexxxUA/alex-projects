@@ -74,6 +74,7 @@ Navigation.prototype.hideMsg = function(){
 	clearTimeout(this.errTimeOut);
 	this.$ajaxMsgHolder.hide().text('').removeClass('error');
 	$(window).off('mousemove');
+	this.resetLoaderPos();
 }
 Navigation.prototype.showLoader = function(){
 	this.hideMsg();
@@ -85,6 +86,11 @@ Navigation.prototype.showLoader = function(){
 Navigation.prototype.hideLoader = function(){
 	this.$ajaxLoader.hide();
 	$(window).off('mousemove');
+	this.resetLoaderPos();
+}
+Navigation.prototype.resetLoaderPos = function(e){
+	this.$ajaxLoader.removeAttr('style');
+	this.$ajaxMsgHolder.removeAttr('style');
 }
 Navigation.prototype.setLoaderPos = function(e){
 	var position = {
@@ -472,6 +478,8 @@ function AdminPanel(params){
 	this.dataLineItemSel = '.js-data-line-item';
 	this.dataEditSel = '.js-data-edid';
 	this.dataRemoveSel = '.js-data-remove';
+	this.radioReqSel = '.js-radio-req';
+	this.inputGroupSel = '.js-input-group';
 
 	this.aliasLineItem = _.template(
 		'<tr class="'+ this.dataLineItemSel.slice(1) +' table-action-cell">'+
@@ -509,6 +517,8 @@ AdminPanel.prototype.registerEvents = function(){
 	$(document).on('click', this.dataEditSel, $.proxy(this.editData, this));
 	//Remove alias
 	$(document).on('click', this.dataRemoveSel, $.proxy(this.removeData, this));
+	//Radio group (required input/textarea)
+	$(document).on('change', this.radioReqSel, $.proxy(this.radioReqChanged, this));
 }
 AdminPanel.prototype.dataInputBlur = function(e){
 	var $this = $(e.currentTarget),
@@ -562,7 +572,19 @@ AdminPanel.prototype.editData = function(e){
 AdminPanel.prototype.getHolderDataAttr = function(e, dataType){
     return $(e.currentTarget).closest(this.dataHolderSel).data(dataType);
 }
+AdminPanel.prototype.radioReqChanged = function(e){
+	var $this = $(e.currentTarget),
+		name = $this.attr('name'),
+		$form = $this.closest('form'),
+		$radios = $form.find('[name="'+ name +'"]'),
+		$inputGroups = $radios.closest(this.inputGroupSel),
+		$curInputGroup = $this.closest(this.inputGroupSel),
+		$inputs = $inputGroups.find('input, textarea').not(this.radioReqSel),
+		$curInput = $curInputGroup.find('input, textarea').not(this.radioReqSel);
 
+	$inputs.removeAttr('required');
+	$curInput.attr('required', 'required');
+}
 AdminPanel.prototype.removeData = function(e){
 	var $this = $(e.currentTarget),
 		$lineItem = $this.closest(this.dataLineItemSel),

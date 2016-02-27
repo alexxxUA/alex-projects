@@ -462,10 +462,16 @@ to { color: #92F099; }
 	width: 100%;
 }
 .send-email-form textarea {
-	height: 450px;
+	height: 360px;
 	max-height: 80vh;
 	resize: none;
-	margin: 15px 0;
+}
+.send-email-form .input-group,
+.send-email-form .btn{
+	margin-top: 15px;
+}
+.send-email-form h3 {
+	margin-top: 0;
 }
 .modal {
 	display: none;
@@ -526,8 +532,8 @@ to { color: #92F099; }
 .js-ajax-msg {
     position: fixed;
     display: none;
-    left: 50%;
-    top: 50%;
+	left: 45%;
+    top: 45%;
     z-index: 999999;
     min-width: 100px;
     max-width: 200px;

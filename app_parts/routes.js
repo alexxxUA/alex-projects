@@ -4,6 +4,8 @@ var mime = require('mime-types'),
 	rmdir = require('rimraf'),
 	path = require('path'),
 	fbgraph = require('fbgraphapi'),
+	needle = require('needle'),
+	legacy = require('legacy-encoding'),
 	cf = require('./../config/config.js'),
 	auth = require('./auth.js'),
 	read = require('./readFileFolder.js'),
@@ -12,7 +14,7 @@ var mime = require('mime-types'),
 	Aliases = require('./aliases_schema.js'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js'),
-	emailServer = require('./sendMail.js'),
+	email = require('./sendMail.js'),
 	aliasesMap = {};
 
 function setAliasMap(){
@@ -184,20 +186,29 @@ function init(app){
 	
 	app.get('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var mail = req.query.mail,
-			to = req.query.to;
-
-		emailServer.send({
-			text: 'Test text',
-			from: 'Test mail engine',
-			to: to,
-			subject: 'Test mail',
-			attachment: 	[{data: mail, alternative: true}]
-		}, function(err, message) {
-			if(err)
-				res.status('500').send('Email was not send.\n'+ err);
-			else
-				res.send('Message successfully sended!');
-		});
+			mailUrl = req.query['mail-url'],
+			to = req.query.to,
+			method = req.query.method;
+		
+		function callback(err, msg){
+			if(err) res.status('500').send('Email was not send.\n'+ err);
+			else res.send('Message successfully sended!');
+		}
+		if(method == 'url'){
+			needle.get(mailUrl ,function(err, resp) {
+				if (err || resp.statusCode == 404 || resp.statusCode == 500){
+					res.status('500').send('Email not found by specified url.');
+					return;
+				}
+				mail = legacy.decode(resp.raw, 'utf8', {
+					mode: 'html'
+				});
+				email.sendMail(to, mail, callback);
+			});
+		}
+		else{
+			email.sendMail(to, mail, callback);	
+		}
 	});
 
 	app.get('/proxy', function(req, res){
