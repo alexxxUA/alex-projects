@@ -191,8 +191,7 @@ function init(app){
 			method = req.body.method;
 		
 		function callback(err, msg){
-			if(err) res.status('500').send('Email was not send.\n'+ err);
-			else res.send('Message successfully sended!');
+			if(err) console.log('Email was not send.\n'+ err);
 		}
 		if(method == 'url'){
 			needle.get(mailUrl, function(err, resp) {
@@ -204,10 +203,12 @@ function init(app){
 					mode: 'html'
 				});
 				email.sendMail(to, mail, callback);
+				res.send('Message successfully sended!');
 			});
 		}
 		else{
-			email.sendMail(to, mail, callback);	
+			email.sendMail(to, mail, callback);
+			res.send('Message successfully sended!');
 		}
 	});
 
