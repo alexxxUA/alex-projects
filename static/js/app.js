@@ -622,12 +622,10 @@ AdminPanel.prototype.forceGeneratePlaylist = function(e){
 	$.ajax({
 		url: $this.attr('href'),
 		success: function(res){
-			navigation.hideLoader();
-			alert('Generation of playlists started!');
+			navigation.showMsg('Generation of playlists started!');
 		},
 		error: function(err){
-			navigation.hideLoader();
-			alert('Generation of playlists failed!');
+			navigation.showMsg('Generation of playlists not started. Server error.', true);
 		}
 	})
 }
@@ -973,7 +971,6 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 
 			if(typeof formError !== 'undefined' && formError.length)
 				executeFunctionByName(formError, window, err, $form);
-			navigation.hideLoader();
 			navigation.showMsg(msg, true);
 		}
 	});
