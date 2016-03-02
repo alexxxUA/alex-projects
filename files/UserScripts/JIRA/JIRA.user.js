@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name			JIRA templates
-// @version			1.0
+// @version			1.1
 // @description		Quick templates for JIRA (can be used on any textarea elements) 
 // @author			Alexey Vasin
 // @require			https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
@@ -159,6 +159,9 @@ try{
 	var _T = {
 		cache: {},
 		splitParamSymb: '_',
+		delimStart: '{{',
+		delimEnd: '}}',
+		delimExecute: '#',
 		escape: function(str){
 			return str.replace(/\r/g, "-r-")
 						.replace(/\t/g, "-t-")
@@ -170,7 +173,9 @@ try{
 						.replace(/-n-/g, "\n");
 		},
 		getT: function(str, data){
-			var that = this;
+			var that = this,
+				regExp_1 = new RegExp("((^|"+ this.delimEnd +")[^\t]*)'", 'g'),
+				regExp_2 = new RegExp("\t"+ this.delimExecute +"(.*?)"+ this.delimEnd, 'g');
 			try{
 				var fn = !/\W/.test(str) ?
 					this.cache[str] = this.cache[str] ||
@@ -180,11 +185,11 @@ try{
 					"var p=[],print=function(){p.push.apply(p,arguments);};" +
 					"with(obj){p.push('" +
 					that.escape(str)						
-						.split("<%").join("\t")
-						.replace(/((^|%>)[^\t]*)'/g, "$1\r")
-						.replace(/\t=(.*?)%>/g, "',$1,'")
+						.split(that.delimStart).join("\t")
+						.replace(regExp_1, "$1\r")
+						.replace(regExp_2, "',$1,'")
 						.split("\t").join("');")
-						.split("%>").join("p.push('")
+						.split(that.delimEnd).join("p.push('")
 						.split("\r").join("\\'")
 						+ "');}return p.join('');");
 
@@ -196,14 +201,16 @@ try{
 			}
 		},
 		getTemplParamsNames: function(templString){
-			var params = templString.match(/<%=.*?%>/gm);
+			var paramsRegExp = new RegExp(this.delimStart + this.delimExecute +'.*?'+ this.delimEnd, 'gm'),
+				cleanParamName = new RegExp(this.delimStart + this.delimExecute +'\\s*|\\s*'+ this.delimEnd, 'g'),
+				params = templString.match(paramsRegExp);
 
 			//Return empty array in case there is no params in a string
 			if(!params)
 				return [];
 
 			for(var i=0; i<params.length; i++)
-				params[i] =  params[i].replace(/<%=\s*|\s*%>/g, '');
+				params[i] =  params[i].replace(cleanParamName, '');
 
 			return params;
 		},
@@ -218,10 +225,10 @@ try{
 		},
 		updateTemplateParams: function(string){
 			var that = this,
-				regExp = /(?:<%=)(.*)?(?:%>)/gm;		
+				regExp = new RegExp('(?:'+ this.delimStart + this.delimExecute +')(.*)?(?:'+ this.delimEnd +')', 'gm');
 
 			return string.replace(regExp, function(match, g1){
-				return '<%= ' + ($.trim(g1)).replace(/\s+/g, that.splitParamSymb) +' %>';
+				return that.delimStart + that.delimExecute +' ' + ($.trim(g1)).replace(/\s+/g, that.splitParamSymb) +' '+ that.delimEnd;
 			});
 		}
 	};
@@ -278,30 +285,30 @@ try{
 	}
 	Templates.prototype.initAssociateParams = function(){
 		//Set params based on another params
-		this._templButton = '<div class="'+ this.templContainerClass +'" '+ this.commentAttr +'="<%= uniqueAttr %>">'+
+		this._templButton = '<div class="'+ this.templContainerClass +'" '+ this.commentAttr +'="{{# uniqueAttr }}">'+
 								'<div class="'+ this.templListClass +'">'+
-									'<% if(! jQuery.isEmptyObject(templates) ){ %>'+
+									'{{ if(! jQuery.isEmptyObject(templates) ){ }}'+
 										'<ul>'+
-											'<% for(var key in templates){ %>'+
-												'<li class="'+ this.templItemClass +'" '+ this.templNameAttr +'="<%= key %>">'+
-													'<a class="'+ this.templItemLinkClass +' '+ this.applyTemplClass +'" href="#" title="Apply template item."><%= key %></a>'+
+											'{{ for(var key in templates){ }}'+
+												'<li class="'+ this.templItemClass +'" '+ this.templNameAttr +'="{{# key }}">'+
+													'<a class="'+ this.templItemLinkClass +' '+ this.applyTemplClass +'" href="#" title="Apply template item.">{{# key }}</a>'+
 													'<span class="'+ this.confirmDelHolderClass +'">'+
 														'<a href="#" class="'+ this.confirmDelTemplClass +'">Yes</a> | '+
 														'<a href="#" class="'+ this.notDelTemplClass +'">No</a>'+
 													'</span>'+
 													'<span class="'+ this.templItemActionsClass +' '+ this.activeClass +'">'+
-														'<% if(!jQuery.isEmptyObject(defaults[key])){ %>'+
+														'{{ if(!jQuery.isEmptyObject(defaults[key])){ }}'+
 															'<a href="#" class="'+ this.confTemplClass +' aui-icon aui-icon-small aui-iconfont-configure" title="Configure default parameters in template.">conf</a> '+
-														'<% } %>'+
+														'{{ } }}'+
 														'<a href="#" class="'+ this.editTemplClass +' aui-icon aui-icon-small aui-iconfont-edit" title="Edit template item.">edit</a> '+
 														'<a href="#" class="'+ this.delTemplClass +' aui-icon aui-icon-small aui-iconfont-delete" title="Remove template item.">del</a>'+
 													'</span>'+
 												'</li>'+
-											'<% } %>'+
+											'{{ } }}'+
 										'</ul>'+
-									'<% }else{ %>'+
+									'{{ }else{ }}'+
 										'<div class="'+ this.noTemplMsgClass +'">You dont have any templates yet.</div>'+
-									'<% } %>'+
+									'{{ } }}'+
 									'<div class="add-templ-holder">'+
 										'<a href="#" title="Add new template" class="'+ this.templAddClass +' aui-button small-btn">Add template</a>'+
 										'<a href="#" title="Import/Export templates" class="'+ this.templImportExportClass +' aui-button small-btn">Import/Export</a>'+
@@ -323,47 +330,47 @@ try{
 		this._editTeml = '<form class="'+ this.addTemlFormClass +' aui">'+
 							'<h2 class="jira-dialog-heading">'+
 								'Edit template: '+
-								'<input class="templName" type="text" name="name" placeholder="Name of template" value="<%= name %>" required>'+
+								'<input class="templName" type="text" name="name" placeholder="Name of template" value="{{# name }}" required>'+
 							'</h2>'+
 							'<div class="jira-dialog-main-section">'+
-								'<textarea class="locked" name="value" placeholder="Template" required><%= templ %></textarea>'+
+								'<textarea class="locked" name="value" placeholder="Template" required>{{# templ }}</textarea>'+
 							'</div>'+
 							'<div class="buttons-container">'+
 								'<input class="button" type="submit" value="Save">'+
 							'</div>'+
 						'</form>';
 		this._confTeml = '<form class="'+ this.saveDefaultsFormClass +' aui">'+
-							'<h2 class="jira-dialog-heading">Default parameters value for "<%= templName %>".</h2>'+
+							'<h2 class="jira-dialog-heading">Default parameters value for "{{# templName }}".</h2>'+
 							'<div class="jira-dialog-main-section">'+
 								'<ul class="defaults-list">'+
-									'<% for(var param in params){ %>'+
+									'{{ for(var param in params){ }}'+
 										'<li>'+
-											'<label for="label-<%= param %>"><%= param %>:</label>'+
-											'<textarea id="label-<%= param %>" class="locked" name="<%= param %>" placeholder="<%= param %>">'+
-												'<% if(params[param].length){ %>'+
-													'<%= params[param] %>'+
-												'<% } %>'+
+											'<label for="label-{{# param }}">{{# param }}:</label>'+
+											'<textarea id="label-{{# param }}" class="locked" name="{{# param }}" placeholder="{{# param }}">'+
+												'{{ if(params[param].length){ }}'+
+													'{{# params[param] }}'+
+												'{{ } }}'+
 											'</textarea>'+
 										'</li>'+
-									'<% } %>'+
+									'{{ } }}'+
 								'</ul>'+
-								'<input type="hidden" name="templName" value="<%= templName %>">'+
+								'<input type="hidden" name="templName" value="{{# templName }}">'+
 							'</div>'+
 							'<div class="buttons-container">'+
 								'<input class="button" type="submit" value="Save">'+
 							'</div>'+
 						'</form>';
 		this._paramsDialog = '<form class="'+ this.applyTemplParamsFormClass +' aui">'+
-								'<h2 class="jira-dialog-heading">Fill out parameters for template "<%= templName %>".</h2>'+
+								'<h2 class="jira-dialog-heading">Fill out parameters for template "{{# templName }}".</h2>'+
 								'<div class="jira-dialog-main-section">'+
-									'<% for(var param in params){ %>'+
-										'<textarea class="locked" name="<%= param %>" placeholder="<%= param %>">'+
-											'<% if(params[param]){ %>'+
-												'<%= params[param] %>'+
-											'<% } %>'+
+									'{{ for(var param in params){ }}'+
+										'<textarea class="locked" name="{{# param }}" placeholder="{{# param }}">'+
+											'{{ if(params[param]){ }}'+
+												'{{# params[param] }}'+
+											'{{ } }}'+
 										'</textarea>'+
-									'<% } %>'+
-									'<input type="hidden" name="templName" value="<%= templName %>">'+
+									'{{ } }}'+
+									'<input type="hidden" name="templName" value="{{# templName }}">'+
 								'</div>'+
 								'<div class="buttons-container">'+
 									'<input class="button" type="submit" value="Apply">'+
@@ -769,12 +776,12 @@ try{
 	var modal = new Modal();
 	var templates = new Templates({
 		defaultTempls: {
-			Send_to_review: 'Hi <%= reviewer_name %>,\n\n'+
+			Send_to_review: 'Hi {{# reviewer_name }},\n\n'+
 							'Please review the code.\n\n'+
 							'Thanks in advance.',
 			Code_approved: 'Code looks good.\n'+
 							'No comments or objections.',
-			Implemented: '<%= implemented_stuff %> has been implemented.'
+			Implemented: '{{# implemented_stuff }} has been implemented.'
 		}
 	});
 }
