@@ -1,13 +1,13 @@
 var channelList = [
-	{dName: 'Hustler', sName: 'Hustler', flags: 'hd'},
-	{dName: 'Brazzers TV Europe', sName: 'Brazzers TV Europe', flags: ''},
-	{dName: 'Platinum TV', sName: 'Platinum TV', flags: ''},
-	{dName: 'XXL', sName: 'XXL', flags: ''},
-	{dName: 'Satisfaction', sName: 'Satisfaction', flags: 'hd'},
-	{dName: 'Redlight', sName: 'Redlight', flags: 'hd'},
-	{dName: 'Exotica TV', sName: 'Exotica TV', flags: ''},
-	{dName: 'O-la-la', sName: 'O-la-la', flags: ''},
-	{dName: 'SCT', sName: 'SCT', flags: ''}
+	{dName: 'SHVzdGxlcg==', sName: 'SHVzdGxlcg==', flags: 'hd cod'},
+	{dName: 'QnJhenplcnMgVFYgRXVyb3Bl', sName: 'QnJhenplcnMgVFYgRXVyb3Bl', flags: 'cod'},
+	{dName: 'UGxhdGludW0gVFY=', sName: 'UGxhdGludW0gVFY=', flags: 'cod'},
+	{dName: 'WFhM', sName: 'WFhM', flags: 'cod'},
+	{dName: 'U2F0aXNmYWN0aW9u', sName: 'U2F0aXNmYWN0aW9u', flags: 'hd cod'},
+	{dName: 'UmVkbGlnaHQ=', sName: 'UmVkbGlnaHQ=', flags: 'hd cod'},
+	{dName: 'RXhvdGljYSBUVg==', sName: 'RXhvdGljYSBUVg==', flags: 'cod'},
+	{dName: 'Ty1sYS1sYQ==', sName: 'Ty1sYS1sYQ==', flags: 'cod'},
+	{dName: 'U0NU', sName: 'U0NU', flags: 'cod'}
 ]
 
 module.exports.channelList = channelList;

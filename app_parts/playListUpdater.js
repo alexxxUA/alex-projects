@@ -17,6 +17,9 @@ function Channel(params){
 		},{
 			string: 'req',
 			property: 'isReq'
+		},{
+			string: 'cod',
+			property: 'isCoded'
 	}];
 	this.channelCounter = 0;
 	this.validList = '';
@@ -66,7 +69,7 @@ Channel.prototype = {
 		
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
-		this.setChannelListConfig();
+		this.updateChannelsObject();
 		this.getValidPlaylist();
 		this.storeGenerator();
 
@@ -118,13 +121,24 @@ Channel.prototype = {
 			this.channels = this.channels.concat(channelListItem);
 		}
 	},
-	setChannelListConfig: function() {
+	updateChannelsObject: function() {
 		for(var i=0; i < this.channels.length; i++){
-			var channel = this.channels[i],
-				flags = channel.flags ? channel.flags : '';
+			var channel = this.channels[i];
 
-			this.extendObj(channel, this.getObjFromFlags(flags));
+			this.updateFlags(channel);
+			this.decodeChannelNames(channel);
 		}
+	},
+	updateFlags: function(channel){
+		var flags = channel.flags ? channel.flags : '';
+
+		this.extendObj(channel, this.getObjFromFlags(flags));
+	},
+	decodeChannelNames: function(channel){
+		if(channel.isCoded){
+			channel.sName = new Buffer(channel.sName, 'base64');
+			channel.dName = new Buffer(channel.dName, 'base64');
+		}	
 	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
