@@ -7,7 +7,7 @@ var channelList = [
 	{dName: 'UmVkbGlnaHQ=', sName: 'UmVkbGlnaHQ=', flags: 'hd cod'},
 	{dName: 'RXhvdGljYSBUVg==', sName: 'RXhvdGljYSBUVg==', flags: 'cod'},
 	{dName: 'Ty1sYS1sYQ==', sName: 'Ty1sYS1sYQ==', flags: 'cod'},
-	{dName: 'U0NU', sName: 'U0NU', flags: 'cod'}
+	{dName: 'U0NU', sName: 'U0NU', flags: ''}
 ]
 
 module.exports.channelList = channelList;
