@@ -4,3 +4,10 @@ Update Mongo DB:
         mongo
         use explorer
         db.users.update({'email': 'aluaex@gmail.com'}, {$set: {isAdmin: true}})
+		
+Set env variables:
+	rhc set-env env_vars.txt -a projects
+
+List env cariables:
+	rhc env list -a
+	

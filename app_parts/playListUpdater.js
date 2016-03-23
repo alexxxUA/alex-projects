@@ -24,7 +24,7 @@ function Channel(params){
 	this.channelCounter = 0;
 	this.validList = '';
 
-	this.generateInterval = 60; //Value in minutes
+	this.generateInterval = 180; //Value in minutes
 	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
