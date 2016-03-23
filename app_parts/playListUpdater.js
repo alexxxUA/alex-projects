@@ -66,7 +66,7 @@ Channel.prototype = {
 	init: function(channelsArray) {
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
-		
+
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
 		this.updateChannelsObject();
@@ -138,7 +138,7 @@ Channel.prototype = {
 		if(channel.isCoded){
 			channel.sName = new Buffer(channel.sName, 'base64');
 			channel.dName = new Buffer(channel.dName, 'base64');
-		}	
+		}
 	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
@@ -209,7 +209,7 @@ Channel.prototype = {
 
 		for (var i = 0; i < that.channels.length; i++) {
 			var curChannel = that.channels[i];
-			
+
 			(function(channel){
 				that.getChannelId(channel, function(ID){
 					that.storeChannelItem(channel, ID)
