@@ -11,3 +11,17 @@ Set env variables:
 List env cariables:
 	rhc env list -a
 	
+	
+Implementation notes
+	Channel.proxyRequest({
+		type: 'GET',
+		url: 'http://smenip.ru/proxi/browse.php?',
+		isCookies: true,
+		data: {
+			u: 'http://gf2hi5ronzsxi.nblz.ru/iframe.php?site=873&channel=6427',
+			b: '5'  
+		}
+	}, function(resp){
+		console.log(resp);
+	});
+	
