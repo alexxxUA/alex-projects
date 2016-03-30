@@ -226,13 +226,13 @@ Channel.prototype = {
 		for (var i = 0; i < that.channels.length; i++) {
 			var curChannel = that.channels[i];
 
-			(function(channel){
+			(function(channel, j){
 				setTimeout(function(){
 					that.getChannelId(channel, function(ID){
 						that.storeChannelItem(channel, ID)
 					});
-				}, that.generateDelay);
-			})(curChannel);
+				}, j * that.generateDelay);
+			})(curChannel, i);
 		}
 	},
 	getArrayCopy: function(array){
