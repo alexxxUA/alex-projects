@@ -29,8 +29,8 @@ function Channel(params){
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
 	
-	this.generateDelay = 600; //Value in milisec
-	this.generateInterval = 580; //Value in minutes
+	this.generateDelay = 6000; //Value in milisec
+	this.generateInterval = 475; //Value in minutes
 	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
@@ -195,6 +195,7 @@ Channel.prototype = {
 		var that = this,
 			reqParams = {
 				url: this.proxyUrl,
+				isCookies: 'true',
 				data: {b: 5, u: this.playerDomain + $url.parse(cUrl).path}
 			};
 
