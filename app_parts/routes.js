@@ -214,7 +214,7 @@ function init(app){
 
 	app.get('/proxy', function(req, res){
 		//Make proxy request
-		proxy.makeProxyRequest(req, res);
+		proxy.makeProxyRequest(req.query, res);
 	});
 
 	app.get('/error404', function(req, res){

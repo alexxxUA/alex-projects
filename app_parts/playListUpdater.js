@@ -1,4 +1,5 @@
 var needle = require('needle'),
+	$url = require('url'),
 	path = require('path'),
 	fs = require('fs'),
 	prependFile = require('prepend-file'),
@@ -6,6 +7,7 @@ var needle = require('needle'),
 	cheerio = require('cheerio'),
 	mkdirp = require('mkdirp'),
 	cf = require('./../config/config.js'),
+	proxy = require('./proxy.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList;
 
@@ -23,8 +25,12 @@ function Channel(params){
 	}];
 	this.channelCounter = 0;
 	this.validList = '';
-
-	this.generateInterval = 180; //Value in minutes
+	this.isProxy = true;
+	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
+	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
+	
+	this.generateDelay = 600; //Value in milisec
+	this.generateInterval = 580; //Value in minutes
 	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
@@ -185,10 +191,14 @@ Channel.prototype = {
 
 		return flagsObj;
 	},
-	getIdFromFrame: function(url, channel, callback){
-		var that = this;
+	getIdFromFrame: function(cUrl, channel, callback){
+		var that = this,
+			reqParams = {
+				url: this.proxyUrl,
+				data: {b: 5, u: this.playerDomain + $url.parse(cUrl).path}
+			};
 
-		needle.request('GET', url, null, {}, function(err, resp) {
+		function returnId(err, resp){
 			if (err || resp.statusCode !== 200){
 				that.failed(channel);
 				return;
@@ -197,7 +207,12 @@ Channel.prototype = {
 				chanId = resp.body.match(regExp);
 
 			callback(chanId && chanId[1] ? chanId[1] : false);
-		});
+		}
+
+		if(this.isProxy)
+			proxy.makeProxyRequest(reqParams, null, null, returnId);
+		else
+			needle.request('GET', cUrl, null, {}, returnId);
 	},
 	getReport: function(){
 		var report = this._report(this.report);
@@ -211,9 +226,11 @@ Channel.prototype = {
 			var curChannel = that.channels[i];
 
 			(function(channel){
-				that.getChannelId(channel, function(ID){
-					that.storeChannelItem(channel, ID)
-				});
+				setTimeout(function(){
+					that.getChannelId(channel, function(ID){
+						that.storeChannelItem(channel, ID)
+					});
+				}, that.generateDelay);
 			})(curChannel);
 		}
 	},
@@ -373,7 +390,6 @@ var channelTuchka = new Channel({
 module.exports = {
 	init: function(){
 		channelTorrentStream.init([channels1]);
-		channelTuchka.init([channels1, channels2]);
 	},
 	forceGeneratePlaylists: function(){
 		Channel.prototype.forceGeneratePlaylists();
