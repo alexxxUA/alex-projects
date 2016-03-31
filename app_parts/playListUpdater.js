@@ -12,6 +12,7 @@ var needle = require('needle'),
 	channels2 = require('./../config/channelList2.js').channelList;
 
 function Channel(params){
+	this.oneDay = 1000 * 60 * 60 * 24;
 	this.channels = [];
 	this.availableFlags = [{
 			string: 'hd',
@@ -25,12 +26,38 @@ function Channel(params){
 	}];
 	this.channelCounter = 0;
 	this.validList = '';
+	/* Is getting channel's html through proxy */
 	this.isProxy = true;
+	/**
+	 * Used for defining if playlist generates once in specified time, or in intervals
+	 * @Value true -> Generate playlist in specified time
+	 * @Value false -> Generate in intervals
+	 */
+	this.isGenerateInTime = true;
+	/**
+	 * Used for using delay when getting channel's html per schedule update
+	 * @Value in seconds
+	 */
+	this.scheduleGenDelay = 30;
+	/**
+	 * Used for using delay when getting channel's html per forced update
+	 * @Value in seconds
+	 */
+	this.forceGenDelay = 6;
+	/**
+	 * Generate interval (used if @isGenerateInTime = false, else 24h)
+	 * @Value in minutes
+	 */
+	this.generateInterval = 475;
+	/**
+	 * Generate in specified time (used if @isGenerateInTime = true)
+	 * @Value in format: 4:00 (24h format)
+	 */
+	this.generateTime = '4:25';
+
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
-	
-	this.generateDelay = 6000; //Value in milisec
-	this.generateInterval = 475; //Value in minutes
+
 	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
@@ -59,8 +86,8 @@ Channel.prototype = {
 	playlisGeneratorInstanses: [],
 	forceGeneratePlaylists: function(){
 		for(var i=0; i < this.playlisGeneratorInstanses.length; i++){
-			var instane = this.playlisGeneratorInstanses[i];
-			instane.func.call(instane.that);
+			var instance = this.playlisGeneratorInstanses[i];
+			instance.func.call(instance.that, true);
 		}
 	},
 	logInfo: function(msg){
@@ -70,17 +97,22 @@ Channel.prototype = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function(channelsArray) {
+		var nextTimeOffset = this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour();
+
+		this.generateInterval = (this.isGenerateInTime ? 60*24 : this.generateInterval) * 60000;//Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
-
+		
+		if(typeof this.initParams == 'function')
+			this.initParams();
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
 		this.updateChannelsObject();
-		this.getValidPlaylist();
+		this.getValidPlaylist(true);
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
-		this.setTimeoutCall(this.getOffsetNextHour());
+		this.setTimeoutCall(nextTimeOffset);
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -92,13 +124,18 @@ Channel.prototype = {
 		});
 		return target;
 	},
-	resetData: function() {
+	/**
+	 * Reset data before starting generate
+	 * @param {boolean} isForce | indicate is generation forced or no
+	 */
+	resetData: function(isForce) {
 		this.report = {
 			failedList: [],
 			updatedList: [],
 			reqFailedList: []
 		};
 		this.channelCounter = 0;
+		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
 	},
 	createFolder: function(folderPath){
 		var fullFolderPath =  path.join(filesP, folderPath);
@@ -118,7 +155,7 @@ Channel.prototype = {
 		setTimeout(function(){
 			that.getValidPlaylist();
 
-			that.setTimeoutCall(that.generateInterval * 60000);
+			that.setTimeoutCall(that.generateInterval);
 		}, time);
 	},
 	setChannels: function(entryChannelArray){
@@ -153,20 +190,40 @@ Channel.prototype = {
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
 	getOffsetNextHour: function(){
-		var now = new Date,
+		var now = new Date(),
 			nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()+1, 0, 0, 0);
 
 		return nextHour - now;
+	},
+	/**
+	 * Getting offset time till time
+	 * @param   {string} time | '4:00' or '18:30'
+	 * @returns {number} miliseconds
+	 */
+	getOffsetTillTime: function(time){
+		var now = new Date(),
+			timeArray = time.split(':'),
+			tillHrs = parseInt(timeArray[0]),
+			tillMins = parseInt(timeArray[1]),
+			nextOrCurDay = now,
+			tillTime = 0;
+
+		if(now.getHours() > tillHrs || now.getHours() == tillHrs && now.getMinutes() > tillMins)
+			nextOrCurDay = new Date(now.getTime() + this.oneDay);
+
+		tillTime = new Date(nextOrCurDay.getFullYear(), nextOrCurDay.getMonth(), nextOrCurDay.getDate(), tillHrs, tillMins, 0, 0);
+
+		return tillTime - now;
 	},
 	getformatedDate: function(date){
 		var now = this.getTimeOnZone(date, 2);
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
-	getValidPlaylist: function(){
+	getValidPlaylist: function(isForce){
 		var that = this;
 
-		that.resetData();
+		that.resetData(isForce);
 
 		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
@@ -231,7 +288,7 @@ Channel.prototype = {
 					that.getChannelId(channel, function(ID){
 						that.storeChannelItem(channel, ID)
 					});
-				}, j * that.generateDelay);
+				}, j * that.genDelay);
 			})(curChannel, i);
 		}
 	},
@@ -350,7 +407,9 @@ var channelTuchka = new Channel({
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
-	playerUrl: 'http://1ttv.net/iframe.php?site=873&channel=',
+	initParams: function(){
+		this.playerUrl = this.playerDomain + '/iframe.php?site=873&channel=';	
+	},
 	storeValidList: function(resp){
 		var $ = this.getDom(resp.body),
 			playlist = $('#sidebar select').html();
