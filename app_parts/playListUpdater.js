@@ -54,6 +54,7 @@ function Channel(params){
 	 * @Value in format: 4:00 (24h format)
 	 */
 	this.generateTime = '4:15';
+	this.timeZone = 2;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
@@ -190,6 +191,9 @@ Channel.prototype = {
 	getTimeOnZone: function(time, tZone){
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
+	getNowOnTimeZone: function(){
+		return this.getTimeOnZone(new Date(), this.timeZone);
+	},
 	getOffsetNextHour: function(){
 		var now = new Date(),
 			nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()+1, 0, 0, 0);
@@ -202,7 +206,7 @@ Channel.prototype = {
 	 * @returns {number} miliseconds
 	 */
 	getOffsetTillTime: function(time){
-		var now = new Date(),
+		var now = this.getNowOnTimeZone(),
 			timeArray = time.split(':'),
 			tillHrs = parseInt(timeArray[0]),
 			tillMins = parseInt(timeArray[1]),
@@ -217,7 +221,7 @@ Channel.prototype = {
 		return tillTime - now;
 	},
 	getformatedDate: function(date){
-		var now = this.getTimeOnZone(date, 2);
+		var now = this.getTimeOnZone(date, this.timeZone);
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
