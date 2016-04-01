@@ -466,6 +466,7 @@ var channelTuchka = new Channel({
 module.exports = {
 	init: function(){
 		channelTorrentStream.init([channels1]);
+		//channelTuchka.init([channels1, channels2]);
 	},
 	forceGeneratePlaylists: function(){
 		Channel.prototype.forceGeneratePlaylists();
