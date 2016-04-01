@@ -113,7 +113,6 @@ Channel.prototype = {
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
-		console.log(nextTimeOffset);
 		this.setTimeoutCall(nextTimeOffset);
 	},
 	extendObj: function(target) {
