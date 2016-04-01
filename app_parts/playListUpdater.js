@@ -38,7 +38,7 @@ function Channel(params){
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
 	 */
-	this.scheduleGenDelay = 30;
+	this.scheduleGenDelay = 40;
 	/**
 	 * Used for using delay when getting channel's html per forced update
 	 * @Value in seconds
@@ -53,7 +53,7 @@ function Channel(params){
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
 	 */
-	this.generateTime = '4:25';
+	this.generateTime = '4:15';
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
@@ -99,7 +99,7 @@ Channel.prototype = {
 	init: function(channelsArray) {
 		var nextTimeOffset = this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour();
 
-		this.generateInterval = (this.isGenerateInTime ? 60*24 : this.generateInterval) * 60000;//Value in minutes
+		this.generateInterval = (this.isGenerateInTime ? 60*12 : this.generateInterval) * 60000;//Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
 		
@@ -112,6 +112,7 @@ Channel.prototype = {
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
+		console.log(nextTimeOffset);
 		this.setTimeoutCall(nextTimeOffset);
 	},
 	extendObj: function(target) {
@@ -238,6 +239,9 @@ Channel.prototype = {
 	getHdText: function(isHd){
 		return isHd ? ' HD' : '';
 	},
+	getFullChannelName: function(channel){
+		return channel.dName + this.getHdText(channel.isHd);
+	},
 	getObjFromFlags: function(flagString) {
 		var flags = flagString.split(' '),
 			flagsObj = {},
@@ -314,14 +318,14 @@ Channel.prototype = {
 	},
 	formChannItem: function(channel) {
 		return '\n\t\t<track>' +
-				'\n\t\t\t<title>' + channel.dName + this.getHdText(channel.isHd) + '</title>' +
-				'\n\t\t\t<location>' + channel.id.replace('\n', '') + '</location>' +
+				'\n\t\t\t<title>' + this.getFullChannelName(channel) + '</title>' +
+				'\n\t\t\t<location>' + channel.id + '</location>' +
 				'\n\t\t</track>';
 	},
 	storeChannelItem: function(channel, ID){
 		this.channelCounter++
 
-		channel.id = ID;
+		channel.id = ID.replace('\n', '');
 
 		this.report.updatedList.push(channel);
 
