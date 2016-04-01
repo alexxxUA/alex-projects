@@ -35,6 +35,11 @@ function Channel(params){
 	 */
 	this.isGenerateInTime = true;
 	/**
+	 * Used for getting generated playlist in exec specified time @generateTime
+	 * @Value in miliseconds
+	 */
+	this.generationSpentTime = 0;
+	/**
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
 	 */
@@ -53,7 +58,7 @@ function Channel(params){
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
 	 */
-	this.generateTime = '4:15';
+	this.generateTime = '5:00';
 	this.timeZone = 2;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
@@ -98,8 +103,6 @@ Channel.prototype = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function(channelsArray) {
-		var nextTimeOffset = this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour();
-
 		this.generateInterval = (this.isGenerateInTime ? 60*12 : this.generateInterval) * 60000;//Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
@@ -109,9 +112,12 @@ Channel.prototype = {
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
 		this.updateChannelsObject();
+		this.storeGenerateSpentTime();
 		this.getValidPlaylist(true);
 		this.storeGenerator();
 
+		var nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - this.generationSpentTime;
+		console.log(nextTimeOffset);
 		//Scheduler for updating playlist
 		this.setTimeoutCall(nextTimeOffset);
 	},
@@ -324,6 +330,9 @@ Channel.prototype = {
 				'\n\t\t\t<title>' + this.getFullChannelName(channel) + '</title>' +
 				'\n\t\t\t<location>' + channel.id + '</location>' +
 				'\n\t\t</track>';
+	},
+	storeGenerateSpentTime: function(){
+		this.generationSpentTime = this.channels.length * this.scheduleGenDelay * 1000;
 	},
 	storeChannelItem: function(channel, ID){
 		this.channelCounter++
