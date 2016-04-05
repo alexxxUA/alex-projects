@@ -14,6 +14,12 @@ var needle = require('needle'),
 function Channel(params){
 	this.oneDay = 1000 * 60 * 60 * 24;
 	this.channels = [];
+	this.report = {
+		failedList: [],
+		updatedList: [],
+		reqFailedList: []
+	};
+	this.channelCounter = 0;
 	this.availableFlags = [{
 			string: 'hd',
 			property: 'isHd'
@@ -24,7 +30,11 @@ function Channel(params){
 			string: 'cod',
 			property: 'isCoded'
 	}];
-	this.channelCounter = 0;
+	/**
+	 * Used for calling callback once after first generation finished
+	 * @Value function
+	 */
+	this.callback = null;
 	this.validList = '';
 	/* Is getting channel's html through proxy */
 	this.isProxy = true;
@@ -102,13 +112,15 @@ Channel.prototype = {
 	logErr: function(msg){
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
-	init: function(channelsArray) {
+	init: function(channelsArray, callback) {
 		this.generateInterval = (this.isGenerateInTime ? 60*12 : this.generateInterval) * 60000;//Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
 		
 		if(typeof this.initParams == 'function')
 			this.initParams();
+		if(typeof callback == 'function')
+			this.callback = callback;
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
 		this.updateChannelsObject();
@@ -116,10 +128,8 @@ Channel.prototype = {
 		this.getValidPlaylist(true);
 		this.storeGenerator();
 
-		var nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - this.generationSpentTime;
-		console.log(nextTimeOffset);
 		//Scheduler for updating playlist
-		this.setTimeoutCall(nextTimeOffset);
+		this.setTimeoutCall(this.getNextTimeOffset());
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -135,13 +145,16 @@ Channel.prototype = {
 	 * Reset data before starting generate
 	 * @param {boolean} isForce | indicate is generation forced or no
 	 */
-	resetData: function(isForce) {
+	resetData: function() {
 		this.report = {
 			failedList: [],
 			updatedList: [],
 			reqFailedList: []
 		};
 		this.channelCounter = 0;
+		delete this.callback;
+	},
+	prepareData: function(isForce){
 		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
 	},
 	createFolder: function(folderPath){
@@ -190,6 +203,9 @@ Channel.prototype = {
 			channel.dName = new Buffer(channel.dName, 'base64');
 		}
 	},
+	getNextTimeOffset: function(){
+		return (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - this.generationSpentTime;
+	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
 	},
@@ -233,7 +249,7 @@ Channel.prototype = {
 	getValidPlaylist: function(isForce){
 		var that = this;
 
-		that.resetData(isForce);
+		that.prepareData(isForce);
 
 		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
@@ -285,7 +301,7 @@ Channel.prototype = {
 		else
 			needle.request('GET', cUrl, null, {}, returnId);
 	},
-	getReport: function(){
+	printReport: function(){
 		var report = this._report(this.report);
 
 		this.logInfo(report);
@@ -363,12 +379,15 @@ Channel.prototype = {
 	},
 	finishPlaylist: function(){
 		this.savePlaylist(this.formFullChannList());
-		this.getReport();
+		this.printReport();
+		if(typeof this.callback == 'function')
+			this.callback();
 		this.resetData();
 	}
 }
 
 var channelTorrentStream = new Channel({
+	generateTime: '5:10',
 	playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
 	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
@@ -465,8 +484,9 @@ var channelTuchka = new Channel({
 
 module.exports = {
 	init: function(){
-		channelTorrentStream.init([channels1]);
-		//channelTuchka.init([channels1, channels2]);
+		channelTorrentStream.init([channels1], function(){
+			channelTuchka.init([channels2]);
+		});
 	},
 	forceGeneratePlaylists: function(){
 		Channel.prototype.forceGeneratePlaylists();
