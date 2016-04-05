@@ -254,6 +254,7 @@ Channel.prototype = {
 		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
 				that.logErr('Error in getting valid playlist!');
+				that.playlistFinished();
 				return;
 			}
 
@@ -380,6 +381,9 @@ Channel.prototype = {
 	finishPlaylist: function(){
 		this.savePlaylist(this.formFullChannList());
 		this.printReport();
+		this.playlistFinished();
+	},
+	playlistFinished: function(){
 		if(typeof this.callback == 'function')
 			this.callback();
 		this.resetData();
