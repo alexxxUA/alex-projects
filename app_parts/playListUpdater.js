@@ -30,11 +30,6 @@ function Channel(params){
 			string: 'cod',
 			property: 'isCoded'
 	}];
-	/**
-	 * Used for calling callback once after first generation finished
-	 * @Value function
-	 */
-	this.callback = null;
 	this.validList = '';
 	/* Is getting channel's html through proxy */
 	this.isProxy = true;
@@ -44,11 +39,6 @@ function Channel(params){
 	 * @Value false -> Generate in intervals
 	 */
 	this.isGenerateInTime = true;
-	/**
-	 * Used for getting generated playlist in exec specified time @generateTime
-	 * @Value in miliseconds
-	 */
-	this.generationSpentTime = 0;
 	/**
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
@@ -60,10 +50,10 @@ function Channel(params){
 	 */
 	this.forceGenDelay = 6;
 	/**
-	 * Generate interval (used if @isGenerateInTime = false, else 24h)
-	 * @Value in minutes
+	 * How many times playlist will be generated per 24h after first generate time
+	 * @Value int
 	 */
-	this.generateInterval = 475;
+	this.generateCountPer24h = 2;
 	/**
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
@@ -77,11 +67,6 @@ function Channel(params){
 	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
-	this.report = {
-		updatedList: [],
-		reqFailedList: [],
-		failedList: []
-	};
 	this._report = _.template('Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
 		'\nRequired failed: <%= reqFailedList.length %>'+
@@ -113,7 +98,7 @@ Channel.prototype = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
 	init: function(channelsArray, callback) {
-		this.generateInterval = (this.isGenerateInTime ? 60*12 : this.generateInterval) * 60000;//Value in minutes
+		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
 		
@@ -391,7 +376,6 @@ Channel.prototype = {
 }
 
 var channelTorrentStream = new Channel({
-	generateTime: '5:10',
 	playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
 	playlistUrl: 'http://torrentstream.tv/browse-vse-kanali-tv-videos-1-date.html',
@@ -443,6 +427,8 @@ var channelTorrentStream = new Channel({
 });
 
 var channelTuchka = new Channel({
+	generateCountPer24h: 1,
+	generateTime: '5:10',
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
