@@ -43,7 +43,7 @@ function Channel(params){
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
 	 */
-	this.scheduleGenDelay = 40;
+	this.scheduleGenDelay = 60;
 	/**
 	 * Used for using delay when getting channel's html per forced update
 	 * @Value in seconds
@@ -53,7 +53,7 @@ function Channel(params){
 	 * How many times playlist will be generated per 24h after first generate time
 	 * @Value int
 	 */
-	this.generateCountPer24h = 2;
+	this.generateCountPer24h = 1;
 	/**
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
