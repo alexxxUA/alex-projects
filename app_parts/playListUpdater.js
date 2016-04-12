@@ -53,12 +53,12 @@ function Channel(params){
 	 * How many times playlist will be generated per 24h after first generate time
 	 * @Value int
 	 */
-	this.generateCountPer24h = 1;
+	this.generateCountPer24h = 2;
 	/**
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
 	 */
-	this.generateTime = '5:00';
+	this.generateTime = '6:00';
 	this.timeZone = 2;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
@@ -427,8 +427,7 @@ var channelTorrentStream = new Channel({
 });
 
 var channelTuchka = new Channel({
-	generateCountPer24h: 1,
-	generateTime: '5:10',
+	generateTime: '6:20',
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
