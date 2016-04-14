@@ -4,13 +4,16 @@ block facebookLogin
 block pageConfigValues
 	include pageConfigValues
 block adminPanel
-	div.col-md-3.reset-padding
+	div.col-md-4.reset-padding
 		div.panel.panel-info
 			div.panel-heading
 				h3.panel-title Server actions
 			div.panel-body.server-actions-holder
-				a.js-force-generate-playlists.btn.btn-success.btn-sm(href='/playlistForceGenerate', title='Force generate playlists') Force generate playlists
-				a.btn.btn-success.btn-sm(href='#', title='Send email', data-dialog='email-dialog') Send email
+				-if(cf.playlistEnabled){
+					a.js-force-generate-playlists.btn.btn-success.btn-sm.col-xs-6.col-sm-6(href='/playlistForceGenerate', title='Force generate playlists') Force gen. playlists
+					a.output-btn.btn.btn-success.btn-sm.col-xs-5.col-sm-5(href='#{cf.plaulistOutputPath}', title='Playlist output') Playlist output
+				-}
+				a.btn.btn-success.btn-sm.col-xs-12.col-sm-12(href='#', title='Send email', data-dialog='email-dialog') Send email
 		div.panel.panel-info.add-alias-pan
 			div.panel-heading
 				h3.panel-title New alias URL
@@ -21,7 +24,7 @@ block adminPanel
 					.form-group
 						input.form-control.input-sm(type='text', name='alias_real_url', placeholder='Actual relative url', data-validate-type='notEmpty')
 					input.btn.btn-success.btn-sm(type='submit', value='ADD')
-	div.col-md-9.reset-padding.aliases-list-container
+	div.col-md-8.reset-padding.aliases-list-container
 		div.panel.panel-info
 			div.panel-heading
 				h3.panel-title Alias URLs

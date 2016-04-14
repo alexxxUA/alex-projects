@@ -63,8 +63,7 @@ function init(app){
 	});
 
 	app.get('/playlistForceGenerate', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		playlist.forceGeneratePlaylists();
-		res.send('Generation started!');
+		playlist.forceGeneratePlaylists(res);
 	});
 
 	app.post('/upload', auth.isLogged, auth.isHaveEditAccess, function(req, res){

@@ -12,7 +12,7 @@ var needle = require('needle'),
 	channels2 = require('./../config/channelList2.js').channelList;
 
 function Channel(params){
-	this.oneDay = 1000 * 60 * 60 * 24;
+	this.oneDay = cf.oneDay;
 	this.channels = [];
 	this.report = {
 		failedList: [],
@@ -32,7 +32,7 @@ function Channel(params){
 	}];
 	this.validList = '';
 	/* Is getting channel's html through proxy */
-	this.isProxy = true;
+	this.isProxy = cf.playlistGenProxy;
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -64,7 +64,7 @@ function Channel(params){
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
 
-	this.outputPath = '/UpdateChanList/LastValidPlaylist/server';
+	this.outputPath = cf.plaulistOutputPath;
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
 	this._report = _.template('Playlist updated.'+
@@ -470,14 +470,72 @@ var channelTuchka = new Channel({
 		});
 	}
 });
+var channelChangeTracker = new Channel({
+	isGenerateInTime: false,
+	generateCountPer24h: 24,
+	logName: 'log_channelChecker.txt',
+	playlistUrl: 'http://tuchkatv.ru/player.html',
+	initParams: function(){
+		this.playerUrl = this.playerDomain + '/iframe.php?site=873&channel=';	
+	},
+	storeValidList: function(resp){
+		var $ = this.getDom(resp.body),
+			playlist = $('#sidebar select').html();
+
+		this.validList = playlist;
+	},
+	getChannelNumb: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
+
+		return chanNum && chanNum[1] ? chanNum[1] : false;
+	},
+	getPLayerUrl: function(channelNum){
+		return this.playerUrl + channelNum;
+	},
+	getChannelId: function(channel, callback){
+		var that = this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPLayerUrl(chanNum);
+
+		if(!chanNum){
+			this.failed(channel);
+			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
+			return;
+		}
+
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			if(!chanId){
+				that.failed(channel);
+				return;
+			}
+			callback(chanId);
+		});
+	},
+	finishPlaylist: function(){
+		var firstChannel = this.channels[0];
+		this.logInfo(this.getFullChannelName(firstChannel) +': '+ firstChannel.id);
+		this.playlistFinished();
+	}
+});
 
 module.exports = {
 	init: function(){
-		channelTorrentStream.init([channels1], function(){
-			channelTuchka.init([channels2]);
-		});
+		if(cf.playlistEnabled){
+			channelTorrentStream.init([channels1], function(){
+				channelTuchka.init([channels2]);
+			});
+		}
+		channelChangeTracker.init([{dName: '1+1', sName: '1\\+1', flags: ''}])
 	},
-	forceGeneratePlaylists: function(){
-		Channel.prototype.forceGeneratePlaylists();
+	forceGeneratePlaylists: function(res){
+		if(cf.playlistEnabled){
+			Channel.prototype.forceGeneratePlaylists();
+			res.send('Generation started!');
+		}
+		else{
+			res.status(503).send('Playlist generation disabled!');
+		}
 	}
 }

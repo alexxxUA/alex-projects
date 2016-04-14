@@ -1,3 +1,9 @@
+* {
+	-webkit-transition: width, height, margin, padding 0.3s ease;
+	-moz-transition: width, height, margin, padding 0.3s ease;
+	-ms-transition: width, height, margin, padding 0.3s ease;
+	-o-transition: width, height, margin, padding 0.3s ease;
+}
 html,
 body{
     height: 100%;
@@ -436,15 +442,18 @@ to { color: #92F099; }
 .changed .js-data-edid {
 	display: inline-block;
 }
-.server-actions-holder a,
 .add-alias-pan input{
 	width: 100%;
 }
 .server-actions-holder a {
 	margin-top: 10px;
 }
-.server-actions-holder a:first-child {
+.server-actions-holder a:first-child,
+.server-actions-holder .output-btn{
 	margin-top: 0;
+}
+.output-btn {
+	float: right;
 }
 .add-alias-pan input[type="text"] {
 	margin-bottom: 4px;

@@ -625,7 +625,13 @@ AdminPanel.prototype.forceGeneratePlaylist = function(e){
 			navigation.showMsg('Generation of playlists started!');
 		},
 		error: function(err){
-			navigation.showMsg('Generation of playlists not started. Server error.', true);
+			var msg = 'Generation of playlists not started. Server error.';
+			switch(err.status) {
+				case 503:
+					msg = err.responseText;
+					break;
+			}
+			navigation.showMsg(msg, true);
 		}
 	})
 }
