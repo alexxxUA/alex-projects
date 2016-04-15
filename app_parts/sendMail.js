@@ -10,15 +10,15 @@ var server = email.server.connect({
 
 module.exports = {
 	server: server,
-	sendMail: function(to, mail, callback){
+	sendMail: function(subj, to, mail, callback){
 		server.send({
 			text: 'Test text',
 			from: 'Test mail engine',
 			to: to,
-			subject: 'Test mail',
+			subject: subj,
 			attachment: [{data: mail, alternative: true}]
 		}, function(err, message) {
-			callback(err, message);
+			if(callback) callback(err, message);
 		});
 	}
 }

@@ -8,6 +8,7 @@ var needle = require('needle'),
 	mkdirp = require('mkdirp'),
 	cf = require('./../config/config.js'),
 	proxy = require('./proxy.js'),
+	email = require('./sendMail.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList;
 
@@ -19,6 +20,7 @@ function Channel(params){
 		updatedList: [],
 		reqFailedList: []
 	};
+	this.isPlaylistFailed = false;
 	this.channelCounter = 0;
 	this.availableFlags = [{
 			string: 'hd',
@@ -48,7 +50,7 @@ function Channel(params){
 	 * Used for using delay when getting channel's html per forced update
 	 * @Value in seconds
 	 */
-	this.forceGenDelay = 6;
+	this.forceGenDelay = 0;
 	/**
 	 * How many times playlist will be generated per 24h after first generate time
 	 * @Value int
@@ -64,6 +66,9 @@ function Channel(params){
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
 
+	this.emailSubj = 'Playlist generator notifier';
+	this.emailRecipient = 'aluaex@gmail.com';
+	
 	this.outputPath = cf.plaulistOutputPath;
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
@@ -137,6 +142,7 @@ Channel.prototype = {
 			reqFailedList: []
 		};
 		this.channelCounter = 0;
+		this.isPlaylistFailed = false;
 		delete this.callback;
 	},
 	prepareData: function(isForce){
@@ -238,6 +244,7 @@ Channel.prototype = {
 
 		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
+				that.isPlaylistFailed = true;
 				that.logErr('Error in getting valid playlist!');
 				that.playlistFinished();
 				return;
@@ -333,6 +340,11 @@ Channel.prototype = {
 				'\n\t\t\t<location>' + channel.id + '</location>' +
 				'\n\t\t</track>';
 	},
+	sendPlaylistGenFailedEmail: function(){
+		var msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
+
+		email.sendMail(this.emailSubj, this.emailRecipient, msg);
+	},
 	storeGenerateSpentTime: function(){
 		this.generationSpentTime = this.channels.length * this.scheduleGenDelay * 1000;
 	},
@@ -364,6 +376,7 @@ Channel.prototype = {
 			this.finishPlaylist();
 	},
 	finishPlaylist: function(){
+		this.isPlaylistFailed = this.channels.length == this.report.failedList.length;
 		this.savePlaylist(this.formFullChannList());
 		this.printReport();
 		this.playlistFinished();
@@ -371,6 +384,7 @@ Channel.prototype = {
 	playlistFinished: function(){
 		if(typeof this.callback == 'function')
 			this.callback();
+		if(this.isPlaylistFailed) this.sendPlaylistGenFailedEmail();
 		this.resetData();
 	}
 }
@@ -471,6 +485,7 @@ var channelTuchka = new Channel({
 	}
 });
 var channelChangeTracker = new Channel({
+	firstChannelId: false,
 	isGenerateInTime: false,
 	generateCountPer24h: 24,
 	logName: 'log_channelChecker.txt',
@@ -513,9 +528,33 @@ var channelChangeTracker = new Channel({
 			callback(chanId);
 		});
 	},
+	getChannelChangeEmailContent: function(channel){
+		return '<h2>Channel\'s id has been changed:</h2>'+
+			'<strong>Time:</strong> '+ this.getformatedDate(new Date) +
+			'<br><strong>Channel:</strong> '+ this.getFullChannelName(channel) +
+			'<br><strong>Old ID value:</strong> '+ this.firstChannelId +
+			'<br><strong>New ID value:</strong> '+ channel.id;
+	},
+	sendChannelChangeEmail: function(channel){
+		email.sendMail(this.emailSubj, this.emailRecipient, this.getChannelChangeEmailContent(channel));
+	},
+	isChannelChanged: function(channel){
+		var isChanged = false;
+		
+		if(channel.id != false && channel.id != this.firstChannelId)
+			isChanged = true;
+		
+		return isChanged;
+	},
 	finishPlaylist: function(){
-		var firstChannel = this.channels[0];
-		this.logInfo(this.getFullChannelName(firstChannel) +': '+ firstChannel.id);
+		var firstChannel = this.channels[0],
+			isChanged = this.isChannelChanged(firstChannel),
+			changedText = isChanged ? ' :CHANGED' : '';
+
+		this.logInfo(this.getFullChannelName(firstChannel) +': '+ firstChannel.id + changedText);
+		if(isChanged) this.sendChannelChangeEmail(firstChannel);
+
+		this.firstChannelId = firstChannel.id;
 		this.playlistFinished();
 	}
 });

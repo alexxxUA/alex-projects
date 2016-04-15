@@ -186,6 +186,7 @@ function init(app){
 	app.post('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		var mail = req.body.mail,
 			mailUrl = req.body['mail-url'],
+			subj = 'Test mail',
 			to = req.body.to,
 			method = req.body.method;
 		
@@ -201,12 +202,12 @@ function init(app){
 				mail = legacy.decode(resp.raw, 'utf8', {
 					mode: 'html'
 				});
-				email.sendMail(to, mail, callback);
+				email.sendMail(subj, to, mail, callback);
 				res.send('Message successfully sended!');
 			});
 		}
 		else{
-			email.sendMail(to, mail, callback);
+			email.sendMail(subj, to, mail, callback);
 			res.send('Message successfully sended!');
 		}
 	});
