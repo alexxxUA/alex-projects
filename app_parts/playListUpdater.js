@@ -20,6 +20,7 @@ function Channel(params){
 		updatedList: [],
 		reqFailedList: []
 	};
+	this.tempRestartCount = 0;
 	this.isPlaylistFailed = false;
 	this.channelCounter = 0;
 	this.availableFlags = [{
@@ -50,12 +51,22 @@ function Channel(params){
 	 * Used for using delay when getting channel's html per forced update
 	 * @Value in seconds
 	 */
-	this.forceGenDelay = 0;
+	this.forceGenDelay = 6;
 	/**
 	 * How many times playlist will be generated per 24h after first generate time
 	 * @Value int
 	 */
-	this.generateCountPer24h = 2;
+	this.generateCountPer24h = 1;
+	/**
+	 * How many times playlist generation will be restarted if failed
+	 * @Value int
+	 */
+	this.maxRestartCount = 3;
+	/**
+	 * Delay in restartin generation of playlist
+	 * @Value in minutes
+	 */
+	this.restartDelay = 10;
 	/**
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
@@ -64,7 +75,8 @@ function Channel(params){
 	this.timeZone = 2;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
-	this.playerDomain = 'http://gf2hi5ronzsxi.nblz.ru';
+	this.playerDomain = 'http://1ttv.net';
+	this.playerDomainProxy = 'http://1ttv.net'; //http://gf2hi5ronzsxi.nblz.ru
 
 	this.emailSubj = 'Playlist generator notifier';
 	this.emailRecipient = 'aluaex@gmail.com';
@@ -272,10 +284,11 @@ Channel.prototype = {
 	},
 	getIdFromFrame: function(cUrl, channel, callback){
 		var that = this,
+			newChanUrl = this.getUpdatedPlayerUrl(cUrl),
 			reqParams = {
 				url: this.proxyUrl,
 				isCookies: 'true',
-				data: {b: 5, u: this.playerDomain + $url.parse(cUrl).path}
+				data: {b: 5, u: newChanUrl}
 			};
 
 		function returnId(err, resp){
@@ -292,7 +305,7 @@ Channel.prototype = {
 		if(this.isProxy)
 			proxy.makeProxyRequest(reqParams, null, null, returnId);
 		else
-			needle.request('GET', cUrl, null, {}, returnId);
+			needle.request('GET', newChanUrl, null, {}, returnId);
 	},
 	printReport: function(){
 		var report = this._report(this.report);
@@ -313,6 +326,9 @@ Channel.prototype = {
 				}, j * that.genDelay);
 			})(curChannel, i);
 		}
+	},
+	getUpdatedPlayerUrl: function(urlPath){
+		return (this.isProxy ? this.playerDomainProxy : this.playerDomain) + $url.parse(urlPath).path;
 	},
 	getArrayCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
@@ -341,9 +357,10 @@ Channel.prototype = {
 				'\n\t\t</track>';
 	},
 	sendPlaylistGenFailedEmail: function(){
-		var msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
+		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date) +']',
+			msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
 
-		email.sendMail(this.emailSubj, this.emailRecipient, msg);
+		email.sendMail(sbj, this.emailRecipient, msg);
 	},
 	storeGenerateSpentTime: function(){
 		this.generationSpentTime = this.channels.length * this.scheduleGenDelay * 1000;
@@ -382,10 +399,29 @@ Channel.prototype = {
 		this.playlistFinished();
 	},
 	playlistFinished: function(){
-		if(typeof this.callback == 'function')
-			this.callback();
-		if(this.isPlaylistFailed) this.sendPlaylistGenFailedEmail();
+		if(typeof this.callback == 'function') this.callback();
+		
+		if(this.isPlaylistFailed)
+			this.playlistFailed();
+		else
+			this.tempRestartCount = 0;
+
 		this.resetData();
+	},
+	playlistFailed: function(){
+		var that = this;
+
+		if(this.tempRestartCount < this.maxRestartCount){
+			setTimeout(function(){
+				that.getValidPlaylist();
+			}, this.restartDelay * 1000 * 60);
+
+			this.tempRestartCount++
+		}
+		else{
+			this.sendPlaylistGenFailedEmail();
+			this.tempRestartCount = 0;
+		}
 	}
 }
 
@@ -403,7 +439,7 @@ var channelTorrentStream = new Channel({
 
 		return chanPage && chanPage[1] ? chanPage[1] : false;
 	},
-	getPLayerUrl: function(channel, callback){
+	getPlayerUrl: function(channel, callback){
 		var that = this,
 			channelPage = that.getChannelPage(channel);
 
@@ -428,7 +464,7 @@ var channelTorrentStream = new Channel({
 	getChannelId: function(channel, callback){
 		var that = this;
 
-		that.getPLayerUrl(channel, function(url){
+		that.getPlayerUrl(channel, function(url){
 			that.getIdFromFrame(url, channel, function(chanId){
 				if(!chanId){
 					that.failed(channel);
@@ -445,9 +481,7 @@ var channelTuchka = new Channel({
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
-	initParams: function(){
-		this.playerUrl = this.playerDomain + '/iframe.php?site=873&channel=';	
-	},
+	playerUrlPath: '/iframe.php?site=873&channel=',
 	storeValidList: function(resp){
 		var $ = this.getDom(resp.body),
 			playlist = $('#sidebar select').html();
@@ -461,13 +495,13 @@ var channelTuchka = new Channel({
 
 		return chanNum && chanNum[1] ? chanNum[1] : false;
 	},
-	getPLayerUrl: function(channelNum){
-		return this.playerUrl + channelNum;
+	getPlayerUrl: function(chanNum){
+		return this.playerUrlPath + chanNum;
 	},
 	getChannelId: function(channel, callback){
 		var that = this,
 			chanNum = this.getChannelNumb(channel),
-			chanUrl = this.getPLayerUrl(chanNum);
+			chanUrl = this.getPlayerUrl(chanNum);
 
 		if(!chanNum){
 			this.failed(channel);
@@ -490,9 +524,7 @@ var channelChangeTracker = new Channel({
 	generateCountPer24h: 24,
 	logName: 'log_channelChecker.txt',
 	playlistUrl: 'http://tuchkatv.ru/player.html',
-	initParams: function(){
-		this.playerUrl = this.playerDomain + '/iframe.php?site=873&channel=';	
-	},
+	playerUrlPath: '/iframe.php?site=873&channel=',
 	storeValidList: function(resp){
 		var $ = this.getDom(resp.body),
 			playlist = $('#sidebar select').html();
@@ -506,17 +538,16 @@ var channelChangeTracker = new Channel({
 
 		return chanNum && chanNum[1] ? chanNum[1] : false;
 	},
-	getPLayerUrl: function(channelNum){
-		return this.playerUrl + channelNum;
+	getPlayerUrl: function(chanNum){
+		return this.playerUrlPath + chanNum;
 	},
 	getChannelId: function(channel, callback){
 		var that = this,
 			chanNum = this.getChannelNumb(channel),
-			chanUrl = this.getPLayerUrl(chanNum);
+			chanUrl = this.getPlayerUrl(chanNum);
 
 		if(!chanNum){
 			this.failed(channel);
-			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
 			return;
 		}
 
@@ -536,12 +567,13 @@ var channelChangeTracker = new Channel({
 			'<br><strong>New ID value:</strong> '+ channel.id;
 	},
 	sendChannelChangeEmail: function(channel){
-		email.sendMail(this.emailSubj, this.emailRecipient, this.getChannelChangeEmailContent(channel));
+		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date) +']';
+		email.sendMail(sbj, this.emailRecipient, this.getChannelChangeEmailContent(channel));
 	},
 	isChannelChanged: function(channel){
 		var isChanged = false;
 		
-		if(channel.id != false && channel.id != this.firstChannelId)
+		if(channel.id && this.firstChannelId && channel.id != this.firstChannelId)
 			isChanged = true;
 		
 		return isChanged;
