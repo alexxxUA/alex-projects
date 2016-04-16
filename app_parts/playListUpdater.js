@@ -84,15 +84,20 @@ function Channel(params){
 	this.outputPath = cf.plaulistOutputPath;
 	this.playListName = 'TV_List.xspf';
 	this.logName = 'log.txt';
-	this._report = _.template('Playlist updated.'+
+	this._report = _.template(
+		'Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
-		'\nRequired failed: <%= reqFailedList.length %>'+
-		'\nFailed: <%= failedList.length %>'+
-		'\nFailed channel list:'+
-		'<% _.each(failedList, function(item, index) { '+
-			'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
-			'\n\t<%= index+1 %>. <%= channelFullName %>'+
-		'<% }); %>');
+		'<% if(reqFailedList.length){ %>'+
+			'\nRequired failed: <%= reqFailedList.length %>'+
+		'<% } if(failedList.length){ %>'+
+			'\nFailed: <%= failedList.length %>'+
+			'\nFailed channel list:'+
+			'<% _.each(failedList, function(item, index) { '+
+				'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
+				'\n\t<%= index+1 %>. <%= channelFullName %>'+
+			'<% }); %>'+
+		'<% } %>'
+	);
 
 	//Init params
 	for(var param in params){
@@ -183,7 +188,7 @@ Channel.prototype = {
 	},
 	setChannels: function(entryChannelArray){
 		for(var i=0; i < entryChannelArray.length; i++){
-			var channelListItem = this.getArrayCopy(entryChannelArray[i]);
+			var channelListItem = this.getArrayOrObjCopy(entryChannelArray[i]);
 			this.channels = this.channels.concat(channelListItem);
 		}
 	},
@@ -308,9 +313,10 @@ Channel.prototype = {
 			needle.request('GET', newChanUrl, null, {}, returnId);
 	},
 	printReport: function(){
-		var report = this._report(this.report);
-
-		this.logInfo(report);
+		if(this.isPlaylistFailed)
+			this.logErr('Generation of playlist failed');
+		else
+			this.logInfo( this._report(this.report) );
 	},
 	getList: function() {
 		var that = this;
@@ -330,7 +336,7 @@ Channel.prototype = {
 	getUpdatedPlayerUrl: function(urlPath){
 		return (this.isProxy ? this.playerDomainProxy : this.playerDomain) + $url.parse(urlPath).path;
 	},
-	getArrayCopy: function(array){
+	getArrayOrObjCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
 	},
 	formFullChannList: function(){
