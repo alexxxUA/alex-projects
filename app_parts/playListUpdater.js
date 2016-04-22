@@ -46,12 +46,12 @@ function Channel(params){
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
 	 */
-	this.scheduleGenDelay = 60;
+	this.scheduleGenDelay = 62;
 	/**
 	 * Used for using delay when getting channel's html per forced update
 	 * @Value in seconds
 	 */
-	this.forceGenDelay = 6;
+	this.forceGenDelay = 7;
 	/**
 	 * How many times playlist will be generated per 24h after first generate time
 	 * @Value int
@@ -76,7 +76,7 @@ function Channel(params){
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://1ttv.net';
-	this.playerDomainProxy = 'http://1ttv.net'; //http://gf2hi5ronzsxi.nblz.ru
+	this.playerDomainProxy = 'http://gf2hi5ronzsxi.nblz.ru'; //http://gf2hi5ronzsxi.nblz.ru  |  http://1ttv.net
 
 	this.emailSubj = 'Playlist generator notifier';
 	this.emailRecipient = 'aluaex@gmail.com';
@@ -604,7 +604,9 @@ module.exports = {
 				channelTuchka.init([channels2]);
 			});
 		}
-		channelChangeTracker.init([{dName: '1+1', sName: '1\\+1', flags: ''}])
+		if(cf.playListChannelChecker){
+			channelChangeTracker.init([{dName: '1+1', sName: '1\\+1', flags: ''}])
+		}
 	},
 	forceGeneratePlaylists: function(res){
 		if(cf.playlistEnabled){

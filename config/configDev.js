@@ -8,8 +8,8 @@ var config = {
 	FBappId: '998511046825943',
 	FBsecret: '4092b64b251eb9491a59f79c1dca0350',
 	FBv: 'v2.2',
-	playlistEnabled: true,
-	playlistGenProxy: false
+	playlistEnabled: false,
+	playlistGenProxy: true
 }
 
 module.exports = config;
