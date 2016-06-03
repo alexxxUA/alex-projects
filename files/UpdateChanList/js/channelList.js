@@ -19,6 +19,7 @@ var channelList = [
 	{dName: 'К1', sName: 'К1', flags: 'req'},
 	{dName: 'К2', sName: 'К2', flags: 'req'},
 	{dName: '2x2', sName: '2x2', flags: 'req'},
+	{dName: 'Мама', sName: 'Мама', flags: ''},
 	{dName: 'СТС', sName: 'СТС', flags: 'req'},
 	{dName: 'ТНТ', sName: 'ТНТ', flags: 'req'},
 	{dName: 'Перец', sName: 'Перец', flags: ''},
