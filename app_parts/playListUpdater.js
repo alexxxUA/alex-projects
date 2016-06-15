@@ -61,7 +61,10 @@ function Channel(params){
 	 * How many times playlist generation will be restarted if failed
 	 * @Value int
 	 */
-	this.maxRestartCount = 3;
+	this.maxRestartCount = 5;
+
+	this.maxRestartCountPerChannel = 4;
+	this.restartChannelItemDelay = 60;//Seconds
 	/**
 	 * Delay in restartin generation of playlist
 	 * @Value in minutes
@@ -94,7 +97,8 @@ function Channel(params){
 			'\nFailed channel list:'+
 			'<% _.each(failedList, function(item, index) { '+
 				'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
-				'\n\t<%= index+1 %>. <%= channelFullName %>'+
+				'\n\t<%= index+1 %>. <%= channelFullName %> '+
+				'<%= item.isReq ? "(Reg)" : "" %> - <%= item.errMsg %>'+
 			'<% }); %>'+
 		'<% } %>'
 	);
@@ -130,13 +134,20 @@ Channel.prototype = {
 			this.callback = callback;
 		this.createFolder(this.outputPath);
 		this.setChannels(channelsArray);
-		this.updateChannelsObject();
+		this.initChannelsObject();
 		this.storeGenerateSpentTime();
 		this.getValidPlaylist(true);
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
 		this.setTimeoutCall(this.getNextTimeOffset());
+	},
+	initChannelsObject: function(){
+		this.updateChannelsObject(function(channel){
+			this.updateFlags(channel);
+			this.decodeChannelNames(channel);
+		});
+		this.resetChannelsObject();
 	},
 	extendObj: function(target) {
 		var sources = [].slice.call(arguments, 1);
@@ -160,10 +171,18 @@ Channel.prototype = {
 		};
 		this.channelCounter = 0;
 		this.isPlaylistFailed = false;
+		this.resetChannelsObject();
 		delete this.callback;
+	},
+	resetChannelsObject: function(){
+		this.updateChannelsObject(function(channel){
+			channel.failedCount = 0;
+			channel.errMsg = '';
+		});
 	},
 	prepareData: function(isForce){
 		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
+		this.restartChannelItemDelay = this.restartChannelItemDelay * 1000;
 	},
 	createFolder: function(folderPath){
 		var fullFolderPath =  path.join(filesP, folderPath);
@@ -192,13 +211,9 @@ Channel.prototype = {
 			this.channels = this.channels.concat(channelListItem);
 		}
 	},
-	updateChannelsObject: function() {
-		for(var i=0; i < this.channels.length; i++){
-			var channel = this.channels[i];
-
-			this.updateFlags(channel);
-			this.decodeChannelNames(channel);
-		}
+	updateChannelsObject: function(callback) {
+		for(var i=0; i < this.channels.length; i++)
+			callback.call(this, this.channels[i]);
 	},
 	updateFlags: function(channel){
 		var flags = channel.flags ? channel.flags : '';
@@ -298,13 +313,18 @@ Channel.prototype = {
 
 		function returnId(err, resp){
 			if (err || resp.statusCode !== 200){
-				that.failed(channel);
+				that.failed(channel, 'channel`s page/frame not available');
 				return;
 			}
 			var regExp = new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
 				chanId = resp.body.match(regExp);
 
-			callback(chanId && chanId[1] ? chanId[1] : false);
+			chanId = chanId && chanId[1] ? chanId[1] : false;
+			
+			if(!chanId)
+				that.failed(channel, 'id not fund on the page/frame');
+			else
+				callback(chanId);
 		}
 
 		if(this.isProxy)
@@ -385,11 +405,23 @@ Channel.prototype = {
 	savePlaylist: function(playlist){
 		fs.writeFile(this.playlistPath, playlist);
 	},
-	failed: function(channel){
+	failed: function(channel, errMsg){
+		var that = this;
+		
+		//Restart gen. of channel item
+		if(channel.failedCount < this.maxRestartCountPerChannel && channel.isReq){
+			setTimeout(function(){
+				channel.failedCount++;
+				that.getChannelId(channel, function(ID){
+					that.storeChannelItem(channel, ID)
+				});
+			}, this.restartChannelItemDelay);
+			return;
+		}
+
 		this.channelCounter++
-
 		channel.id = false;
-
+		channel.errMsg = errMsg;
 		this.report.failedList.push(channel);
 		if(channel.isReq)
 			this.report.reqFailedList.push(channel);
@@ -450,15 +482,13 @@ var channelTorrentStream = new Channel({
 			channelPage = that.getChannelPage(channel);
 
 		if(!channelPage){
-			console.log('Channel not found on the page: '+ channel.dName);
-			that.failed(channel);
+			that.failed(channel, 'not found on the playlist page');
 			return;
 		}
 
 		needle.request('GET', channelPage, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
-				that.logErr('Error in getting page for channel: '+ channel.dName);
-				that.failed(channel);
+				that.failed(channel, 'error in getting page for channel');
 				return;
 			}
 			var $ = that.getDom(resp.body),
@@ -472,10 +502,6 @@ var channelTorrentStream = new Channel({
 
 		that.getPlayerUrl(channel, function(url){
 			that.getIdFromFrame(url, channel, function(chanId){
-				if(!chanId){
-					that.failed(channel);
-					return;
-				}
 				callback(chanId);
 			});
 		});
@@ -510,16 +536,11 @@ var channelTuchka = new Channel({
 			chanUrl = this.getPlayerUrl(chanNum);
 
 		if(!chanNum){
-			this.failed(channel);
-			//console.log("Unable to find cnahhel's NUMBER: "+ channel.dName);
+			this.failed(channel, 'number not found on playlist page');
 			return;
 		}
 
 		this.getIdFromFrame(chanUrl, channel, function(chanId){
-			if(!chanId){
-				that.failed(channel);
-				return;
-			}
 			callback(chanId);
 		});
 	}
@@ -553,15 +574,11 @@ var channelChangeTracker = new Channel({
 			chanUrl = this.getPlayerUrl(chanNum);
 
 		if(!chanNum){
-			this.failed(channel);
+			this.failed(channel, 'number not found on playlist page');
 			return;
 		}
 
 		this.getIdFromFrame(chanUrl, channel, function(chanId){
-			if(!chanId){
-				that.failed(channel);
-				return;
-			}
 			callback(chanId);
 		});
 	},

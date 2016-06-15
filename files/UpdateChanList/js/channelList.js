@@ -40,6 +40,7 @@ var channelList = [
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'hd req'},
 	{dName: 'History Channel', sName: 'History Channel', flags: 'hd req'},
+	{dName: 'TLC', sName: 'TLC', flags: 'hd'},
 	{dName: 'Animal Planet', sName: 'Animal Planet|Animаl Planеt', flags: 'hd req'},
 	{dName: 'Nat Geo Wild', sName: 'Nat Geo Wild|Nаt Geо Wild', flags: 'hd req'},
 	{dName: 'Наука 2.0', sName: 'Наука 2.0', flags: 'req'},
@@ -48,6 +49,7 @@ var channelList = [
 	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV', flags: ''},
 	{dName: 'Travel channel', sName: 'Travel channel', flags: ''},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ', flags: ''},
+	{dName: 'Первый автомобильный', sName: 'Первый автомобильный \\(Украина\\)', flags: ''},
 	{dName: 'Extreme Sports', sName: 'Extreme Sports', flags: ''},
 	{dName: 'English Club TV', sName: 'English Club TV|EnglishClub TV', flags: ''},
 
@@ -65,7 +67,7 @@ var channelList = [
 	{dName: 'HD Life', sName: 'HD Life', flags: 'req'},
 	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'HD Кино', sName: 'HD Кино', flags: 'req'},
-	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: 'req'},
+	{dName: 'HD Кино 2', sName: 'HD Кино 2', flags: ''},
 
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', flags: ''},
