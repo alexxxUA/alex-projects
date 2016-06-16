@@ -125,6 +125,7 @@ Channel.prototype = {
 	},
 	init: function(channelsArray, callback) {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
+		this.restartChannelItemDelay = this.restartChannelItemDelay * 1000;
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
 		
@@ -136,7 +137,7 @@ Channel.prototype = {
 		this.setChannels(channelsArray);
 		this.initChannelsObject();
 		this.storeGenerateSpentTime();
-		this.getValidPlaylist(true);
+		this.genValidPlaylist(true);
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
@@ -182,7 +183,6 @@ Channel.prototype = {
 	},
 	prepareData: function(isForce){
 		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
-		this.restartChannelItemDelay = this.restartChannelItemDelay * 1000;
 	},
 	createFolder: function(folderPath){
 		var fullFolderPath =  path.join(filesP, folderPath);
@@ -193,14 +193,14 @@ Channel.prototype = {
 		//Push playlist generator instance to global prototype property for further regeneration
 		this.playlisGeneratorInstanses.push({
 			that: this,
-			func: this.getValidPlaylist
+			func: this.genValidPlaylist
 		});
 	},
 	setTimeoutCall: function(time){
 		var that = this;
 
 		setTimeout(function(){
-			that.getValidPlaylist();
+			that.genValidPlaylist();
 
 			that.setTimeoutCall(that.generateInterval);
 		}, time);
@@ -269,7 +269,7 @@ Channel.prototype = {
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
-	getValidPlaylist: function(isForce){
+	genValidPlaylist: function(isForce){
 		var that = this;
 
 		that.prepareData(isForce);
@@ -451,7 +451,7 @@ Channel.prototype = {
 
 		if(this.tempRestartCount < this.maxRestartCount){
 			setTimeout(function(){
-				that.getValidPlaylist();
+				that.genValidPlaylist();
 			}, this.restartDelay * 1000 * 60);
 
 			this.tempRestartCount++
