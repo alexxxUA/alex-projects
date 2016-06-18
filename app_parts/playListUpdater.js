@@ -37,6 +37,7 @@ function Channel(params){
 	this.validList = '';
 	/* Is getting channel's html through proxy */
 	this.isProxy = cf.playlistGenProxy;
+	this.idMinLength = 10;
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -65,7 +66,6 @@ function Channel(params){
 	this.maxRestartCount = 5;
 	
 	this.maxRestartCountPerChannel = 1;
-	this.restartChannelItemDelay = 45;//Seconds
 	/**
 	 * Delay in restartin generation of playlist
 	 * @Value in minutes
@@ -126,7 +126,6 @@ Channel.prototype = {
 	},
 	init: function(channelsArray, callback, backUpGen) {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
-		this.restartChannelItemDelay = this.restartChannelItemDelay * 1000;
 		this.backUpGen = backUpGen;
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
@@ -381,9 +380,8 @@ Channel.prototype = {
 
 		for (var i = 0; i < this.channels.length; i++) {
 			var channel = this.channels[i];
-			if(channel.id){
+			if(channel.id && channel.id.length >= this.idMinLength)
 				channels += this.formChannItem(channel);
-			}
 		}
 
 		return '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -439,7 +437,7 @@ Channel.prototype = {
 				that.backUpGen.getChannelId(channel, function(ID){
 					that.storeChannelItem(channel, ID)
 				}, that);
-			}, this.restartChannelItemDelay);
+			}, this.genDelay);
 			return;
 		}
 
