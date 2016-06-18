@@ -98,7 +98,7 @@ function Channel(params){
 			'\nFailed channel list:'+
 			'<% _.each(failedList, function(item, index) { '+
 				'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
-				'\n\t<%= index+1 %>. <%= channelFullName %> '+
+				'\n  <%= index+1 %>. <%= channelFullName %> '+
 				'<%= item.isReq ? "(Reg)" : "" %> - <%= item.errMsg.join("|") %>'+
 			'<% }); %>'+
 		'<% } %>'
@@ -380,8 +380,13 @@ Channel.prototype = {
 
 		for (var i = 0; i < this.channels.length; i++) {
 			var channel = this.channels[i];
-			if(channel.id && channel.id.length >= this.idMinLength)
+			if(channel.id && channel.id.length >= this.idMinLength){
 				channels += this.formChannItem(channel);
+			}
+			else if(channel.id && channel.id.length < this.idMinLength){
+				channel.errMsg.push('id shorter than '+ this.idMinLength +' symbols');
+				this.pushToFailedList(channel);
+			}
 		}
 
 		return '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -442,14 +447,17 @@ Channel.prototype = {
 		}
 
 		this.channelCounter++
-		channel.id = false;
-		this.report.failedList.push(channel);
-		if(channel.isReq)
-			this.report.reqFailedList.push(channel);
+		this.pushToFailedList(channel);
 
 		//Finish playlist
 		if(this.channelCounter >= this.channels.length)
 			this.finishPlaylist();
+	},
+	pushToFailedList: function(channel){
+		channel.id = false;
+		this.report.failedList.push(channel);
+		if(channel.isReq)
+			this.report.reqFailedList.push(channel);
 	},
 	finishPlaylist: function(){
 		this.isPlaylistFailed = this.channels.length == this.report.failedList.length;
