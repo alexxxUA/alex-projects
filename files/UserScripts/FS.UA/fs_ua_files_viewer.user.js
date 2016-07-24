@@ -157,8 +157,8 @@ function Proxy(params){
 	this.internalProxyUrl = location.protocol +'//avasin.ml/proxy';
 	this.externalProxyUrl = location.protocol +'//213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 
-	this.browserProxyDomain = 'http://smenip.ru'; //'http://cloud.lntu.info'
-	this.browserProxyPath = '/proxi/browse.php?'; //'/browse.php?'
+	this.browserProxyDomain = 'http://cloud.lntu.info'; //'http://smenip.ru'
+	this.browserProxyPath = '/browse.php?'; //'/proxi/browse.php?'
 
 	this.isBrowserProxy = false;
 	this.readSpeed = 600; //Symbols per minute
