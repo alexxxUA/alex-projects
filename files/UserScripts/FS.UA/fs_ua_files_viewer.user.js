@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name			FS.UA files viewer
-// @version			6.0
+// @version			6.1
 // @description		FS.UA files (video, audio, games, etc...) viewer from non UA/RU coutries
 // @author			Alexey
 // @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
@@ -93,7 +93,7 @@ Modal.prototype.init = function(param){
 	this.registerEvents();
 }
 Modal.prototype.addCustomStyles = function(){
-	var $styles = $("<style/>").html(
+	this.insertCss(
 		'.'+ this.modalClass +'{display: none;position: fixed;width: '+ this.contentWidth +'px;top: 50%;left: 50%;margin: -200px 0 0 -'+ this.contentWidth/2 +'px;z-index: 99999;background: #000;box-shadow: 0 0 4px 1px #00A08D;border-radius: 5px;}'+
 		'.'+ this.modalClass +'.'+ this.activeClass +'{display: block;}'+
 		'.'+ this.modalClass +' .'+ this.contentClass +'{width:100%; height: 100%;padding: 3%;box-sizing: border-box;text-align:center;}'+
@@ -102,9 +102,6 @@ Modal.prototype.addCustomStyles = function(){
 		'.'+ this.bgClass +'.'+ this.activeClass +'{display: block;}'+
 		'.'+ this.closeClass +'{position: absolute;right: 10px;top: 5px;color: #C9F2F9;font: normal 20px arial;cursor: pointer;}'
 	);
-	
-	$styles.attr('data-id', unsafeWindow.FS_PROXY.dataId);
-	$('head').append($styles);
 }	
 Modal.prototype.createDom = function(){
 	$('body').append('<div class="'+ this.bgClass +'"></div>')
@@ -429,8 +426,13 @@ var FS = new Proxy({
             e.preventDefault();
         });
     },
+	insertCss: function(css){
+		var id = typeof unsafeWindow.FS_PROXY != 'undefined' ? unsafeWindow.FS_PROXY.dataId : '';
+
+		$("<style/>").html(css).attr('data-id', id).appendTo('head');
+	},
     addCustomStyles: function(){
-        var $styles = $("<style/>").html(
+		this.insertCss(
 			'.'+ this.ajaxLoaderClass +' {position: fixed; width:30px; height:30px; z-index:999999; left:50%; top:50%; margin:12px 0 0 12px; display:none;}'+
 			'.'+ this.ajaxLoaderClass +' img {width: 100%; height: 100%;}'+
 			'.'+ this.ajaxErrorClass +' {position:fixed; display:none; left:50%; top:50%; z-index:999999; min-width:100px; max-width:200px; color:#FF7D7D; background:#00013F; border-radius:0 10px 10px; padding:10px; text-align:center; margin:12px 0 0 12px;}'+
@@ -451,8 +453,6 @@ var FS = new Proxy({
 			'.rutor-poster-link {position: absolute; top: 0; left: 0; z-index: 100; width: 35px; height: 35px;}'+
 			'.rutor-poster-link + .rutor-poster-link {top: 30px;}'
 		);
-		$styles.attr('data-id', unsafeWindow.FS_PROXY.dataId);
-        this.$head.append($styles);
     },
 	loadCss: function(){
 		var cssArray = typeof this.cssArray != 'undefined' ? this.cssArray : [];
@@ -688,5 +688,6 @@ var FS = new Proxy({
 
 //Greate Modal instance and init()
 var modal = new Modal({
-	contentWidth: FS.videoWidth
+	contentWidth: FS.videoWidth,
+	insertCss: FS.insertCss
 });
