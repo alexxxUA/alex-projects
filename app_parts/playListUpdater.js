@@ -524,7 +524,10 @@ var channelTorrentStream = new Channel({
 			var $ = that.getDom(resp.body),
 				channelUrl = $('#Playerholder iframe').attr('src');
 
-			callback(channelUrl);
+            if(channelUrl)
+                callback(channelUrl);
+            else
+                _that.failed(channel, 'players src not found in frame on page');
 		});
 	},
 	getChannelId: function(channel, callback, _that){
