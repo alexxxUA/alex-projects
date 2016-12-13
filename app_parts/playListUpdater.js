@@ -12,6 +12,17 @@ var needle = require('needle'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList;
 
+function extend(target) {
+    var sources = [].slice.call(arguments, 1);
+
+    sources.forEach(function (source) {
+        for (var prop in source) {
+            target[prop] = source[prop];
+        }
+    });
+    return target;
+}
+
 function Channel(params){
 	this.oneDay = cf.oneDay;
 	this.channels = [];
@@ -151,16 +162,6 @@ Channel.prototype = {
 		});
 		this.resetChannelsObject();
 	},
-	extendObj: function(target) {
-		var sources = [].slice.call(arguments, 1);
-
-		sources.forEach(function (source) {
-			for (var prop in source) {
-				target[prop] = source[prop];
-			}
-		});
-		return target;
-	},
 	/**
 	 * Reset data before starting generate
 	 * @param {boolean} isForce | indicate is generation forced or no
@@ -219,7 +220,7 @@ Channel.prototype = {
 	updateFlags: function(channel){
 		var flags = channel.flags ? channel.flags : '';
 
-		this.extendObj(channel, this.getObjFromFlags(flags));
+		extend(channel, this.getObjFromFlags(flags));
 	},
 	decodeChannelNames: function(channel){
 		if(channel.isCoded){
@@ -492,6 +493,42 @@ Channel.prototype = {
 	}
 }
 
+//Tuchka main config
+var TuckaMainConfig = {
+    playlistUrl: 'http://tuchkatv.ru/player.html',
+	playerUrlPath: '/iframe.php?site=873&channel=',
+	storeValidList: function(resp){
+		var $ = this.getDom(resp.body),
+			playlist = $('#sidebar select').html();
+
+		this.validList = playlist;
+	},
+	getChannelNumb: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
+
+		return chanNum && chanNum[1] ? chanNum[1] : false;
+	},
+	getPlayerUrl: function(chanNum){
+		return this.playerUrlPath + chanNum;
+	},
+	getChannelId: function(channel, callback, _that){
+		var _that = _that || this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPlayerUrl(chanNum);
+
+		if(!chanNum){
+			_that.failed(channel, 'number not found on playlist page');
+			return;
+		}
+
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			callback(chanId);
+		}, _that);
+	}
+}
+
 var channelTorrentStream = new Channel({
 	playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
@@ -542,43 +579,17 @@ var channelTorrentStream = new Channel({
 	}
 });
 
-var channelTuchka = new Channel({
+var channelTuchka = new Channel(extend({}, TuckaMainConfig, {
 	generateTime: '6:20',
 	playListName: 'TV_List_tuchka.xspf',
-	logName: 'log_tuchka.txt',
-	playlistUrl: 'http://tuchkatv.ru/player.html',
-	playerUrlPath: '/iframe.php?site=873&channel=',
-	storeValidList: function(resp){
-		var $ = this.getDom(resp.body),
-			playlist = $('#sidebar select').html();
+	logName: 'log_tuchka.txt'
+}));
 
-		this.validList = playlist;
-	},
-	getChannelNumb: function(channel){
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
-			chanNum = this.validList.match(regExp);
+var mainPlaylist = new Channel(extend({}, TuckaMainConfig, {
+	playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt'
+}));
 
-		return chanNum && chanNum[1] ? chanNum[1] : false;
-	},
-	getPlayerUrl: function(chanNum){
-		return this.playerUrlPath + chanNum;
-	},
-	getChannelId: function(channel, callback, _that){
-		var _that = _that || this,
-			chanNum = this.getChannelNumb(channel),
-			chanUrl = this.getPlayerUrl(chanNum);
-
-		if(!chanNum){
-			_that.failed(channel, 'number not found on playlist page');
-			return;
-		}
-
-		this.getIdFromFrame(chanUrl, channel, function(chanId){
-			callback(chanId);
-		}, _that);
-	}
-});
 var channelChangeTracker = new Channel({
 	firstChannelId: false,
 	isGenerateInTime: false,
@@ -651,7 +662,7 @@ var channelChangeTracker = new Channel({
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			channelTorrentStream.init([channels1], function(){
+			mainPlaylist.init([channels1], function(){
 				channelTuchka.init([channels2]);
 			}, channelTuchka);
 		}
