@@ -11,7 +11,7 @@ block adminPanel
 			div.panel-body.server-actions-holder
 				-if(cf.playlistEnabled){
 					a.js-force-generate-playlists.btn.btn-success.btn-sm.col-xs-6.col-sm-6(href='/playlistForceGenerate', title='Force generate playlists') Force gen. playlists
-					a.output-btn.btn.btn-info.btn-sm.col-xs-5.col-sm-5(href='#{cf.plaulistOutputPath}', title='Playlist output') Playlist output
+					a.output-btn.btn.btn-info.btn-sm.col-xs-5.col-sm-5(href='#{cf.playlistOutputPath}', title='Playlist output') Playlist output
 				-}
 				a.btn.btn-success.btn-sm.col-xs-12.col-sm-12(href='#', title='Send email', data-dialog='email-dialog') Send email
 		div.panel.panel-info.add-alias-pan

@@ -4,7 +4,7 @@ var config = {
 	oneDay: 86400000,
 	playlistEnabled: true,
 	playListChannelChecker: false,
-	plaulistOutputPath: '/UpdateChanList/LastValidPlaylist/server'
+	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server'
 }
 
 module.exports = config;
