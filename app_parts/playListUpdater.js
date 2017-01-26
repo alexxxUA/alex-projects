@@ -163,7 +163,8 @@ Channel.prototype = {
     logStartGeneration: function(){
         var now = this.getNowOnTimeZone(),
             approxEndGenMs = now.getTime() + this.generationSpentTime,
-            approxEndDateString = this.getformatedDate( new Date(approxEndGenMs) ),
+            approxEndDate = this.getDateOnZone( new Date(approxEndGenMs) ),
+            approxEndDateString = this.getformatedDate( approxEndDate ),
             genTimeString = this.getGenTime().string;
 
         this.logInfo('Generation started and will take ~ '+ genTimeString +'. End time ~ '+ approxEndDateString +'.');
@@ -294,11 +295,12 @@ Channel.prototype = {
     getTimeZone: function(){
         return this.timeZone - (this.isDst ?  1 : 0);
     },
-	getTimeOnZone: function(time, tZone){
+	getDateOnZone: function(time, tZone){
+        var tZone = typeof tZone != 'undefined' ? tZone : this.getTimeZone();
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
 	getNowOnTimeZone: function(){
-		return this.getTimeOnZone(new Date(), this.getTimeZone() );
+		return this.getDateOnZone(new Date());
 	},
 	getOffsetNextHour: function(){
 		var now = new Date(),
@@ -327,7 +329,7 @@ Channel.prototype = {
 		return tillTime - now;
 	},
 	getformatedDate: function(date){
-		var now = this.getTimeOnZone(date, this.getTimeZone() );
+		var now = this.getDateOnZone(date);
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
