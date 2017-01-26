@@ -155,16 +155,15 @@ Channel.prototype = {
 		}
 	},
 	logInfo: function(msg){
-		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
+		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
 	logErr: function(msg){
-		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
+		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
     logStartGeneration: function(){
         var now = new Date(),
             approxEndGenMs = now.getTime() + this.generationSpentTime,
-            approxEndDate = this.getDateOnZone( new Date(approxEndGenMs) ),
-            approxEndDateString = this.getformatedDate( approxEndDate ),
+            approxEndDateString = this.getformatedDate( new Date(approxEndGenMs), true ),
             genTimeString = this.getGenTime().string;
 
         this.logInfo('Generation started and will take ~ '+ genTimeString +'. End time ~ '+ approxEndDateString +'.');
@@ -328,8 +327,8 @@ Channel.prototype = {
 
 		return tillTime - now;
 	},
-	getformatedDate: function(date){
-		var now = this.getDateOnZone(date);
+	getformatedDate: function(date, isNeedConvert){
+		var now = isNeedConvert ? this.getDateOnZone(date) : date;
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
@@ -450,7 +449,7 @@ Channel.prototype = {
 
 		return '<?xml version="1.0" encoding="UTF-8"?>' +
 				'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
-				'\n\t<title>TV playlist: '+ this.getformatedDate(new Date()) +'; failed channels: '+ this.report.failedList.length +'</title>' +
+				'\n\t<title>TV playlist: '+ this.getformatedDate(new Date(), true) +'; failed channels: '+ this.report.failedList.length +'</title>' +
 				'\n\t<creator>Vasin Oleksiy</creator>' +
 				'\n\t<trackList>' + channels + '\n\t</trackList>' +
 				'\n</playlist>';
@@ -462,7 +461,7 @@ Channel.prototype = {
 				'\n\t\t</track>';
 	},
 	sendPlaylistGenFailedEmail: function(){
-		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date) +']',
+		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date, true) +']',
 			msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
 
 		email.sendMail(sbj, this.emailRecipient, msg);
@@ -675,13 +674,13 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
 	logName: 'log_channelChecker.txt',
 	getChannelChangeEmailContent: function(channel){
 		return '<h2>Channel\'s id has been changed:</h2>'+
-			'<strong>Time:</strong> '+ this.getformatedDate(new Date) +
+			'<strong>Time:</strong> '+ this.getformatedDate(new Date, true) +
 			'<br><strong>Channel:</strong> '+ this.getFullChannelName(channel) +
 			'<br><strong>Old ID value:</strong> '+ this.firstChannelId +
 			'<br><strong>New ID value:</strong> '+ channel.id;
 	},
 	sendChannelChangeEmail: function(channel){
-		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date) +']';
+		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date, true) +']';
 		email.sendMail(sbj, this.emailRecipient, this.getChannelChangeEmailContent(channel));
 	},
 	isChannelChanged: function(channel){
