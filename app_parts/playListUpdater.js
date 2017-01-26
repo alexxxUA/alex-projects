@@ -12,6 +12,16 @@ var needle = require('needle'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList;
 
+
+Date.prototype.stdTimezoneOffset = function() {
+    var jan = new Date(this.getFullYear(), 0, 1);
+    var jul = new Date(this.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+}
+Date.prototype.dst = function() {
+    return this.getTimezoneOffset() < this.stdTimezoneOffset();
+}
+
 /**
  * Extend objects
  * @param   {objects}
@@ -150,6 +160,14 @@ Channel.prototype = {
 	logErr: function(msg){
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
+    logStartGeneration: function(){
+        var now = this.getNowOnTimeZone(),
+            approxEndGenMs = now.getTime() + this.generationSpentTime,
+            approxEndDateString = this.getformatedDate( new Date(approxEndGenMs) ),
+            genTimeString = this.getGenTime().string;
+
+        this.logInfo('Generation started and will take ~ '+ genTimeString +'. End time ~ '+ approxEndDateString +'.');
+    },
 	init: function() {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
@@ -160,7 +178,6 @@ Channel.prototype = {
 		this.createFolder(this.outputPath);
 		this.setChannels(this.channelsArray);
 		this.initChannelsObject();
-		this.storeGenerateSpentTime();
 
         //Save playlist page for backup
 		if(this.backUpGen)
@@ -205,6 +222,7 @@ Channel.prototype = {
 	},
 	prepareData: function(isForce){
 		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
+        this.generationSpentTime = this.getGenTime().time;
 	},
 	createFolder: function(folderPath){
 		var fullFolderPath =  path.join(filesP, folderPath);
@@ -248,6 +266,24 @@ Channel.prototype = {
 			channel.dName = new Buffer(channel.dName, 'base64');
 		}
 	},
+    getGenTime: function(){
+        var time = this.channels.length * this.genDelay,
+            date = new Date(time),
+            h = date.getUTCHours(),
+            m = date.getUTCMinutes(),
+            s = date.getUTCSeconds(),
+            hString = h ? h+'h ' : '',
+            mString = m ? m+'m ' : '',
+            sString = s ? s+'s ' : '',
+            string = hString + mString + sString;
+
+        return {
+            time: +time.toFixed(2),
+            h: h,
+            m: m,
+            string: string.slice(0, string.length-1)
+        }
+    },
 	getNextTimeOffset: function(){
 		var nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - this.generationSpentTime;
 		return nextTimeOffset > 0 ? nextTimeOffset : 0;
@@ -255,11 +291,14 @@ Channel.prototype = {
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
 	},
+    getTimeZone: function(){
+        return this.timeZone - (this.isDst ?  1 : 0);
+    },
 	getTimeOnZone: function(time, tZone){
 		return new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(),  time.getUTCHours() + tZone, time.getUTCMinutes(), time.getUTCSeconds());
 	},
 	getNowOnTimeZone: function(){
-		return this.getTimeOnZone(new Date(), this.timeZone);
+		return this.getTimeOnZone(new Date(), this.getTimeZone() );
 	},
 	getOffsetNextHour: function(){
 		var now = new Date(),
@@ -288,7 +327,7 @@ Channel.prototype = {
 		return tillTime - now;
 	},
 	getformatedDate: function(date){
-		var now = this.getTimeOnZone(date, this.timeZone);
+		var now = this.getTimeOnZone(date, this.getTimeZone() );
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
@@ -296,6 +335,7 @@ Channel.prototype = {
 		var that = this;
 
 		this.prepareData(isForce);
+        this.logStartGeneration();
 
 		//Gen playlist
 		this.getValidPlaylist(function(){
@@ -425,13 +465,13 @@ Channel.prototype = {
 
 		email.sendMail(sbj, this.emailRecipient, msg);
 	},
+    isDst: function(){
+        return new Date().dst();
+    },
 	isAbleToRestartChan: function(channel){
 		return typeof this.backUpGen != 'undefined'
 				&& this.backUpGen.validList.length 
 				&& channel.failedCount < this.maxRestartCountPerChannel;
-	},
-	storeGenerateSpentTime: function(){
-		this.generationSpentTime = this.channels.length * this.scheduleGenDelay * 1000;
 	},
 	storeChannelItem: function(channel, ID){
 		this.channelCounter++
