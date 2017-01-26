@@ -161,7 +161,7 @@ Channel.prototype = {
 		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date) +'] '+ msg +'\n\n');
 	},
     logStartGeneration: function(){
-        var now = this.getNowOnTimeZone(),
+        var now = new Date(),
             approxEndGenMs = now.getTime() + this.generationSpentTime,
             approxEndDate = this.getDateOnZone( new Date(approxEndGenMs) ),
             approxEndDateString = this.getformatedDate( approxEndDate ),
