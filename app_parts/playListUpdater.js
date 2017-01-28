@@ -111,7 +111,16 @@ function Channel(params){
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://1ttv.net';
+    this.playerFrameUrl = this.playerDomain +'/acestream.php';
 	this.playerDomainProxy = 'http://gf2hi5ronzsxi.nblz.ru'; //http://gf2hi5ronzsxi.nblz.ru  |  http://1ttv.net
+    
+    this.reqParams = {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Host': '1ttv.net',
+        }
+    };
 
 	this.emailSubj = 'Playlist generator notifier';
 	this.emailRecipient = 'aluaex@gmail.com';
@@ -251,6 +260,18 @@ Channel.prototype = {
 			this.channels = this.channels.concat(channelListItem);
 		}
 	},
+    setCookie: function(url, channel, callback){
+        var that = this;
+
+        needle.request('GET', url, null, that.reqParams, function(err, resp){
+            if (err || resp.statusCode !== 200){
+                that.failed(channel, 'channel`s page/frame not available');
+                return;
+            }
+
+            if(callback) callback(resp.headers['set-cookie']);
+        });
+    },
 	updateChannelsObject: function(callback) {
 		for(var i=0; i < this.channels.length; i++)
 			callback.call(this, this.channels[i]);
@@ -376,36 +397,40 @@ Channel.prototype = {
 		return flagsObj;
 	},
 	getIdFromFrame: function(cUrl, channel, callback, _that){
-		var _that = _that || this,
-			that = this,
-			newChanUrl = this.getUpdatedPlayerUrl(cUrl),
-			reqParams = {
-				url: this.proxyUrl,
-				isCookies: 'true',
-				data: {b: 5, u: newChanUrl}
-			};
+		var that = _that || this,
+			updChanUrl = that.getUpdatedPlayerUrl(cUrl),
+            reqParams = extend({}, this.reqParams);
 
-		function returnId(err, resp){
-			if (err || resp.statusCode !== 200){
-				_that.failed(channel, 'channel`s page/frame not available');
-				return;
-			}
-			var regExp = new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
-				chanId = resp.body.match(regExp);
+        reqParams.headers.Referer = updChanUrl;
 
-			chanId = chanId && chanId[1] ? chanId[1] : false;
-			
-			if(!chanId)
-				_that.failed(channel, 'id not found on the page/frame');
-			else
-				callback(chanId);
-		}
-
-		if(this.isProxy)
-			proxy.makeProxyRequest(reqParams, null, null, returnId);
-		else
-			needle.request('GET', newChanUrl, null, {}, returnId);
+        function getIdReq(cookie){
+            //Set cookie
+            reqParams.headers.Cookie = cookie;
+            //Send request
+            needle.request('GET', that.playerFrameUrl , null, reqParams, function(err, resp){
+                that.getIdFromFrameRespCallback.call(that, err, resp, channel, callback)
+            });
+        }
+        that.setCookie(updChanUrl, channel, getIdReq);
 	},
+    getIdFromFrameRespCallback: function(err, resp, channel, callback){
+        if (err || resp.statusCode !== 200){
+            this.failed(channel, 'channel`s page/frame not available');
+            return;
+        }
+
+        var regExp = new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
+            chanId = resp.body.match(regExp);
+
+        chanId = chanId && chanId[1] ? chanId[1] : false;
+        //Check if ID string contains numbers. If not -> failed.
+        chanId = /[0-9]+/.test(chanId) ? chanId : false;
+
+        if(!chanId)
+            this.failed(channel, 'id not found on the page/frame');
+        else
+            callback(chanId);
+    },
 	printReport: function(){
 		if(this.isPlaylistFailed)
 			this.logErr('Generation of playlist failed');
@@ -549,9 +574,10 @@ Channel.prototype = {
             this.backUpGen.genValidPlaylist.call(this.backUpGen, true);
             this.tempRestartCount = 0;
         }
-        //Send email notification
+        //Send email notification about failed generation
 		else{
 			this.sendPlaylistGenFailedEmail();
+            this.logErr('Attempts of generating playlist have stopped. You can manually restart generation of playlist later in the admin panel.');
 			this.tempRestartCount = 0;
 		}
 	}
