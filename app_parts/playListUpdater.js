@@ -69,6 +69,7 @@ function Channel(params){
 	/* Is getting channel's html through proxy */
 	this.isProxy = cf.playlistGenProxy;
 	this.idMinLength = 10;
+    this.isLog = cf.isConsoleLogPlaylist;
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -121,6 +122,12 @@ function Channel(params){
             'Host': '1ttv.net',
         }
     };
+    
+    //RegExps array for search channel id or url
+    this.cRegExps = [
+        new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
+        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im')
+    ];
 
 	this.emailSubj = 'Playlist generator notifier';
 	this.emailRecipient = 'aluaex@gmail.com';
@@ -163,6 +170,9 @@ Channel.prototype = {
 			instance.func.call(instance.that, true);
 		}
 	},
+    cLog: function(msg){
+        if(this.isLog) console.log(msg);
+    },
 	logInfo: function(msg){
 		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
@@ -218,6 +228,7 @@ Channel.prototype = {
 			updatedList: [],
 			reqFailedList: []
 		};
+        this.validList = '';
 		this.channelCounter = 0;
 		this.isPlaylistFailed = false;
 		this.resetChannelsObject();
@@ -267,8 +278,7 @@ Channel.prototype = {
             if (err || resp.statusCode !== 200){
                 that.failed(channel, 'channel`s page/frame not available');
                 return;
-            }
-            
+            }            
             var cookie = resp.headers['set-cookie'];
 
             if(callback) callback(cookie ? cookie : '');
@@ -404,8 +414,18 @@ Channel.prototype = {
 
 		return flagsObj;
 	},
+    getChannelId: function(channel, callback, _that){
+		var _that = _that || this,
+			that = this;
+
+		that.getPlayerUrl(channel, function(url){
+			that.getIdFromFrame(url, channel, function(chanId){
+				callback(chanId);
+			}, _that);
+		}, _that);
+	},
 	getIdFromFrame: function(cUrl, channel, callback, _that){
-		var that = _that || this,
+		var that = this,
 			updChanUrl = that.getUpdatedPlayerUrl(cUrl),
             reqParams = extend({}, this.reqParams);
 
@@ -416,26 +436,31 @@ Channel.prototype = {
             reqParams.headers.Cookie = cookie;
             //Send request
             needle.request('GET', that.playerFrameUrl , null, reqParams, function(err, resp){
-                that.getIdFromFrameRespCallback.call(that, err, resp, channel, callback)
+                that.getIdFromFrameRespCallback(err, resp, channel, callback, _that)
             });
         }
         that.setCookie(updChanUrl, channel, getIdReq);
 	},
-    getIdFromFrameRespCallback: function(err, resp, channel, callback){
+    getIdFromFrameRespCallback: function(err, resp, channel, callback, _that){
         if (err || resp.statusCode !== 200){
-            this.failed(channel, 'channel`s page/frame not available');
+            _that.failed(channel, 'channel`s page/frame not available');
             return;
         }
 
-        var regExp = new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
-            chanId = resp.body.match(regExp);
+        var _that = _that || this,
+            i = 0,
+            chanId;
 
-        chanId = chanId && chanId[1] ? chanId[1] : false;
+        while(!chanId && i < this.cRegExps.length){
+            chanId = resp.body.match(this.cRegExps[i]);
+            chanId = chanId && chanId[1] ? chanId[1] : false;
+            i++;
+        }
         //Check if ID string contains numbers. If not -> failed.
         chanId = /[0-9]+/.test(chanId) ? chanId : false;
 
         if(!chanId)
-            this.failed(channel, 'id not found on the page/frame');
+            _that.failed(channel, 'id not found on the page/frame');
         else
             callback(chanId);
     },
@@ -471,13 +496,11 @@ Channel.prototype = {
 
 		for (var i = 0; i < this.channels.length; i++) {
 			var channel = this.channels[i];
-			if(channel.id && channel.id.length >= this.idMinLength){
+
+			if(channel.id && channel.id.length >= this.idMinLength)
 				channels += this.formChannItem(channel);
-			}
-			else if(channel.id && channel.id.length < this.idMinLength){
-				channel.errMsg.push('id shorter than '+ this.idMinLength +' symbols');
-				this.pushToFailedList(channel);
-			}
+			else if(channel.id && channel.id.length < this.idMinLength)
+                this.failed(channel, 'id shorter than '+ this.idMinLength +' symbols');
 		}
 
 		return '<?xml version="1.0" encoding="UTF-8"?>' +
@@ -524,6 +547,7 @@ Channel.prototype = {
 	failed: function(channel, errMsg){
 		var that = this;
 		
+        this.cLog(channel.dName +': '+ errMsg);
 		channel.errMsg.push(errMsg);
 
 		//Restart gen. of channel item using backup generator
@@ -595,7 +619,10 @@ Channel.prototype = {
  * Main config for "Torrent stream" source
 **/
 var TorStreamMainConfig = {
-	playlistUrl: 'http://torrentstream.tv/videos/browse',
+    playlistDomain: 'https://torrentstream.tv',
+    initParams: function(){
+        this.playlistUrl = this.playlistDomain +'/videos/browse';
+    },
 	storeValidList: function(resp){
 		this.validList = resp.body;
 	},
@@ -604,7 +631,7 @@ var TorStreamMainConfig = {
 			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/a>)', 'im'),
 			chanPage = this.validList.match(regExp);
 
-		return chanPage && chanPage[1] ? chanPage[1] : false;
+		return chanPage && chanPage[1] ? this.playlistDomain + chanPage[1] : false;
 	},
 	getPlayerUrl: function(channel, callback, _that){
 		var _that = _that || this,
@@ -622,23 +649,13 @@ var TorStreamMainConfig = {
 				return;
 			}
 			var $ = that.getDom(resp.body),
-				channelUrl = $('#Playerholder iframe').attr('src');
+				channelUrl = $('#Lnk').attr('href');
 
             if(channelUrl)
                 callback(channelUrl);
             else
                 _that.failed(channel, 'players src not found in frame on page');
 		});
-	},
-	getChannelId: function(channel, callback, _that){
-		var _that = _that || this,
-			that = this;
-
-		that.getPlayerUrl(channel, function(url){
-			that.getIdFromFrame(url, channel, function(chanId){
-				callback(chanId);
-			}, _that);
-		}, _that);
 	}
 };
 
@@ -687,9 +704,9 @@ var TuckaHomepageConfig = {
     playlistUrl: 'http://tuchkatv.ru/page/',
     getValidPlaylist: function(callback){
         var that = this;
-        
         that.pagesCount = 0;
-        
+        that.validList = '';
+
         that.getPagesCount(that.playlistUrl +'1', function(count){            
             for(var i=1; i<=count; i++){
                 (function(j){
@@ -698,12 +715,9 @@ var TuckaHomepageConfig = {
                             that.storeValidList(resp);
 
                             //Call callback in case all parts collected
-                            if(callback && this.pagesCount == count){
-                                //console.log(this.validList);
-                                callback();
-                            }
+                            if(callback && that.pagesCount == count) callback();
                         });
-                    }, 500);
+                    }, j * 500);
                 })(i);
             }
         });
@@ -726,41 +740,48 @@ var TuckaHomepageConfig = {
         this.pagesCount++;
 		this.validList += playlistPart;
 	},
-	getChannelNumb: function(channel){
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
-			chanNum = this.validList.match(regExp);
-
-		return chanNum && chanNum[1] ? chanNum[1] : false;
-	},
-	getPlayerUrl: function(chanNum){
-		return this.playerUrlPath + chanNum;
-	},
-	getChannelId: function(channel, callback, _that){
+    getPlayerUrl: function(channel, callback, _that){
 		var _that = _that || this,
-			chanNum = this.getChannelNumb(channel),
-			chanUrl = this.getPlayerUrl(chanNum);
+			that = this,
+            isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<a.*?href="(.*?)")(?:.+)?(?:'+ channel.sName +'\\s*'+ isHd +')(?:.+)?(?:<\/a>)', 'im'),
+			chanUrl = this.validList.match(regExp);
 
-		if(!chanNum){
-			_that.failed(channel, 'number not found on playlist page');
+        chanUrl = chanUrl && chanUrl[1] ? chanUrl[1] : false;
+
+		if(!chanUrl){
+			_that.failed(channel, 'not found on the playlist page');
 			return;
 		}
 
-		this.getIdFromFrame(chanUrl, channel, function(chanId){
-			callback(chanId);
-		}, _that);
-	}
+        if(callback) callback(chanUrl);
+	},
+    getIdFromFrame: function(cUrl, channel, callback, _that){
+        var _that = _that || this,
+			that = this,
+			newChanUrl = that.getUpdatedPlayerUrl(cUrl);
+
+        needle.request('GET', cUrl, null, {}, function(err, resp){
+            that.getIdFromFrameRespCallback(err, resp, channel, callback, _that)
+        });
+	},
 }
 
 /*
     INIT Genarator instances
 */
-var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
+var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
 }));
-var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
+	channelsArray: [channels2],
+    generateTime: '6:20',
+	playListName: 'TV_List_tuchka.xspf',
+	logName: 'log_tuchka.txt'
+}));
+var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
@@ -770,12 +791,6 @@ var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt',
     backUpGen: MainPlaylist_tucka
-}));
-var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
-	channelsArray: [channels2],
-    generateTime: '6:20',
-	playListName: 'TV_List_tuchka.xspf',
-	logName: 'log_tuchka.txt'
 }));
 var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
     channelsArray: [{dName: '1+1', sName: '1\\+1', flags: ''}],
@@ -820,7 +835,7 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylistHomepage_tucka.start(function(){
-				//SecondaryPlaylist_tucka.start();
+				SecondaryPlaylist_tucka.start();
 			});
 		}
 		if(cf.playListChannelChecker){

@@ -4,6 +4,7 @@ var config = {
 	oneDay: 86400000,
 	playlistEnabled: true,
 	playListChannelChecker: false,
+    isConsoleLogPlaylist: false,
 	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server'
 }
 

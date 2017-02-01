@@ -9,7 +9,7 @@
 var channelList = [
 	//Украинские
 	{dName: '1+1', sName: '1\\+1', flags: 'req'},
-	{dName: 'СТБ', sName: 'СТБ|СТБ Украина', flags: 'req'},
+	{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ  \\(UA\\)', flags: 'req'},
 	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', flags: 'req'},
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
 	{dName: '2+2', sName: '2\\+2', flags: 'req'},
@@ -40,7 +40,7 @@ var channelList = [
 	{dName: 'Discovery Channel', sName: 'Discovery Channel|Discovеry Channеl', flags: 'hd req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'hd req'},
-	{dName: 'History Channel', sName: 'History Channel', flags: 'hd req'},
+	{dName: 'History Channel', sName: 'History Channel|History', flags: 'hd req'},
 	{dName: 'TLC', sName: 'TLC', flags: 'hd'},
 	{dName: 'Animal Planet', sName: 'Animal Planet|Animаl Planеt', flags: 'hd req'},
 	{dName: 'Nat Geo Wild', sName: 'Nat Geo Wild|Nаt Geо Wild', flags: 'hd req'},
