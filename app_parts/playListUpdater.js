@@ -268,8 +268,10 @@ Channel.prototype = {
                 that.failed(channel, 'channel`s page/frame not available');
                 return;
             }
+            
+            var cookie = resp.headers['set-cookie'];
 
-            if(callback) callback(resp.headers['set-cookie']);
+            if(callback) callback(cookie ? cookie : '');
         });
     },
 	updateChannelsObject: function(callback) {
@@ -365,21 +367,27 @@ Channel.prototype = {
 		});
 	},
 	getValidPlaylist: function(callback){
-		var that = this;
+        var that = this;
 
-		needle.request('GET', that.playlistUrl, null, {}, function(err, resp) {
+        that.getValidPlaylistPart(that.playlistUrl, function(resp){
+            that.storeValidList(resp);
+            if(callback) callback();
+        });
+	},
+    getValidPlaylistPart: function(url, callback){
+        var that = this;
+
+		needle.request('GET', url, null, {}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
 				that.isPlaylistFailed = true;
-				that.logErr('Error in getting valid playlist! Source: '+ that.playlistUrl +' .');
+				that.logErr('Error in getting valid playlist! Source: '+ url +' .');
 				that.playlistFinished();
 				return;
 			}
-			that.storeValidList(resp);
 
-			if(callback)
-				callback(resp, err);			
+			if(callback) callback(resp);			
 		});
-	},
+    },
 	getHdText: function(isHd){
 		return isHd ? ' HD' : '';
 	},
@@ -672,10 +680,87 @@ var TuckaMainConfig = {
 	}
 }
 
+/**
+ * Main config for "Tuchka" source from homepage
+**/
+var TuckaHomepageConfig = {
+    playlistUrl: 'http://tuchkatv.ru/page/',
+    getValidPlaylist: function(callback){
+        var that = this;
+        
+        that.pagesCount = 0;
+        
+        that.getPagesCount(that.playlistUrl +'1', function(count){            
+            for(var i=1; i<=count; i++){
+                (function(j){
+                    setTimeout(function(){
+                        that.getValidPlaylistPart(that.playlistUrl + j, function(resp){
+                            that.storeValidList(resp);
+
+                            //Call callback in case all parts collected
+                            if(callback && this.pagesCount == count){
+                                //console.log(this.validList);
+                                callback();
+                            }
+                        });
+                    }, 500);
+                })(i);
+            }
+        });
+        
+	},
+    getPagesCount: function(url, callback){
+        var that = this;
+
+        that.getValidPlaylistPart(url, function(resp){
+            var $ = that.getDom(resp.body),
+                count = $('.navigation_n > a').last().text();
+
+            if(callback) callback(+count);
+        });
+    },
+	storeValidList: function(resp){
+		var $ = this.getDom(resp.body),
+			playlistPart = $('#dle-content').html();
+
+        this.pagesCount++;
+		this.validList += playlistPart;
+	},
+	getChannelNumb: function(channel){
+		var isHd = channel.isHd ? '(?:hd|cee)' : '',
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+			chanNum = this.validList.match(regExp);
+
+		return chanNum && chanNum[1] ? chanNum[1] : false;
+	},
+	getPlayerUrl: function(chanNum){
+		return this.playerUrlPath + chanNum;
+	},
+	getChannelId: function(channel, callback, _that){
+		var _that = _that || this,
+			chanNum = this.getChannelNumb(channel),
+			chanUrl = this.getPlayerUrl(chanNum);
+
+		if(!chanNum){
+			_that.failed(channel, 'number not found on playlist page');
+			return;
+		}
+
+		this.getIdFromFrame(chanUrl, channel, function(chanId){
+			callback(chanId);
+		}, _that);
+	}
+}
+
 /*
     INIT Genarator instances
 */
 var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
+	channelsArray: [channels1],
+    playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt'
+}));
+var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
@@ -734,8 +819,8 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			MainPlaylist_torStream.start(function(){
-				SecondaryPlaylist_tucka.start();
+			MainPlaylistHomepage_tucka.start(function(){
+				//SecondaryPlaylist_tucka.start();
 			});
 		}
 		if(cf.playListChannelChecker){
