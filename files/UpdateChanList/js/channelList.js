@@ -8,7 +8,7 @@
 
 var channelList = [
 	//Украинские
-	{dName: '1+1', sName: '1\\+1', flags: 'req'},
+	{dName: '1+1', sName: '1\\+1(?!\\s*international)', flags: 'req'},
 	{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ  \\(UA\\)', flags: 'req'},
 	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', flags: 'req'},
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
