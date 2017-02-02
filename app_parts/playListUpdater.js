@@ -701,6 +701,7 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
+    minReqDelay: 600,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
@@ -723,11 +724,13 @@ var TuckaHomepageConfig = {
                             that.cLog('Page: '+ j +';  '+ url +'. Downloaded');
                             //Call callback in case all parts collected
                             if(callback && that.pagesCount == pagesTotal) {
-                                that.cLog('All playlist\'s parts are downloaded. Starting generation.');
-                                callback();
+                                setTimeout(function(){
+                                    that.cLog('All playlist\'s parts are downloaded. Starting generation.');
+                                    callback();
+                                }, that.minReqDelay);
                             }
                         });
-                    }, j * 600);
+                    }, j * that.minReqDelay);
                 })(i, pageUrl);
             }
         });
@@ -776,6 +779,7 @@ var TuckaHomepageConfig = {
 			newChanUrl = that.getUpdatedPlayerUrl(cUrl);
 
         needle.request('GET', cUrl, null, {}, function(err, resp){
+            that.cLog('Request to: '+ cUrl);
             that.getIdFromFrameRespCallback(err, resp, channel, callback, _that)
         });
 	},
@@ -784,10 +788,16 @@ var TuckaHomepageConfig = {
 /*
     INIT Genarator instances
 */
-var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
+}));
+var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+	channelsArray: [channels1],
+    playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt',
+    backUpGen: MainPlaylist_torStream
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
@@ -799,12 +809,6 @@ var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
-}));
-var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
-	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
-	logName: 'log_torrent_stream.txt',
-    backUpGen: MainPlaylist_tucka
 }));
 var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
     channelsArray: [{dName: '1+1', sName: '1\\+1', flags: ''}],
