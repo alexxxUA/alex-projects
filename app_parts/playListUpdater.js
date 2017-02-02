@@ -789,7 +789,7 @@ var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
 }));
-var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
+var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:20',
 	playListName: 'TV_List_tuchka.xspf',
