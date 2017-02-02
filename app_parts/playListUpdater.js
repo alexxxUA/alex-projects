@@ -701,36 +701,50 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
-    playlistUrl: 'http://tuchkatv.ru/page/',
+    playlistDomain: 'http://tuchkatv.ru',
+    initParams: function(){
+        this.playlistUrl = this.playlistDomain;
+    },
     getValidPlaylist: function(callback){
         var that = this;
         that.pagesCount = 0;
         that.validList = '';
 
-        that.getPagesCount(that.playlistUrl +'1', function(count){            
-            for(var i=1; i<=count; i++){
-                (function(j){
-                    setTimeout(function(){
-                        that.getValidPlaylistPart(that.playlistUrl + j, function(resp){
-                            that.storeValidList(resp);
+        that.getPagesArray(that.playlistUrl, function(pages){
+            var pagesTotal = pages.length;
 
+            for(var i=0; i<pagesTotal; i++){
+                var pageUrl = pages[i];
+
+                (function(j, url){
+                    setTimeout(function(){
+                        that.getValidPlaylistPart(url, function(resp){
+                            that.storeValidList(resp);
+                            that.cLog('Page: '+ j +';  '+ url +'. Downloaded');
                             //Call callback in case all parts collected
-                            if(callback && that.pagesCount == count) callback();
+                            if(callback && that.pagesCount == pagesTotal) {
+                                that.cLog('All playlist\'s parts are downloaded. Starting generation.');
+                                callback();
+                            }
                         });
-                    }, j * 500);
-                })(i);
+                    }, j * 600);
+                })(i, pageUrl);
             }
         });
-        
 	},
-    getPagesCount: function(url, callback){
+    getPagesArray: function(url, callback){
         var that = this;
 
         that.getValidPlaylistPart(url, function(resp){
             var $ = that.getDom(resp.body),
-                count = $('.navigation_n > a').last().text();
+                $links = $('#slidemenu a:not([target="_blank"])'),
+                linksArray = [];
 
-            if(callback) callback(+count);
+            $links.each(function(){
+                linksArray.push(that.playlistDomain + this.attribs.href);
+            });
+            that.cLog(linksArray);
+            if(callback) callback(linksArray);
         });
     },
 	storeValidList: function(resp){
