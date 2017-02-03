@@ -295,12 +295,12 @@ Channel.prototype = {
 		extend(channel, this.getObjFromFlags(flags));
 	},
     updateChannelSname: function(channel){
-        channel.sName = channel.sName.replace(/\s+/g, '\\\\s*');
+        channel.sName = channel.sName.replace(/\s+/g, '\\s*');
     },
 	decodeChannelNames: function(channel){
 		if(channel.isCoded){
-			channel.sName = new Buffer(channel.sName, 'base64');
-			channel.dName = new Buffer(channel.dName, 'base64');
+			channel.sName = (new Buffer(channel.sName, 'base64')).toString();
+			channel.dName = (new Buffer(channel.dName, 'base64')).toString();
 		}
 	},
     getGenTime: function(){
@@ -554,7 +554,7 @@ Channel.prototype = {
 	failed: function(channel, errMsg){
 		var that = this;
 		
-        this.cLog(channel.dName +': '+ errMsg);
+        this.cLog(channel.dName +': '+ errMsg +'\t\t\t:'+ channel.sName);
 		channel.errMsg.push(errMsg);
 
 		//Restart gen. of channel item using backup generator
@@ -769,7 +769,6 @@ var TuckaHomepageConfig = {
 			that = this,
             isHd = this.getHdForRegexp(channel),
 			regExp = new RegExp('(?:<a.*?href="(.*?)")(?:.+)?(?:(?:'+ channel.sName +')'+ isHd +')(?:.+)?(?:<\/a>)', 'im'),
-            
 			chanUrl = this.validList.match(regExp);
 
         chanUrl = chanUrl && chanUrl[1] ? chanUrl[1] : false;
