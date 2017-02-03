@@ -215,6 +215,7 @@ Channel.prototype = {
 		this.updateChannelsObject(function(channel){
 			this.updateFlags(channel);
 			this.decodeChannelNames(channel);
+            this.updateChannelSname(channel);
 		});
 		this.resetChannelsObject();
 	},
@@ -293,6 +294,9 @@ Channel.prototype = {
 
 		extend(channel, this.getObjFromFlags(flags));
 	},
+    updateChannelSname: function(channel){
+        channel.sName = channel.sName.replace(/\s+/g, '\\\\s*');
+    },
 	decodeChannelNames: function(channel){
 		if(channel.isCoded){
 			channel.sName = new Buffer(channel.sName, 'base64');
@@ -401,6 +405,9 @@ Channel.prototype = {
 	getHdText: function(isHd){
 		return isHd ? ' HD' : '';
 	},
+    getHdForRegexp: function(channel){
+        return channel.isHd ? '(?:\\s*hd|cee)' : '(?!\\s*hd)';
+    }, 
 	getFullChannelName: function(channel){
 		return channel.dName + this.getHdText(channel.isHd);
 	},
@@ -627,8 +634,8 @@ var TorStreamMainConfig = {
 		this.validList = resp.body;
 	},
 	getChannelPage: function(channel){
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/a>)', 'im'),
+		var isHd = this.getHdForRegexp(channel),
+			regExp = new RegExp('(?:<a.*?href="(.*?)".*?>)(?:\\s*(?:.*' + channel.sName + ')' + isHd + '\\s*<\/a>)', 'im'),
 			chanPage = this.validList.match(regExp);
 
 		return chanPage && chanPage[1] ? this.playlistDomain + chanPage[1] : false;
@@ -672,8 +679,8 @@ var TuckaMainConfig = {
 		this.validList = playlist;
 	},
 	getChannelNumb: function(channel){
-		var isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*<\/option>)', 'im'),
+		var isHd = this.getHdForRegexp(channel),
+			regExp = new RegExp('(?:<option\\s+value="([0-9]*)"\\s*>)(?:\\s*(?:.*' + channel.sName + ')' + isHd + '\\s*<\/option>)', 'im'),
 			chanNum = this.validList.match(regExp);
 
 		return chanNum && chanNum[1] ? chanNum[1] : false;
@@ -760,8 +767,9 @@ var TuckaHomepageConfig = {
     getPlayerUrl: function(channel, callback, _that){
 		var _that = _that || this,
 			that = this,
-            isHd = channel.isHd ? '(?:hd|cee)' : '',
-			regExp = new RegExp('(?:<a.*?href="(.*?)")(?:.+)?(?:'+ channel.sName +'\\s*'+ isHd +')(?:.+)?(?:<\/a>)', 'im'),
+            isHd = this.getHdForRegexp(channel),
+			regExp = new RegExp('(?:<a.*?href="(.*?)")(?:.+)?(?:(?:'+ channel.sName +')'+ isHd +')(?:.+)?(?:<\/a>)', 'im'),
+            
 			chanUrl = this.validList.match(regExp);
 
         chanUrl = chanUrl && chanUrl[1] ? chanUrl[1] : false;

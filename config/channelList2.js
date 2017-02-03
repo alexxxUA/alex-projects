@@ -2,7 +2,7 @@ var channelList = [
 	{dName: 'SHVzdGxlcg==', sName: 'SHVzdGxlcg==', flags: 'hd cod'},
 	{dName: 'SHVzdGxlciBUVg==', sName: 'SHVzdGxlciBUVg==', flags: 'cod'},
 	{dName: 'QnJhenplcnMgVFYgRXVyb3Bl', sName: 'QnJhenplcnMgVFYgRXVyb3Bl', flags: 'cod'},
-	{dName: 'QnJhenplcnMgVFY=', sName: 'YnJhenplcnMtdHYu', flags: 'cod'},
+	{dName: 'QnJhenplcnMgVFY=', sName: 'QnJhenplcnMgVFYoPyFcXHMqKGV8LSkp', flags: 'cod'},
 	{dName: 'UGxhdGludW0gVFY=', sName: 'UGxhdGludW0gVFY=', flags: 'cod'},
 	{dName: 'WFhM', sName: 'WFhM', flags: 'cod'},
 	{dName: 'U2F0aXNmYWN0aW9u', sName: 'U2F0aXNmYWN0aW9u', flags: 'hd cod'},
