@@ -40,6 +40,7 @@ var channelList = [
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World', sName: 'Discovery World|Discovеry Wоrld', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'req'},
+	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'hd req'},
 	{dName: 'Discovery Channel', sName: 'Discovery Channel|Discovеry Channеl', flags: 'hd req'},
 	{dName: 'Discovery Showcase HD', sName: 'Discovery HD Showcase', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
