@@ -708,7 +708,7 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
-    minReqDelay: 600,
+    minReqDelay: 800,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
         this.playlistUrl = this.playlistDomain;

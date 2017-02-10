@@ -138,22 +138,18 @@ function init(app){
 	app.get('/updateAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
 		Aliases.findOne({alias: req.query.alias_url}, function(err, result){
 			if(err) throw err;
-			
-			if(result != null)
-				res.status('500').send('Alias already exist.');
-			else{
-				Aliases.findById(req.query.alias_id, function(err, alias){
-					if(err) throw err;
 
-					alias.alias = req.query.alias_url;
-					alias.path = req.query.alias_real_url;
-					alias.save();
-					
-					//Update alias map
-					setAliasMap()
-					res.send();
-				});
-			}
+			Aliases.findById(req.query.alias_id, function(err, alias){
+                if(err) throw err;
+
+                alias.alias = req.query.alias_url;
+                alias.path = req.query.alias_real_url;
+                alias.save();
+
+                //Update alias map
+                setAliasMap()
+                res.send();
+            });
 		});
 	});
     
@@ -169,18 +165,26 @@ function init(app){
 	});
 	
 	app.get('/addAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		var alias = new Aliases({
-			alias: req.query.alias_url,
-			path: req.query.alias_real_url
-		});
-		
-		alias.save(function(err, col){
+        Aliases.findOne({alias: req.query.alias_url}, function(err, result){
 			if(err) throw err;
-			
-			//Update alias map
-			setAliasMap();
-			res.send(col);
-		})
+
+			if(result != null)
+				res.status('500').send('Alias already exist.');
+			else{
+				var alias = new Aliases({
+                    alias: req.query.alias_url,
+                    path: req.query.alias_real_url
+                });
+
+                alias.save(function(err, col){
+                    if(err) throw err;
+
+                    //Update alias map
+                    setAliasMap();
+                    res.send(col);
+                });
+			}
+		});
 	});
 	
 	app.post('/sendMail', auth.isLogged, auth.isHaveEditAccess, function(req, res){

@@ -549,9 +549,22 @@ AdminPanel.prototype.getLineData = function(e){
 	
 	return this.getContextData($lineItem);
 }
+AdminPanel.prototype.resetLineData = function(e){
+	var $this = $(e.target),
+		$lineItem = $this.closest(this.dataLineItemSel),
+        $beforeEdit = $lineItem.find('[data-before-edit]');
+    
+    $beforeEdit.each(function(){
+        var $this = $(this);
+        $this.attr('data-before-edit', $this.val());
+    });
+	
+    $lineItem.removeClass('changed');
+}
 AdminPanel.prototype.editData = function(e){
-	var data = this.getLineData(e),
-        url = this.getHolderDataAttr(e, 'edit-url');
+	var that = this,
+        data = that.getLineData(e),
+        url = that.getHolderDataAttr(e, 'edit-url');
 	
 	navigation.showLoader();
 
@@ -561,10 +574,10 @@ AdminPanel.prototype.editData = function(e){
 		data: data,
 		success: function(res){
 			navigation.hideLoader();
+            that.resetLineData(e);
 		},
 		error: function(err){
-			navigation.hideLoader();
-			console.log(err);
+            navigation.showMsg(err.responseText);
 		}
 	});
 }
@@ -602,8 +615,7 @@ AdminPanel.prototype.removeData = function(e){
 			navigation.hideLoader();
 		},
 		error: function(err){
-			navigation.hideLoader();
-			console.log(err);
+			navigation.showMsg(err.responseText);
 		}
 	});
 }
