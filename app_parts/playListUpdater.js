@@ -146,7 +146,7 @@ function Channel(params){
 			'<% _.each(failedList, function(item, index) { '+
 				'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
 				'\n  <%= index+1 %>. <%= channelFullName %> '+
-				'<%= item.isReq ? "(Reg)" : "" %> - <%= item.errMsg.join("|") %>'+
+				'<%= item.isReq ? "(Req)" : "" %> - <%= item.errMsg.join("|") %>'+
 			'<% }); %>'+
 		'<% } %>'
 	);
@@ -708,6 +708,7 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
+    scheduleGenDelay: 28,
     minReqDelay: 1000,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
