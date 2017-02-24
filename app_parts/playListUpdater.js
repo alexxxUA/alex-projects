@@ -628,7 +628,7 @@ Channel.prototype = {
 var TorStreamMainConfig = {
     playlistDomain: 'https://torrentstream.tv',
     initParams: function(){
-        this.playlistUrl = this.playlistDomain +'/videos/browse';
+        this.playlistUrl = this.playlistDomain +'/browse-vse-kanali-tv-videos-1-date.html';
     },
 	storeValidList: function(resp){
 		this.validList = resp.body;
