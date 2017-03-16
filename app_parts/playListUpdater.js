@@ -804,8 +804,7 @@ var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
 var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
-	logName: 'log_torrent_stream.txt',
-    backUpGen: MainPlaylist_torStream
+	logName: 'log_torrent_stream.txt'
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
