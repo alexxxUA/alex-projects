@@ -303,8 +303,14 @@ Channel.prototype = {
 			channel.dName = (new Buffer(channel.dName, 'base64')).toString();
 		}
 	},
-    getGenTime: function(){
-        var time = this.channels.length * this.genDelay,
+    /**
+     * Return object with data about how much time generation of playlist will take
+     * @param   {boolean} isForce not required
+     * @returns {object}
+     */
+    getGenTime: function(isForce){
+        var genDelay = 'undefined' != typeof isForce ? (isForce ? this.forceGenDelay : this.scheduleGenDelay)*1000 : this.genDelay,
+            time = this.channels.length * genDelay,
             date = new Date(time),
             h = date.getUTCHours(),
             m = date.getUTCMinutes(),
@@ -322,8 +328,9 @@ Channel.prototype = {
         }
     },
 	getNextTimeOffset: function(){
-		var nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - this.generationSpentTime;
-		return nextTimeOffset > 0 ? nextTimeOffset : 0;
+		var generationSpentTime = this.getGenTime(false).time,
+            nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime;
+        return nextTimeOffset > 0 ? nextTimeOffset : 0;
 	},
 	getDom: function(html){
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
