@@ -108,7 +108,7 @@ function Channel(params){
 	 * @Value in format: 4:00 (24h format)
 	 */
 	this.generateTime = '6:00';
-	this.timeZone = 2;
+	this.timeZone = 1;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://1ttv.net';
@@ -329,7 +329,7 @@ Channel.prototype = {
 		return	cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
 	},
     getTimeZone: function(){
-        return this.timeZone - (this.isDst ?  1 : 0);
+        return this.timeZone + (this.isDst() ? 1 : 0);
     },
 	getDateOnZone: function(time, tZone){
         var tZone = typeof tZone != 'undefined' ? tZone : this.getTimeZone();
@@ -708,7 +708,7 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
-    scheduleGenDelay: 28,
+    scheduleGenDelay: 25,
     minReqDelay: 1000,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
@@ -855,7 +855,6 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
 		this.playlistFinished();
 	}
 }));
-
 
 module.exports = {
 	init: function(){
