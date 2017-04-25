@@ -715,6 +715,8 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
+    forceGenDelay: 10,
+	maxRestartCount: 2,
     scheduleGenDelay: 25,
     minReqDelay: 1000,
     playlistDomain: 'http://tuchkatv.ru',
