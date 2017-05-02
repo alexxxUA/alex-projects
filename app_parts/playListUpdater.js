@@ -10,7 +10,8 @@ var needle = require('needle'),
 	proxy = require('./proxy.js'),
 	email = require('./sendMail.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
-	channels2 = require('./../config/channelList2.js').channelList;
+	channels2 = require('./../config/channelList2.js').channelList,
+    generationInProgress = false;
 
 
 Date.prototype.stdTimezoneOffset = function() {
@@ -165,10 +166,27 @@ function Channel(params){
 Channel.prototype = {
 	playlisGeneratorInstanses: [],
 	forceGeneratePlaylists: function(){
-		for(var i=0; i < this.playlisGeneratorInstanses.length; i++){
-			var instance = this.playlisGeneratorInstanses[i];
-			instance.func.call(instance.that, true);
-		}
+        var playlists = this.playlisGeneratorInstanses,
+            playlistsLength = playlists.length,
+            playlistsCallStack;
+
+        //Return if no playlists instances found
+        if(!playlistsLength) return;
+
+         for(var i=0; i < playlistsLength ; i++){
+            (function(j){
+                var instance = playlists[j],
+                    nextInstance = playlists[j+1];
+
+                if(nextInstance){
+                    instance.that.callback = function(){
+                        nextInstance.func.call(nextInstance.that, true);
+                    }
+                }
+            })(i);
+        }
+
+        playlists[0].func.call(playlists[0].that, true);
 	},
     cLog: function(msg){
         if(this.isLog) console.log(msg);
@@ -233,6 +251,7 @@ Channel.prototype = {
 		this.channelCounter = 0;
 		this.isPlaylistFailed = false;
 		this.resetChannelsObject();
+        generationInProgress = false;
 		delete this.callback;
 	},
 	resetChannelsObject: function(){
@@ -242,6 +261,7 @@ Channel.prototype = {
 		});
 	},
 	prepareData: function(isForce){
+        generationInProgress = true;
 		this.genDelay = (isForce ? this.forceGenDelay : this.scheduleGenDelay) * 1000;
         this.generationSpentTime = this.getGenTime().time;
 	},
@@ -709,7 +729,7 @@ var TuckaMainConfig = {
 **/
 var TuckaHomepageConfig = {
     scheduleGenDelay: 28,
-    minReqDelay: 1000,
+    minReqDelay: 1500,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
@@ -855,7 +875,6 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
 	}
 }));
 
-
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
@@ -868,12 +887,23 @@ module.exports = {
 		}
 	},
 	forceGeneratePlaylists: function(res){
-		if(cf.playlistEnabled){
+        var errMsg;
+
+        //Check for errors
+        if(generationInProgress){
+            errMsg = 'Playlist generation inprogress now. Please try later.';
+        }
+        else if(!cf.playlistEnabled){
+            errMsg = 'Playlist generation disabled!';
+        }
+
+        //Generate or send error message if exist
+		if(!errMsg){
 			Channel.prototype.forceGeneratePlaylists();
 			res.send('Generation started!');
 		}
 		else{
-			res.status(503).send('Playlist generation disabled!');
+			res.status(503).send(errMsg);
 		}
 	}
 }
