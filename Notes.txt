@@ -2,7 +2,7 @@ Update Mongo DB:
 
     Set admin flag:
         mongo
-        use explorer
+        use explorer  //May be skipped
         db.users.update({'email': 'aluaex@gmail.com'}, {$set: {isAdmin: true}})
 		
 Set env variables:
