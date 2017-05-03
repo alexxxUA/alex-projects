@@ -9,7 +9,7 @@ Set env variables:
 	rhc set-env env_vars.txt -a projects
 
 List env cariables:
-	rhc env list -a
+	rhc env list -a projects
 	
 	
 Implementation notes
