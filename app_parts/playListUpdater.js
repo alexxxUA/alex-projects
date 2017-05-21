@@ -127,7 +127,8 @@ function Channel(params){
     //RegExps array for search channel id or url
     this.cRegExps = [
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
-        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im')
+        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
+		new RegExp('(?:player\\.php\\?id=)(.+)?(?:"|\')', 'im')
     ];
 
 	this.emailSubj = 'Playlist generator notifier';
@@ -736,9 +737,9 @@ var TuckaMainConfig = {
 **/
 var TuckaHomepageConfig = {
     scheduleGenDelay: 25,
-    forceGenDelay: 10,
+    forceGenDelay: 7,
 	maxRestartCount: 2,
-    minReqDelay: 1500,
+    minReqDelay: 2000,
     playlistDomain: 'http://tuchkatv.ru',
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
