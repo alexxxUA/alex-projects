@@ -3,7 +3,7 @@ var config = {
 	emailPass: process.env.EMAIL_PASS,
 	oneDay: 86400000,
 	playlistEnabled: true,
-	playListChannelChecker: false,
+	playListChannelChecker: true,
     isConsoleLogPlaylist: false,
 	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server'
 }

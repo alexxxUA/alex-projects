@@ -174,7 +174,7 @@ Channel.prototype = {
         //Return if no playlists instances found
         if(!playlistsLength) return;
 
-         for(var i=0; i < playlistsLength ; i++){
+        for(var i=0; i < playlistsLength ; i++){
             (function(j){
                 var instance = playlists[j],
                     nextInstance = playlists[j+1];
@@ -847,11 +847,15 @@ var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
 }));
-var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
+var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
     channelsArray: [{dName: '1+1', sName: '1\\+1', flags: ''}],
 	firstChannelId: false,
 	isGenerateInTime: false,
-	generateCountPer24h: 24,
+	generateCountPer24h: 48,
+    scheduleGenDelay: 10,
+    forceGenDelay: 10,
+	maxRestartCount: 0,
+    minReqDelay: 3000,
 	logName: 'log_channelChecker.txt',
 	getChannelChangeEmailContent: function(channel){
 		return '<h2>Channel\'s id has been changed:</h2>'+
@@ -875,9 +879,11 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaMainConfig, {
 	finishPlaylist: function(){
 		var firstChannel = this.channels[0],
 			isChanged = this.isChannelChanged(firstChannel),
-			changedText = isChanged ? ' :CHANGED' : '';
+			changedText = isChanged ? ' :CHANGED' : '',
+            logMsg = this.getFullChannelName(firstChannel) +': '+ firstChannel.id + changedText;
 
-		this.logInfo(this.getFullChannelName(firstChannel) +': '+ firstChannel.id + changedText);
+		this.logInfo(logMsg);
+        this.cLog(logMsg);
 		if(isChanged) this.sendChannelChangeEmail(firstChannel);
 
 		this.firstChannelId = firstChannel.id;
@@ -889,12 +895,16 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylistHomepage_tucka.start(function(){
-				SecondaryPlaylist_tucka.start();
+				SecondaryPlaylist_tucka.start(function(){
+                    if(cf.playListChannelChecker){
+                        ChannelChangeTracker_tucka.start()
+                    }
+                });
 			});
 		}
-		if(cf.playListChannelChecker){
-			ChannelChangeTracker_tucka.start()
-		}
+        if(!cf.playlistEnabled && cf.playListChannelChecker){
+            ChannelChangeTracker_tucka.start()
+        }
 	},
 	forceGeneratePlaylists: function(res){
         var errMsg;
