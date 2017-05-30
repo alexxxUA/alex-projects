@@ -848,14 +848,14 @@ var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
 	logName: 'log_torrent_stream.txt'
 }));
 var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
-    channelsArray: [{dName: '1+1', sName: '1\\+1', flags: ''}],
+    channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
 	firstChannelId: false,
 	isGenerateInTime: false,
 	generateCountPer24h: 48,
     scheduleGenDelay: 10,
     forceGenDelay: 10,
 	maxRestartCount: 0,
-    minReqDelay: 3000,
+    minReqDelay: 5000,
 	logName: 'log_channelChecker.txt',
 	getChannelChangeEmailContent: function(channel){
 		return '<h2>Channel\'s id has been changed:</h2>'+

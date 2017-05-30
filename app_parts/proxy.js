@@ -101,24 +101,29 @@ var Proxy = {
 	sendRequest: function(params, res, options, callback){
 		var that = this,
 			reqType = params.type ? params.type : 'GET',
+            url = params.url,
 			errUrlMsg = 'Url not specified.';
 		
 		//Return if URL not specified.
-		if(typeof params.url == 'undefined'){
+		if(typeof url == 'undefined'){
 			if(callback)
 				callback(new Error(errUrlMsg), {});
 			else if(res)
 				res.staus(404).send(errUrlMsg)
 			return;
 		}
+        //Check if http prefix exist
+        if(url.indexOf('http') < 0){
+            url = 'http://'+ url;
+        }
 
-		needle.request(reqType, params.url, params.data, options, function(err, resp) {
+		needle.request(reqType, url, params.data, options, function(err, resp) {
 			if (err || resp.statusCode == 404 || resp.statusCode == 500){
 				var gErr = err ? err : new Error('Unavailable');
 				if(callback)
 					callback(gErr, resp)
 				else if(res)
-					res.header(that.respHeaders).status(500).send(params.url);
+					res.header(that.respHeaders).status(500).send("Can't access url: "+ url);
 				return;
 			}
 
