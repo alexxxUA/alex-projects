@@ -1,4 +1,5 @@
-playlistSource=$OPENSHIFT_REPO_DIR/files/UpdateChanList/LastValidPlaylist/server/*.xspf
+playlistSource=$OPENSHIFT_REPO_DIR
+playlistSource+='files/UpdateChanList/LastValidPlaylist/server/*.xspf'
 playlistDest=$OPENSHIFT_DATA_DIR
 
 msg="Backup TV playlists $playlistSource"
