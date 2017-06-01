@@ -108,7 +108,7 @@ function Channel(params){
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
 	 */
-	this.generateTime = '6:00';
+	this.generateTime = '5:00';
 	this.timeZone = 1;
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
@@ -838,7 +838,7 @@ var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
-    generateTime: '6:20',
+    generateTime: '5:20',
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt'
 }));
