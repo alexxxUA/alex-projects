@@ -1,9 +1,0 @@
-playlistSource=$OPENSHIFT_DATA_DIR*.xspf
-playlistDest=$OPENSHIFT_REPO_DIR
-playlistDest+=files/UpdateChanList/LastValidPlaylist/server/
-
-msg="Restore TV playlists $playlistSource"
-
-echo $msg
-
-cp -f $playlistSource $playlistDest

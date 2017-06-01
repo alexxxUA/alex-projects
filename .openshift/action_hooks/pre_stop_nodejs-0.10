@@ -1,0 +1,15 @@
+playlistSource=$OPENSHIFT_REPO_DIR
+playlistSource+='files/UpdateChanList/LastValidPlaylist/server/*.xspf'
+playlistDest=$OPENSHIFT_DATA_DIR
+
+echo "Backup TV playlists..."
+
+for file in $playlistSource; do
+	if [ -f "$file" ]; then
+		cp -f $file $playlistDest
+		fileName="$(basename $file) - saved."
+		echo $fileName
+	else
+		echo "Nothing to backup."
+	fi
+done

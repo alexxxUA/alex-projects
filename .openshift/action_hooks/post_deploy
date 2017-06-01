@@ -1,0 +1,15 @@
+playlistSource=$OPENSHIFT_DATA_DIR*.xspf
+playlistDest=$OPENSHIFT_REPO_DIR
+playlistDest+=files/UpdateChanList/LastValidPlaylist/server/
+
+echo "Restore TV playlists..."
+
+for file in $playlistSource; do
+	if [ -f "$file" ]; then
+		cp -f $file $playlistDest
+		fileName="$(basename $file) - restored".
+		echo $fileName
+	else
+		echo "Nothing to restore."
+	fi
+done
