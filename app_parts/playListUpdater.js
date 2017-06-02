@@ -71,6 +71,7 @@ function Channel(params){
 	this.isProxy = cf.playlistGenProxy;
 	this.idMinLength = 10;
     this.isLog = cf.isConsoleLogPlaylist;
+    this.isGenOnStart = cf.playlistGenOnStart;
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -222,9 +223,14 @@ Channel.prototype = {
             this.backUpGen.getValidPlaylist.call(this.backUpGen);
 	},
     start: function(callback){
-        if(typeof callback == 'function') this.callback = callback;
+        if(this.isGenOnStart){
+            if(typeof callback == 'function') this.callback = callback;
+            this.genValidPlaylist(true);
+        }
+        else{
+            callback();
+        }
 
-		this.genValidPlaylist(true);
 		this.storeGenerator();
 
 		//Scheduler for updating playlist
