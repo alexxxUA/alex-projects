@@ -129,7 +129,8 @@ function Channel(params){
     this.cRegExps = [
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
         new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
-		new RegExp('(?:player\\.php\\?id=)(.+)?(?:"|\')', 'im')
+		new RegExp('(?:player\\.php\\?id=)(.+)?(?:"|\')', 'im'),
+		new RegExp('(?:player\\.php\\?acelive=)(.+)?(?:"|\')', 'im')
     ];
 
 	this.emailSubj = 'Playlist generator notifier';
