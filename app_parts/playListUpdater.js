@@ -111,6 +111,8 @@ function Channel(params){
 	 */
 	this.generateTime = '5:00';
 	this.timeZone = 1;
+    
+    this.torApiUrl = 'http://api.torrentstream.net/upload/jsonp?callback=c&url=';
 
 	this.proxyUrl = 'http://smenip.ru/proxi/browse.php?';
 	this.playerDomain = 'http://1ttv.net';
@@ -128,8 +130,11 @@ function Channel(params){
     //RegExps array for search channel id or url
     this.cRegExps = [
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
+        new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'im'),
         new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
-		new RegExp('(?:player\\.php\\?(?:.+)?=)(.+)?(?:"|\')', 'im')
+		new RegExp('(?:player\\.php\\?(?:.+)?=)(.+)?(?:"|\')', 'im'),
+        //Search for id in jsonp responce from "this.torApiUrl"
+        new RegExp('(?:id":")(.+)?(?:",)', 'im')
     ];
 
 	this.emailSubj = 'Playlist generator notifier';
@@ -465,9 +470,9 @@ Channel.prototype = {
 			}, _that);
 		}, _that);
 	},
-	getIdFromFrame: function(cUrl, channel, callback, _that){
+	getIdFromFrame: function(cUrl, channel, callback, _that, isSkipUrlUpdate){
 		var that = this,
-			updChanUrl = that.getUpdatedPlayerUrl(cUrl),
+			updChanUrl = isSkipUrlUpdate ? cUrl : that.getUpdatedPlayerUrl(cUrl),
             reqParams = extend({}, this.reqParams);
 
         reqParams.headers.Referer = updChanUrl;
@@ -500,10 +505,20 @@ Channel.prototype = {
         //Check if ID string contains numbers. If not -> failed.
         chanId = /[0-9]+/.test(chanId) ? chanId : false;
 
-        if(!chanId)
+        if(!chanId){
             _that.failed(channel, 'id not found on the page/frame');
-        else
-            callback(chanId);
+        }
+        else{
+            //If channel id is URL -> make request and get real id value
+            if( this.isStringUrl(chanId) ){
+                var chanIdUrl = this.torApiUrl + chanId;
+
+                this.getIdFromFrame(chanIdUrl, channel, callback, _that, true);
+            }
+            else {
+                callback(chanId);
+            }
+        }
     },
 	printReport: function(){
 		if(this.isPlaylistFailed)
@@ -527,8 +542,13 @@ Channel.prototype = {
 		}
 	},
 	getUpdatedPlayerUrl: function(urlPath){
-		return (this.isProxy ? this.playerDomainProxy : this.playerDomain) + $url.parse(urlPath).path;
+        var domain = this.isProxy ? this.playerDomainProxy : this.playerDomain;
+
+		return this.getUpdatedDomain(urlPath, domain);
 	},
+    getUpdatedDomain: function(url, domain){
+        return domain + $url.parse(url).path;
+    },
 	getArrayOrObjCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
 	},
@@ -563,6 +583,9 @@ Channel.prototype = {
 
 		email.sendMail(sbj, this.emailRecipient, msg);
 	},
+    isStringUrl: function(url){
+        return !!$url.parse(url).hostname;
+    },
     isDst: function(){
         return new Date().dst();
     },
@@ -747,6 +770,8 @@ var TuckaHomepageConfig = {
 	maxRestartCount: 2,
     minReqDelay: 2000,
     playlistDomain: 'http://tuchkatv.ru',
+    linksSel: '#slidemenu a:not([target="_blank"])',
+    playlistPartSel: '#dle-content',
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
     },
@@ -765,7 +790,7 @@ var TuckaHomepageConfig = {
                     setTimeout(function(){
                         that.getValidPlaylistPart(url, function(resp){
                             that.storeValidList(resp);
-                            that.cLog('Page: '+ j +';  '+ url +'. Downloaded');
+                            that.cLog('Page: '+ (j+1) +';  '+ url +'. Downloaded');
                             //Call callback in case all parts collected
                             if(callback && that.pagesCount == pagesTotal) {
                                 setTimeout(function(){
@@ -784,11 +809,12 @@ var TuckaHomepageConfig = {
 
         that.getValidPlaylistPart(url, function(resp){
             var $ = that.getDom(resp.body),
-                $links = $('#slidemenu a:not([target="_blank"])'),
+                $links = $(that.linksSel),
                 linksArray = [];
 
             $links.each(function(){
-                linksArray.push(that.playlistDomain + this.attribs.href);
+                var url = that.getUpdatedDomain(this.attribs.href, that.playlistDomain);
+                linksArray.push(url);
             });
             that.cLog(linksArray);
             if(callback) callback(linksArray);
@@ -796,14 +822,13 @@ var TuckaHomepageConfig = {
     },
 	storeValidList: function(resp){
 		var $ = this.getDom(resp.body),
-			playlistPart = $('#dle-content').html();
+			playlistPart = $(this.playlistPartSel).html();
 
         this.pagesCount++;
 		this.validList += playlistPart;
 	},
     getPlayerUrl: function(channel, callback, _that){
 		var _that = _that || this,
-			that = this,
             isHd = this.getHdForRegexp(channel),
 			regExp = new RegExp('(?:<a.*?href="(.*?)")(?:.+)?(?:(?:'+ channel.sName +')'+ isHd +')(?:.+)?(?:<\/a>)', 'im'),
 			chanUrl = this.validList.match(regExp);
@@ -817,13 +842,13 @@ var TuckaHomepageConfig = {
 
         if(callback) callback(chanUrl);
 	},
-    getIdFromFrame: function(cUrl, channel, callback, _that){
+    getIdFromFrame: function(cUrl, channel, callback, _that, isSkipUrlUpdate){
         var _that = _that || this,
 			that = this,
-			newChanUrl = that.getUpdatedPlayerUrl(cUrl);
+			newChanUrl = isSkipUrlUpdate ? cUrl : that.getUpdatedDomain(cUrl, that.playlistDomain);
 
-        needle.request('GET', cUrl, null, {}, function(err, resp){
-            that.cLog('Request to: '+ cUrl);
+        that.cLog('Request to: '+ newChanUrl);
+        needle.request('GET', newChanUrl, null, {}, function(err, resp){
             that.getIdFromFrameRespCallback(err, resp, channel, callback, _that)
         });
 	},
@@ -837,10 +862,20 @@ var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
     playListName: 'TV_List_torrent_stream.xspf',
 	logName: 'log_torrent_stream.txt'
 }));
+var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfig, {
+    forceGenDelay: 4,
+	channelsArray: [channels1],
+    playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt',
+    playlistDomain: 'http://www.torrent-stream.ru',
+    linksSel: '.menu-iconmenu li:not(.first):not(.last):not(.jsn-icon-mail):not(.jsn-icon-mountain) a',
+    playlistPartSel: '#jsn-mainbody'
+}));
 var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
-	logName: 'log_torrent_stream.txt'
+	logName: 'log_torrent_stream.txt',
+    //backUpGen: MainPlaylistHomepage_torStreamRu
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
@@ -900,6 +935,7 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
+			//MainPlaylistHomepage_torStreamRu.start(function(){
 			MainPlaylistHomepage_tucka.start(function(){
 				SecondaryPlaylist_tucka.start(function(){
                     if(cf.playListChannelChecker){
@@ -933,3 +969,10 @@ module.exports = {
 		}
 	}
 }
+
+/*
+TODO:
+    1. Check channels for new gen torStreamRu
+    2. Check double request in case chanid is URL
+    3. Enable/Disable backup gen
+*/
