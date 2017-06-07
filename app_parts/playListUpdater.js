@@ -223,11 +223,12 @@ Channel.prototype = {
 		this.setChannels(this.channelsArray);
 		this.initChannelsObject();
 
-        //Save playlist page for backup
-		if(this.backUpGen)
-            this.backUpGen.getValidPlaylist.call(this.backUpGen);
 	},
     start: function(callback){
+        //Save playlist page for backup
+		if(this.backUpGen){
+            this.backUpGen.getValidPlaylist.call(this.backUpGen);
+        }
         if(this.isGenOnStart){
             if(typeof callback == 'function') this.callback = callback;
             this.genValidPlaylist(true);
@@ -935,7 +936,6 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			//MainPlaylistHomepage_torStreamRu.start(function(){
 			MainPlaylistHomepage_tucka.start(function(){
 				SecondaryPlaylist_tucka.start(function(){
                     if(cf.playListChannelChecker){
