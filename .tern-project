@@ -6,14 +6,11 @@
     "node_modules/**"
   ],
   "plugins": {
+    "doc_comment": true,
     "node": {
       "dontLoad": "",
       "load": "",
       "modules": ""
-    },
-    "doc_comment": {
-      "fullDocs": true,
-      "strong": false
     }
   }
 }
