@@ -6,7 +6,7 @@ var	express	= require('express'),
 	mongoose = require("mongoose");
 
 //Set globals
-global.filesP = path.join(__dirname, 'files');
+global.filesP = path.join(__dirname, 'files'); 
 
 var cf = require('./config/config.js'),
 	routes = require('./app_parts/routes.js'),

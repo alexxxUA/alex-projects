@@ -1,1 +1,1 @@
-nodemon --debug app.js
+nodemon --inspect --debug-brk app.js
