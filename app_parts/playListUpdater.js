@@ -131,12 +131,12 @@ function Channel(params){
 
     //RegExps array for search channel id or url
     this.cRegExps = [
-        new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'im'),
-        new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'im'),
-        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'im'),
-		new RegExp('(?:player\\.php\\?(?:.+)?=)(.+)?(?:"|\')', 'im'),
+        new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
+        new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
+        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'img'),
+		new RegExp('(?:player\\.php\\?(?:.+)?=)(.+)?(?:"|\')', 'img'),
         //Search for id in jsonp responce from "this.torApiUrl"
-        new RegExp('(?:id":")(.+)?(?:",)', 'im')
+        new RegExp('(?:id":")(.+)?(?:",)', 'img')
     ];
 
 	this.emailSubj = 'Playlist generator notifier';
@@ -528,6 +528,15 @@ Channel.prototype = {
         }
         that.setCookie(updChanUrl, channel, getIdReq);
 	},
+	getRegExpMatchArray: function(regExp, string){
+		var output = [],
+			matches;
+
+		while (matches = regExp.exec(string)) {
+			output.push(matches[1]);
+		}
+		return output;
+	},
     getIdFromFrameRespCallback: function(err, resp, channel, callback, _that){
         if (err || resp.statusCode !== 200){
             _that.failed(channel, 'channel`s page/frame not available');
@@ -539,8 +548,8 @@ Channel.prototype = {
             chanId;
 
         while(!chanId && i < this.cRegExps.length){
-            chanId = resp.body.match(this.cRegExps[i]);
-            chanId = chanId && chanId[1] ? chanId[1] : false;
+            chanId = this.getRegExpMatchArray(this.cRegExps[i], resp.body);
+            chanId = chanId.length ? chanId[chanId.length - 1] : false;
             i++;
         }
         //Check if ID string contains numbers. If not -> failed.
