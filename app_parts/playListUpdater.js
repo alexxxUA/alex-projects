@@ -111,7 +111,7 @@ function Channel(params){
 	 * Generate in specified time (used if @isGenerateInTime = true)
 	 * @Value in format: 4:00 (24h format)
 	 */
-	this.generateTime = '5:30';
+	this.generateTime = '5:45';
 	this.timeZone = 1;
 
     this.torApiUrl = 'http://api.torrentstream.net/upload/jsonp?callback=c&url=';
@@ -799,7 +799,7 @@ var TuckaMainConfig = {
  * Main config for "Tuchka" source from homepage
 **/
 var TuckaHomepageConfig = {
-    scheduleGenDelay: 25,
+    scheduleGenDelay: 15,
     forceGenDelay: 7,
 	maxRestartCount: 2,
     minReqDelay: 2000,
@@ -909,7 +909,7 @@ var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
-    generateTime: '5:50',
+    generateTime: '6:30',
 	playListName: 'TV_List_tuchka.xspf',
 	logName: 'log_tuchka.txt'
 }));
@@ -968,13 +968,13 @@ module.exports = {
 			MainPlaylistHomepage_tucka.start(function(){
 				SecondaryPlaylist_tucka.start(function(){
                     if(cf.playListChannelChecker){
-                        ChannelChangeTracker_tucka.start()
+                        ChannelChangeTracker_tucka.start();
                     }
                 });
 			});
 		}
         if(!cf.playlistEnabled && cf.playListChannelChecker){
-            ChannelChangeTracker_tucka.start()
+            ChannelChangeTracker_tucka.start();
         }
 	},
 	forceGeneratePlaylists: function(res){
