@@ -134,7 +134,7 @@ function Channel(params){
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'img'),
-		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]*)', 'img'),
+		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]+)', 'img'),
         //Search for id in jsonp responce from "this.torApiUrl"
         new RegExp('(?:id":")(.+)?(?:",)', 'img')
     ];
@@ -549,7 +549,7 @@ Channel.prototype = {
 
         while(!chanId && i < this.cRegExps.length){
             chanId = this.getRegExpMatchArray(this.cRegExps[i], resp.body);
-            chanId = chanId.length ? chanId[chanId.length - 1] : false;
+            chanId = chanId.length ? chanId[0] : false;
             i++;
         }
         //Check if ID string contains numbers. If not -> failed.
