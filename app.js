@@ -13,7 +13,9 @@ var cf = require('./config/config.js'),
 	playlist = require('./app_parts/playListUpdater.js');
 
 // Connect to DB
-mongoose.connect('mongodb://'+ cf.mongoUrl);
+mongoose.connect(`mongodb://${cf.mongoUrl}`, {
+	useMongoClient: true
+});
 
 // New call to compress content
 app.use(express.compress());
