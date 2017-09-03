@@ -39,10 +39,9 @@ routes.init(app);
 playlist.init();
 
 //listen server
-var hostname = cf.isLocal ? 'localhost' : cf.ip;
-app.listen(cf.port, hostname, function(err){
+app.listen(cf.port, cf.ip, function(err){
 	if(err) throw error;
 
-	console.log('Server started on: '+ hostname +':'+ cf.port);
+	console.log('Server started on: '+ cf.ip +':'+ cf.port);
 	//open('http://'+ cf.ip +':'+ cf.port);
 });
