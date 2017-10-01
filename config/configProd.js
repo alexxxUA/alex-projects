@@ -3,7 +3,7 @@ var config = {
 	FBsecret: process.env.FB_SECRET,
 	FBv: process.env.FB_VERSION,
 	playlistGenProxy: false,
-	playlistGenOnStart: false
+	playlistGenOnStart: true
 }
 
 module.exports = config;
