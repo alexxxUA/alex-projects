@@ -131,12 +131,21 @@ function Channel(params){
 
     //RegExps array for search channel id or url
     this.cRegExps = [
+		// search in JSON
+		function(channel){
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:(?:"'+ channel.sName + ')\\s*' + isHd + '\\s*","url":"(.+?)?")', 'img');
+		},
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'img'),
 		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]+)', 'img'),
         //Search for id in jsonp responce from "this.torApiUrl"
-        new RegExp('(?:id":")(.+)?(?:",)', 'img')
+		new RegExp('(?:id":")(.+)?(?:",)', 'img'),
+		function(channel){
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
+		}
     ];
 
 	this.emailSubj = 'Playlist generator notifier';
@@ -237,8 +246,8 @@ Channel.prototype = {
             if(typeof callback == 'function') this.callback = callback;
             this.genValidPlaylist(true);
         }
-        else{
-            callback();
+        else if (callback){
+			callback();
         }
 
 		this.storeGenerator();
@@ -439,6 +448,9 @@ Channel.prototype = {
             if(callback) callback();
         });
 	},
+	storeValidList: function(resp){
+		this.validList = resp.body.toString();
+	},
     getValidPlaylistPart: function(url, callback){
         var that = this;
 
@@ -457,7 +469,7 @@ Channel.prototype = {
 		return isHd ? ' HD' : '';
 	},
     getHdForRegexp: function(channel){
-        return channel.isHd ? '(?:\\s*-*hd|\\s*-*cee)' : '(?!\\s*-*hd)';
+        return channel.isHd ? '(?:\\s*-*hd|\\s*-*cee|\\s*-*hq)' : '(?!\\s*-*hd)';
     },
 	getFullChannelName: function(channel){
 		return channel.dName + this.getHdText(channel.isHd);
@@ -544,16 +556,7 @@ Channel.prototype = {
         }
 
         var _that = _that || this,
-            i = 0,
-            chanId;
-
-        while(!chanId && i < this.cRegExps.length){
-            chanId = this.getRegExpMatchArray(this.cRegExps[i], resp.body);
-            chanId = chanId.length ? chanId[0] : false;
-            i++;
-        }
-        //Check if ID string contains numbers. If not -> failed.
-        chanId = /[0-9]+/.test(chanId) ? chanId : false;
+            chanId = this.getIdFromSourceString(resp.body, channel);
 
         if(!chanId){
             _that.failed(channel, 'id not found on the page/frame');
@@ -569,7 +572,23 @@ Channel.prototype = {
                 callback(chanId);
             }
         }
-    },
+	},
+	getIdFromSourceString: function(source, channel){
+		var i = 0,
+			chanId;
+
+		while(!chanId && i < this.cRegExps.length){
+			var regExp = typeof this.cRegExps[i] === 'function' ? this.cRegExps[i].call(this, channel) : this.cRegExps[i];
+
+            chanId = this.getRegExpMatchArray(regExp, source);
+            chanId = chanId.length ? chanId[0] : false;
+            i++;
+        }
+        //Check if ID string contains numbers. If not -> failed.
+		chanId = /[0-9]+/.test(chanId) ? chanId : false;
+
+		return chanId;
+	},
 	printReport: function(){
 		if(this.isPlaylistFailed)
 			this.logErr('Generation of playlist failed');
@@ -737,9 +756,6 @@ var TorStreamMainConfig = {
     initParams: function(){
         this.playlistUrl = this.playlistDomain +'/browse-vse-kanali-tv-videos-1-date.html';
     },
-	storeValidList: function(resp){
-		this.validList = resp.body;
-	},
 	getPlayerUrl: function(channel, callback, _that){
 		var _that = _that || this,
 			that = this,
@@ -883,9 +899,42 @@ var TuckaHomepageConfig = {
 	},
 }
 
+/**
+ * Main config for generating from source
+**/
+var SourceConfig = {
+    playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json',
+	getChannelId: function(channel, callback, _that){
+		var _that = _that || this,
+		chanId = this.getIdFromSourceString(this.validList, channel);
+
+		if(!chanId){
+            _that.failed(channel, 'id not found on the page/frame');
+        } else {
+			callback(chanId);
+		}
+	}
+}
+
 /*
     INIT Genarator instances
 */
+var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
+	channelsArray: [channels1],
+    playListName: 'TV_List_torrent_stream.xspf',
+	logName: 'log_torrent_stream.txt',
+	forceGenDelay: 0,
+	scheduleGenDelay: 0
+}));
+
+var SecondaryPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
+	channelsArray: [channels2],
+    playListName: 'TV_List_tuchka.xspf',
+	logName: 'log_tuchka.txt',
+	forceGenDelay: 0,
+	scheduleGenDelay: 0
+}));
+
 var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream.xspf',
@@ -965,8 +1014,8 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			MainPlaylistHomepage_tucka.start(function(){
-				SecondaryPlaylist_tucka.start(function(){
+			MainPlaylist_SOURCE.start(function(){
+				SecondaryPlaylist_SOURCE.start(function(){
                     if(cf.playListChannelChecker){
                         ChannelChangeTracker_tucka.start();
                     }
