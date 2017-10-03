@@ -903,6 +903,8 @@ var TuckaHomepageConfig = {
  * Main config for generating from source
 **/
 var SourceConfig = {
+	isGenerateInTime: false,
+	generateCountPer24h: 48,
     playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json',
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
