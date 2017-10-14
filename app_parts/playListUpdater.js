@@ -74,6 +74,9 @@ function Channel(params){
     this.isLog = cf.isConsoleLogPlaylist;
     this.isGenOnStart = cf.playlistGenOnStart;
 	this.isCheckIdForUrl = false;
+
+	this.saveProxyList = true;
+	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?id='
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -152,7 +155,9 @@ function Channel(params){
 	this.emailRecipient = 'aluaex@gmail.com';
 
 	this.outputPath = cf.playlistOutputPath;
-	this.playListName = 'TV_List.xspf';
+	this.playListName = 'TV_List';
+	this.playlistExt = 'xspf'
+	this.proxyPlaylistExt = 'm3u'
 	this.logName = 'log.txt';
 	this._report = _.template(
 		'Playlist updated.'+
@@ -227,7 +232,8 @@ Channel.prototype = {
     },
 	init: function() {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
-		this.playlistPath = path.join(filesP, this.outputPath + '/'+ this.playListName);
+		this.playlistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.playlistExt}`);
+		this.proxyPlaylistPath = path.join(filesP, `${this.outputPath}/Proxy-${this.playListName}.${this.proxyPlaylistExt}`);
 		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
 
 		if(typeof this.initParams == 'function') this.initParams();
@@ -238,13 +244,9 @@ Channel.prototype = {
 
 	},
     start: function(callback){
-        //Save playlist page for backup
-		if(this.backUpGen){
-            this.backUpGen.getValidPlaylist.call(this.backUpGen);
-        }
         if(this.isGenOnStart){
-            if(typeof callback == 'function') this.callback = callback;
-            this.genValidPlaylist(true);
+			if(typeof callback == 'function') this.callback = callback;
+			this.genValidPlaylist(true);
         }
         else if (callback){
 			callback();
@@ -441,7 +443,12 @@ Channel.prototype = {
 		});
 	},
 	getValidPlaylist: function(callback){
-        var that = this;
+		var that = this;
+		
+		//Save playlist page for backup
+		if(this.backUpGen){
+            this.backUpGen.getValidPlaylist.call(this.backUpGen);
+        }
 
         that.getValidPlaylistPart(that.playlistUrl, function(resp){
             that.storeValidList(resp);
@@ -621,30 +628,44 @@ Channel.prototype = {
 	getArrayOrObjCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
 	},
-	formFullChannList: function(){
+	formFullChannList: function(playListExt){
 		var channels = '';
 
 		for (var i = 0; i < this.channels.length; i++) {
 			var channel = this.channels[i];
 
 			if(channel.id && channel.id.length >= this.idMinLength)
-				channels += this.formChannItem(channel);
+				channels += this.formChannItem(channel, playListExt);
 			else if(channel.id && channel.id.length < this.idMinLength)
                 this.failed(channel, 'id shorter than '+ this.idMinLength +' symbols');
 		}
 
-		return '<?xml version="1.0" encoding="UTF-8"?>' +
-				'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
-				'\n\t<title>TV playlist: '+ this.getformatedDate(new Date(), true) +'; failed channels: '+ this.report.failedList.length +'</title>' +
-				'\n\t<creator>Vasin Oleksiy</creator>' +
-				'\n\t<trackList>' + channels + '\n\t</trackList>' +
-				'\n</playlist>';
+		switch (playListExt) {
+			case 'xspf':
+				return '<?xml version="1.0" encoding="UTF-8"?>' +
+						'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
+						'\n\t<title>TV playlist: '+ this.getformatedDate(new Date(), true) +'; failed channels: '+ this.report.failedList.length +'</title>' +
+						'\n\t<creator>Vasin Oleksiy</creator>' +
+						'\n\t<trackList>' + channels + '\n\t</trackList>' +
+						'\n</playlist>';
+			case 'm3u':
+				return '#EXTM3U'+
+						'\n'+ channels
+		}
 	},
-	formChannItem: function(channel) {
-		return '\n\t\t<track>' +
-				'\n\t\t\t<title>' + this.getFullChannelName(channel) + '</title>' +
-				'\n\t\t\t<location>' + channel.id + '</location>' +
-				'\n\t\t</track>';
+	formChannItem: function(channel, playListExt) {
+		var cName = this.getFullChannelName(channel)
+		switch (playListExt) {
+			case 'xspf':
+				return '\n\t\t<track>' +
+						'\n\t\t\t<title>' + cName + '</title>' +
+						'\n\t\t\t<location>' + channel.id + '</location>' +
+						'\n\t\t</track>';
+			case 'm3u':
+				var tvgName = cName.replace(/\s/g, '_')
+				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ cName +'.png",'+ cName +
+						'\n'+ this.proxyListPrefix + channel.id
+		}
 	},
 	sendPlaylistGenFailedEmail: function(){
 		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date, true) +']',
@@ -674,8 +695,10 @@ Channel.prototype = {
 		if(this.channelCounter >= this.channels.length)
 			this.finishPlaylist();
 	},
-	savePlaylist: function(playlist){
-		fs.writeFile(this.playlistPath, playlist);
+	savePlaylist: function(playlist, isProxyList){
+		var playListPath = isProxyList ? this.proxyPlaylistPath : this.playlistPath;
+
+		fs.writeFile(playListPath, playlist);
 	},
 	failed: function(channel, errMsg){
 		var that = this;
@@ -709,7 +732,12 @@ Channel.prototype = {
 	},
 	finishPlaylist: function(){
 		this.isPlaylistFailed = this.channels.length == this.report.failedList.length;
-		this.savePlaylist(this.formFullChannList());
+		this.savePlaylist(this.formFullChannList(this.playlistExt));
+
+		// save same playlist for proxy
+		if (this.saveProxyList) {
+			this.savePlaylist(this.formFullChannList(this.proxyPlaylistExt), true);
+		}
 		this.printReport();
 		this.playlistFinished();
 	},
@@ -900,12 +928,14 @@ var TuckaHomepageConfig = {
 }
 
 /**
- * Main config for generating from source
+ * Main config for generating from source ttv.json
 **/
 var SourceConfig = {
 	isGenerateInTime: false,
 	generateCountPer24h: 48,
-    playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json',
+	forceGenDelay: 0.05,
+	scheduleGenDelay: 0.05,
+    playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
 		chanId = this.getIdFromSourceString(this.validList, channel);
@@ -921,32 +951,35 @@ var SourceConfig = {
 /*
     INIT Genarator instances
 */
+
+var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
+	playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json'
+}));
+
 var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
+    playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
-	forceGenDelay: 0,
-	scheduleGenDelay: 0
+	backUpGen: BackUpGen_SOURCE
 }));
 
 var SecondaryPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
 	channelsArray: [channels2],
-    playListName: 'TV_List_tuchka.xspf',
+    playListName: 'TV_List_tuchka',
 	logName: 'log_tuchka.txt',
-	forceGenDelay: 0,
-	scheduleGenDelay: 0
+	backUpGen: BackUpGen_SOURCE
 }));
 
 var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
+    playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt'
 }));
 var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfig, {
     forceGenDelay: 4,
 	isCheckIdForUrl: true,
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
+    playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
     playlistDomain: 'http://www.torrent-stream.ru',
     linksSel: '.menu-iconmenu li:not(.first):not(.last):not(.jsn-icon-mail):not(.jsn-icon-mountain) a',
@@ -954,19 +987,19 @@ var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfi
 }));
 var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
+    playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
     backUpGen: MainPlaylistHomepage_torStreamRu
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
-	playListName: 'TV_List_tuchka.xspf',
+	playListName: 'TV_List_tuchka',
 	logName: 'log_tuchka.txt'
 }));
 var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream.xspf',
+    playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt'
 }));
 var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
