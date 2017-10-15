@@ -681,7 +681,6 @@ Channel.prototype = {
     },
 	isAbleToRestartChan: function(channel){
 		return typeof this.backUpGen != 'undefined'
-				&& this.backUpGen.validList.length
 				&& channel.failedCount < this.maxRestartCountPerChannel;
 	},
 	storeChannelItem: function(channel, ID){
@@ -713,7 +712,7 @@ Channel.prototype = {
 				that.backUpGen.getChannelId(channel, function(ID){
 					that.storeChannelItem(channel, ID)
 				}, that);
-			}, this.genDelay);
+			}, this.genDelay || 3000);
 			return;
 		}
 
@@ -933,8 +932,8 @@ var TuckaHomepageConfig = {
 var SourceConfig = {
 	isGenerateInTime: false,
 	generateCountPer24h: 48,
-	forceGenDelay: 0.05,
-	scheduleGenDelay: 0.05,
+	forceGenDelay: 0,
+	scheduleGenDelay: 0,
     playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
