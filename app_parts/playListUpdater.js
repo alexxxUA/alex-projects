@@ -761,11 +761,6 @@ Channel.prototype = {
 
 			this.tempRestartCount++
 		}
-        //Restart getting of playlist page using BACKUP generator
-        else if (typeof this.backUpGen != 'undefined'){
-            this.backUpGen.genValidPlaylist.call(this.backUpGen, true);
-            this.tempRestartCount = 0;
-        }
         //Send email notification about failed generation
 		else{
 			this.sendPlaylistGenFailedEmail();
