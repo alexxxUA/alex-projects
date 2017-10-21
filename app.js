@@ -13,7 +13,9 @@ var cf = require('./config/config.js'),
 	playlist = require('./app_parts/playListUpdater.js');
 
 // Connect to DB
-mongoose.connect('mongodb://'+ cf.mongoUrl);
+mongoose.connect(`mongodb://${cf.mongoUrl}`, {
+	useMongoClient: true
+});
 
 // New call to compress content
 app.use(express.compress());
@@ -37,10 +39,9 @@ routes.init(app);
 playlist.init();
 
 //listen server
-var hostname = cf.isLocal ? 'localhost' : cf.ip;
-app.listen(cf.port, hostname, function(err){
+app.listen(cf.port, function(err){
 	if(err) throw error;
 
-	console.log('Server started on: '+ hostname +':'+ cf.port);
+	console.log(`Server started on: ${cf.port}`);
 	//open('http://'+ cf.ip +':'+ cf.port);
 });

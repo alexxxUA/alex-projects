@@ -25,3 +25,7 @@ Implementation notes
 		console.log(resp);
 	});
 	
+
+	Set ENV variables
+		heroku config:set NODE_IS_DEVELOPMENT=false
+		echo 'export NODE_IS_DEVELOPMENT=false' >> ~/.bashrc
