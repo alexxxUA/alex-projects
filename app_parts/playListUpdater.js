@@ -12,6 +12,7 @@ var needle = require('needle'),
 	email = require('./sendMail.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList,
+	channelListSk = require('./../config/channelList_sk').channelListSk,
     generationInProgress = false;
 
 
@@ -66,6 +67,9 @@ function Channel(params){
 		},{
 			string: 'cod',
 			property: 'isCoded'
+		},{
+			string: 'm3',
+			property: 'isM3uOnly'
 	}];
 	this.validList = '';
 	/* Is getting channel's html through proxy */
@@ -137,7 +141,7 @@ function Channel(params){
 		// search in JSON
 		function(channel){
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:(?:"'+ channel.sName + ')\\s*' + isHd + '\\s*","url":"(.+?)?")', 'img');
+			return new RegExp('(?:"(?:'+ channel.sName + ')\\s*' + isHd + '\\s*","url":"(.+?)?")', 'img');
 		},
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
@@ -148,6 +152,10 @@ function Channel(params){
 		function(channel){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
+		},
+		function(channel){
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:0,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 		}
     ];
 
@@ -442,21 +450,53 @@ Channel.prototype = {
 			that.getList();
 		});
 	},
+	getPlaylistParts: function(playlistUrl, callback) {
+		if (callback) {
+			callback(typeof playlistUrl === 'string' ? [playlistUrl] : playlistUrl)
+		}
+	},
 	getValidPlaylist: function(callback){
-		var that = this;
-		
+		var that = this,
+			urlsIndex = 0;
+
+		// reset valid list
+		that.resetValidList();
+
 		//Save playlist page for backup
-		if(this.backUpGen){
-            this.backUpGen.getValidPlaylist.call(this.backUpGen);
+		if(that.backUpGen){
+            that.backUpGen.getValidPlaylist.call(that.backUpGen);
         }
 
-        that.getValidPlaylistPart(that.playlistUrl, function(resp){
-            that.storeValidList(resp);
-            if(callback) callback();
+        that.getPlaylistParts(that.playlistUrl, function(urls){
+            var urlsCount = urls.length;
+
+            for(var i = 0; i < urlsCount; i++){
+                var pageUrl = urls[i];
+
+                (function(j, url){
+                    setTimeout(function(){
+                        that.getValidPlaylistPart(url, function(resp){
+							urlsIndex++
+                            that.storeValidList(resp);
+                            that.cLog('Page: '+ (j+1) +';  '+ url +'. Downloaded');
+                            //Call callback in case all parts collected
+                            if(callback && urlsIndex == urlsCount) {
+                                setTimeout(function(){
+                                    that.cLog('All playlist\'s parts are downloaded. Starting generation.');
+                                    callback();
+                                }, that.minReqDelay);
+                            }
+                        });
+                    }, j * that.minReqDelay);
+                })(i, pageUrl);
+            }
         });
 	},
+	resetValidList: function() {
+		this.validList = ''
+	},
 	storeValidList: function(resp){
-		this.validList = resp.body.toString();
+		this.validList += resp.body.toString();
 	},
     getValidPlaylistPart: function(url, callback){
         var that = this;
@@ -570,7 +610,7 @@ Channel.prototype = {
         }
         else{
             //If channel id is URL && check for URL enabled -> make request and get real id value
-            if( this.isStringUrl(chanId) && this.isCheckIdForUrl){
+            if(this.isStringUrl(chanId) && this.isCheckIdForUrl){
                 var chanIdUrl = this.torApiUrl + chanId;
 
                 this.getIdFromFrame(chanIdUrl, channel, callback, _that, true);
@@ -654,17 +694,25 @@ Channel.prototype = {
 		}
 	},
 	formChannItem: function(channel, playListExt) {
-		var cName = this.getFullChannelName(channel)
+		var cName = this.getFullChannelName(channel),
+			cId = channel.id;
+
 		switch (playListExt) {
 			case 'xspf':
-				return '\n\t\t<track>' +
-						'\n\t\t\t<title>' + cName + '</title>' +
-						'\n\t\t\t<location>' + channel.id + '</location>' +
-						'\n\t\t</track>';
+				if (channel.isM3uOnly) {
+					return '';
+				} else {
+					return '\n\t\t<track>' +
+							'\n\t\t\t<title>' + cName + '</title>' +
+							'\n\t\t\t<location>' + cId + '</location>' +
+							'\n\t\t</track>';
+				}
 			case 'm3u':
-				var tvgName = cName.replace(/\s/g, '_')
+				var tvgName = cName.replace(/\s/g, '_'),
+					cUrl = this.isStringUrl(cId) ? cId : this.proxyListPrefix + cId;
+
 				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ cName +'.png",'+ cName +
-						'\n'+ this.proxyListPrefix + channel.id
+						'\n'+ cUrl
 		}
 	},
 	sendPlaylistGenFailedEmail: function(){
@@ -847,36 +895,7 @@ var TuckaHomepageConfig = {
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
     },
-    getValidPlaylist: function(callback){
-        var that = this;
-        that.pagesCount = 0;
-        that.validList = '';
-
-        that.getPagesArray(that.playlistUrl, function(pages){
-            var pagesTotal = pages.length;
-
-            for(var i=0; i<pagesTotal; i++){
-                var pageUrl = pages[i];
-
-                (function(j, url){
-                    setTimeout(function(){
-                        that.getValidPlaylistPart(url, function(resp){
-                            that.storeValidList(resp);
-                            that.cLog('Page: '+ (j+1) +';  '+ url +'. Downloaded');
-                            //Call callback in case all parts collected
-                            if(callback && that.pagesCount == pagesTotal) {
-                                setTimeout(function(){
-                                    that.cLog('All playlist\'s parts are downloaded. Starting generation.');
-                                    callback();
-                                }, that.minReqDelay);
-                            }
-                        });
-                    }, j * that.minReqDelay);
-                })(i, pageUrl);
-            }
-        });
-	},
-    getPagesArray: function(url, callback){
+    getPlaylistParts: function(url, callback){
         var that = this;
 
         that.getValidPlaylistPart(url, function(resp){
@@ -929,7 +948,11 @@ var SourceConfig = {
 	generateCountPer24h: 48,
 	forceGenDelay: 0,
 	scheduleGenDelay: 0,
-    playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
+	minReqDelay: 0,
+    playlistUrl: [
+		'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&name=TV&type=1&status=2&lng=sk&country=sk&isp=all'
+	],
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
 		chanId = this.getIdFromSourceString(this.validList, channel);
@@ -951,7 +974,7 @@ var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
 }));
 
 var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
-	channelsArray: [channels1],
+	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
 	backUpGen: BackUpGen_SOURCE
@@ -982,8 +1005,7 @@ var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfi
 var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt',
-    backUpGen: MainPlaylistHomepage_torStreamRu
+	logName: 'log_torrent_stream.txt'
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],

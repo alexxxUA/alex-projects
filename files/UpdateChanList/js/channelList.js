@@ -66,11 +66,13 @@ var channelList = [
 	{dName: 'English Club TV', sName: '', flags: ''},
 
 	//Фильмы
-	{dName: 'IDx', sName: 'ID XTRA', flags: 'req'},
+	{dName: 'ID Xtra', sName: '', flags: 'req'},
+	{dName: 'ID Xtra', sName: '', flags: 'hd req'},
 	{dName: 'Fox', sName: 'Fox\\.', flags: 'req'},
 	{dName: 'Fox Life', sName: '', flags: 'hd req'},
 	{dName: 'Остросюжетное', sName: '', flags: 'hd'},
 	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
+	{dName: 'TV 1000 World Kino', sName: '', flags: 'req'},
 	{dName: 'TV 1000 Action East', sName: 'TV 1000 ACTION', flags: 'req'},
 	{dName: 'TV1000 Action', sName: '', flags: 'hd req'},
 	{dName: 'TV1000 Comedy', sName: '', flags: 'hd req'},
@@ -82,6 +84,9 @@ var channelList = [
 	{dName: 'HD Life', sName: '', flags: 'req'},
 	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'Кино Премиум', sName: '', flags: 'hd req'},
+	{dName: 'Кинопоказ', sName: '', flags: ''},
+	{dName: 'Кинопоказ 1', sName: '', flags: 'hd'},
+	{dName: 'Кинопоказ 2', sName: '', flags: 'hd'},
 	{dName: 'HD Кино', sName: '', flags: 'req'},
 	{dName: 'HD Кино 2', sName: '', flags: ''},
 
@@ -100,7 +105,8 @@ var channelList = [
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
-	{dName: 'Мультимания', sName: '', flags: ''}
+	{dName: 'Мультимания', sName: '', flags: ''},
+	{dName: 'Карусель', sName: '', flags: ''}
 ];
 
 var channelRegExps = function(channel, isReserve){
