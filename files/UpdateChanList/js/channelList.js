@@ -85,8 +85,8 @@ var channelList = [
 	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'Кино Премиум', sName: '', flags: 'hd req'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
-	{dName: 'Кинопоказ 1', sName: '', flags: 'hd'},
-	{dName: 'Кинопоказ 2', sName: '', flags: 'hd'},
+	{dName: 'Кинопоказ 1', sName: 'Кинопоказ 1 HD | Кинопоказ Hd1', flags: ''},
+	{dName: 'Кинопоказ 2', sName: 'Кинопоказ 2 HD | Кинопоказ Hd2', flags: ''},
 	{dName: 'HD Кино', sName: '', flags: 'req'},
 	{dName: 'HD Кино 2', sName: '', flags: ''},
 
@@ -104,6 +104,7 @@ var channelList = [
 	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
+	{dName: 'ПлюсПлюс', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
 	{dName: 'Мультимания', sName: '', flags: ''},
 	{dName: 'Карусель', sName: '', flags: ''}

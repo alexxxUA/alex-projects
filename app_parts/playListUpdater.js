@@ -951,7 +951,7 @@ var SourceConfig = {
 	minReqDelay: 0,
     playlistUrl: [
 		'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
-		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&name=TV&type=1&status=2&lng=sk&country=sk&isp=all'
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
 	],
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
