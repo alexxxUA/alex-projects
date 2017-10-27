@@ -85,8 +85,8 @@ var channelList = [
 	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'Кино Премиум', sName: '', flags: 'hd req'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
-	{dName: 'Кинопоказ 1', sName: 'Кинопоказ 1 HD | Кинопоказ Hd1', flags: ''},
-	{dName: 'Кинопоказ 2', sName: 'Кинопоказ 2 HD | Кинопоказ Hd2', flags: ''},
+	{dName: 'Кинопоказ 1 HD', sName: 'Кинопоказ 1 HD | Кинопоказ Hd1', flags: ''},
+	{dName: 'Кинопоказ 2 HD', sName: 'Кинопоказ 2 HD | Кинопоказ Hd2', flags: ''},
 	{dName: 'HD Кино', sName: '', flags: 'req'},
 	{dName: 'HD Кино 2', sName: '', flags: ''},
 
