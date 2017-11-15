@@ -17,14 +17,26 @@ var channelList = [
 	{dName: 'Интер', sName: 'Интер|inter-ukraina', flags: ''},
 	{dName: 'К1', sName: '', flags: 'req'},
 	{dName: 'К2', sName: '', flags: 'req'},
+
+	//Мультики
+	{dName: 'ПлюсПлюс', sName: '', flags: ''},
+	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney', flags: 'req'},
+	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: '2x2', sName: '', flags: 'req'},
+	{dName: 'Cartoon Network', sName: '', flags: 'req'},
+	{dName: 'Nickelodeon', sName: '', flags: 'req'},
+	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
+	{dName: 'Детский', sName: 'Детский мир', flags: ''},
+	{dName: 'Мультимания', sName: '', flags: ''},
+
+	//Разное
+	{dName: 'Zoom', sName: '', flags: ''},
 	{dName: 'Мама', sName: '', flags: ''},
+	{dName: 'Перец', sName: '', flags: ''},
 	{dName: 'СТС', sName: '', flags: ''},
 	{dName: 'ТНТ', sName: '', flags: 'req'},
-	{dName: 'Перец', sName: '', flags: ''},
 	{dName: 'Че', sName: '', flags: ''},
 	{dName: 'Пятница', sName: '', flags: ''},
-	{dName: 'Zoom', sName: '', flags: ''},
 	{dName: 'Парк развлечений', sName: '', flags: ''},
 
 	//Познавательные
@@ -97,17 +109,7 @@ var channelList = [
 	{dName: 'М1', sName: 'М1|M1', flags: 'req'},
 	{dName: 'М2', sName: 'М2|M2', flags: ''},
 	{dName: 'O-TV', sName: '', flags: 'req'},
-	{dName: 'A-ONE', sName: '', flags: ''},
-
-	//Мультики
-	{dName: 'Cartoon Network', sName: '', flags: 'req'},
-	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney', flags: 'req'},
-	{dName: 'Nickelodeon', sName: '', flags: 'req'},
-	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
-	{dName: 'ПлюсПлюс', sName: '', flags: ''},
-	{dName: 'Детский', sName: 'Детский мир', flags: ''},
-	{dName: 'Мультимания', sName: '', flags: ''},
-	{dName: 'Карусель', sName: '', flags: ''}
+	{dName: 'A-ONE', sName: '', flags: ''}
 ];
 
 var channelRegExps = function(channel, isReserve){
