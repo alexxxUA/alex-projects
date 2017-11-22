@@ -24,6 +24,7 @@ var channelList = [
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: '2x2', sName: '', flags: 'req'},
 	{dName: 'Cartoon Network', sName: '', flags: 'req'},
+	{dName: 'Nickjr', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
