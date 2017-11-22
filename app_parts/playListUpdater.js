@@ -668,6 +668,9 @@ Channel.prototype = {
 	getArrayOrObjCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
 	},
+	getLogoName: function(name){
+		return `${name.replace(/\./g, '')}.png`
+	},
 	formFullChannList: function(playListExt){
 		var channels = '';
 
@@ -711,7 +714,7 @@ Channel.prototype = {
 				var tvgName = cName.replace(/\s/g, '_'),
 					cUrl = this.isStringUrl(cId) ? cId : this.proxyListPrefix + cId;
 
-				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ cName +'.png",'+ cName +
+				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoName(cName) +'",'+ cName +
 						'\n'+ cUrl
 		}
 	},
