@@ -495,8 +495,8 @@ Channel.prototype = {
 	resetValidList: function() {
 		this.validList = ''
 	},
-	storeValidList: function(resp){
-		this.validList += resp.body.toString();
+	storeValidList: function (respString){
+		this.validList += respString;
 	},
     getValidPlaylistPart: function(url, callback){
         var that = this;
@@ -509,7 +509,10 @@ Channel.prototype = {
 				return;
 			}
 
-			if(callback) callback(resp);
+			if(callback) {
+				let respString = resp.parser === 'json' ? JSON.stringify(resp.body) : resp.body.toString();
+				callback(respString);
+			}
 		});
     },
 	getHdText: function(isHd){
