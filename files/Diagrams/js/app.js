@@ -1,0 +1,1 @@
+var test = $("img[usemap]").mapTrifecta();

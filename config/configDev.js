@@ -6,7 +6,7 @@ var config = {
 	FBsecret: '4092b64b251eb9491a59f79c1dca0350',
 	FBv: 'v2.2',
     playlistGenOnStart: true,
-	playlistEnabled: true,
+	playlistEnabled: false,
     playListChannelChecker: false,
 	playlistGenProxy: false,
     isConsoleLogPlaylist: true

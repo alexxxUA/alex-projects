@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+	<title>BlankTitle</title>
+
+	<script>
+		var sourceLoader = {
+			isDev: true,
+			devCss: [
+				'css/reset.css',
+				'css/bootstrap_3.2.0.min.css',
+				'css/base.css'
+			],
+			devJs: [
+				'https://code.jquery.com/jquery-2.2.1.min.js',
+				'js/jquery.map-trifecta.js',
+				'js/app.js'
+			],
+			prodCss: ['css/base_min.css'],
+			prodJs: ['js/app_min.js'],
+			loadCss: function(){
+				var cssArray = this.isDev ? this.devCss : this.prodCss;
+
+				for(var i=0; i<cssArray.length; i++)
+					document.write('<link rel="stylesheet" href="'+ cssArray[i] +'">');
+			},
+			loadJs: function(){
+				var jsArray = this.isDev ? this.devJs : this.prodJs;
+
+				for(var i=0; i<jsArray.length;  i++)
+					document.write('<script src="'+ jsArray[i] +'"><\/script>');
+			}
+		}
+		//Load css files
+		sourceLoader.loadCss();
+	</script>
+</head>
+<body>
+	<header></header>
+	<div class="container">
+		<div class="row">
+			<!--IMAGE MAP-->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4>Shapes Image</h4>
+				</div>
+				<div class="panel-body">
+					<center>
+						<img id="myImageMap" src="https://www.partstown.com/is-bin/intershop.static/WFS/Reedy-PartsTown-Site/-/en_US/images/zoomlevels/highest/ACC-EGD-ControlBoxAssy.JPG" usemap="#shapesMap">
+						<map name="shapesMap">
+							<area data-mapid="1" coords="5,136,80,9,152,135" alt="Triangle" href="#" shape="poly" />
+							<area data-mapid="2" coords="177,134,179,7,307,8,308,134" alt="Square" href="#" shape="poly" />
+							<area data-mapid="3" coords="358,123,353,119,342,104,334,88,333,67,339,46,352,26,379,10,403,7,420,13,438,22,448,33,454,43,459,61,462,77,459,93,449,112,437,122,426,128,414,134,393,135,376,132"
+								alt="Circle" href="#" shape="poly" />
+						</map>
+					</center>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer></footer>
+	<div class="script-section">
+		<script>
+			//Load js files
+			sourceLoader.loadJs();
+		</script>
+	</div>
+</body>
+</html>
