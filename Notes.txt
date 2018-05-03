@@ -8,7 +8,7 @@ Update Mongo DB:
 Set env variables:
 	rhc set-env env_vars.txt -a projects
 
-List env cariables:
+List env variables:
 	rhc env list -a projects
 	
 	

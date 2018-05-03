@@ -4,6 +4,10 @@ var fbParser = require('fb-signed-parser'),
 
 var auth = {
 	isLogged: function(req, res, next){
+		if (!cf.FBappId || !cf.FBsecret) {
+			throw Error('FBappId or FBsecret is not configured. Please check config / ENV variables!');
+		}
+
 		var that = auth,
 			token = req.cookies['fbsr_'+ cf.FBappId],
 			userId = token ? fbParser.parse(token, cf.FBsecret).user_id : '';

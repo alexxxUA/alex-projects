@@ -15,6 +15,8 @@ var cf = require('./config/config.js'),
 // Connect to DB
 mongoose.connect(`mongodb://${cf.mongoUrl}`, {
 	useMongoClient: true
+}, err => {
+	if (err) throw err;
 });
 
 // New call to compress content

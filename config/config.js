@@ -9,11 +9,14 @@ function extendObj(target) {
 	return target;
 }
 
-var config = require('./configBase.js');
+let config = require('./configBase.js'),
+	configType = 'Prod';
 
-if(process.env.NODE_IS_DEVELOPMENT == 'true')
-	config = extendObj(config, require('./configDev.js'));
-else
-	config = extendObj(config, require('./configProd.js'));
+if(process.env.NODE_IS_DEVELOPMENT == 'true'){
+	configType = 'Dev';
+}
+
+config = extendObj(config, require(`./config${configType}.js`));
+console.log(`Using "${configType}" config`);
 
 module.exports = config;
