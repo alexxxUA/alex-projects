@@ -39,6 +39,6 @@
   },
   "private": true,
   "engines": {
-    "node": "*"
+    "node": "6.11.0"
   }
 }

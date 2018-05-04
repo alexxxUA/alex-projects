@@ -4,6 +4,9 @@ Update Mongo DB:
         mongo
         use explorer  //May be skipped
         db.users.update({'email': 'aluaex@gmail.com'}, {$set: {isAdmin: true}})
+
+Heroku:
+	Run bash: heroku run bash --app avasin-explorer
 		
 Set env variables:
 	rhc set-env env_vars.txt -a projects
