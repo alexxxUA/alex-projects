@@ -155,7 +155,7 @@ function Channel(params){
 		},
 		function(channel){
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:0,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 		}
     ];
 
@@ -956,7 +956,7 @@ var SourceConfig = {
 	scheduleGenDelay: 0,
 	minReqDelay: 0,
     playlistUrl: [
-		'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json',
+		'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json',
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
 	],
 	getChannelId: function(channel, callback, _that){
@@ -976,14 +976,14 @@ var SourceConfig = {
 */
 
 var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
-	playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/ttv.json'
+	playlistUrl: 'http://pomoyka.lib.emergate.net/trash/ttv-list/as.json'
 }));
 
 var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
 	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
-	backUpGen: BackUpGen_SOURCE
+	//backUpGen: BackUpGen_SOURCE
 }));
 
 var SecondaryPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
