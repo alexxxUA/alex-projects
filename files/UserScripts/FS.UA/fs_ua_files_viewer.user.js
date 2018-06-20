@@ -6,7 +6,7 @@
 // @require			http://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
 // @include			/https?\:\/\/brb\.to.*/
 // @include			/https?\:\/\/fs\.to.*/
-// @updateURL		http://avasin.ml/UserScripts/FS.UA/fs_ua_files_viewer.user.js
+// @updateURL		http://avasin.cf/UserScripts/FS.UA/fs_ua_files_viewer.user.js
 // ==/UserScript==
 
 var $ = jQuery;
@@ -150,8 +150,8 @@ Modal.prototype.hide = function(){
 function Proxy(params){
 	this.ajaxLoaderClass = 'js-ajax-loader';
 	this.ajaxErrorClass = 'js-ajax-error';
-	this.ajaxImgUrl = 'http://avasin.ml/img/ajax-loader.gif';
-	this.internalProxyUrl = location.protocol +'//avasin.ml/proxy';
+	this.ajaxImgUrl = 'http://avasin.cf/img/ajax-loader.gif';
+	this.internalProxyUrl = location.protocol +'//avasin.cf/proxy';
 	this.externalProxyUrl = location.protocol +'//213.108.74.236:8081';  //Site with proxy list --->  http://www.proxynova.com/proxy-server-list/country-ua
 
 	this.browserProxyDomain = 'http://cloud.lntu.info'; //'http://smenip.ru'

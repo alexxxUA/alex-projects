@@ -9,7 +9,7 @@
 // @include			/https?\:\/\/jira\.ontrq\.com.*/
 // @grant			GM_setValue
 // @grant			GM_getValue
-// @updateURL		http://avasin.ml/UserScripts/JIRA/JIRA.user.js
+// @updateURL		http://avasin.cf/UserScripts/JIRA/JIRA.user.js
 // ==/UserScript==
 
 try{

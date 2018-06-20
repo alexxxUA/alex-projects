@@ -1,11 +1,11 @@
 javascript: (function() {
-	var swfScriptUrl = "//avasin.ml/Vk%20music%20downloader/OpenSave/opensave.js",
+	var swfScriptUrl = "//avasin.cf/Vk%20music%20downloader/OpenSave/opensave.js",
 		audioCounter = 0,
 		audioBtnOptions = {
 			width: 20,
 			height: 20,
-			image_up: "//avasin.ml/Vk%20music%20downloader/img/dImg_20x20.png",
-			swf: "//avasin.ml/Vk%20music%20downloader/OpenSave/opensave.swf",
+			image_up: "//avasin.cf/Vk%20music%20downloader/img/dImg_20x20.png",
+			swf: "//avasin.cf/Vk%20music%20downloader/OpenSave/opensave.swf",
 			filename: "",
 			url: "",
 			buttonDiv: ""
