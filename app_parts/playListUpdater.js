@@ -956,7 +956,7 @@ var SourceConfig = {
 	scheduleGenDelay: 0,
 	minReqDelay: 0,
     playlistUrl: [
-		'http://http://91.92.66.82/trash/ttv-list/ttv.json',
+		'http://91.92.66.82/trash/ttv-list/ttv.json',
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
 	],
 	getChannelId: function(channel, callback, _that){
@@ -976,7 +976,7 @@ var SourceConfig = {
 */
 
 var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
-	playlistUrl: 'http://http://91.92.66.82/trash/ttv-list/as.json'
+	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json'
 }));
 
 var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
