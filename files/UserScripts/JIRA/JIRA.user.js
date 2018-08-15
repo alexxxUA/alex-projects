@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name			JIRA templates
-// @version			1.2
+// @version			1.3
 // @description		Quick templates for JIRA (can be used on any textarea elements)
 // @author			Alexey Vasin
 // @require			https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js
@@ -449,10 +449,11 @@ try{
 
 	Templates.prototype.addCustomStyles = function(){
 		var $styles = $("<style/>").html(
-			'.'+ this.templContainerClass +'{position:absolute; margin:0 0 0 -12px; z-index:999;}'+
+			'.'+ this.templContainerClass +'{position:absolute; margin-top:-12px; z-index:999;}'+
+			'.'+ this.templContainerClass +'.active{z-index:9999;}'+
 			'.'+ this.templContainerClass +' a{color:#FFF;}'+
-			'.'+ this.templContainerClass +':before{content:""; width:12px; height:30px; display:block; background:#3B73AF; border-radius:50% 0 0 50%; cursor:pointer}'+
-			'.'+ this.templListClass +'{z-index:1; position:absolute; left:12px; top:0; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; display: none;}'+
+			'.'+ this.templContainerClass +':before{content:""; width:30px; height:12px; display:block; background:#3B73AF; border-radius:50% 50% 0 0; cursor:pointer}'+
+			'.'+ this.templListClass +'{z-index:1; position:absolute; left:0; top:12px; width:250px; padding:10px; background:#3B73AF; color:#FFF; border-radius:0 5px 5px;transition:all 0.2s ease-in-out; display: none;}'+
 			'body .'+ this.templListClass +' ul{margin:0; padding:0;}'+
 			'.'+ this.templAddClass +'{display:block; text-align:center; margin-top:10px;}'+
 			'.'+ this.noTemplMsgClass +'{text-align:center}'+
@@ -475,7 +476,7 @@ try{
 			'.'+ this.templItemClass +':hover{border-color:#fff;}'+
 			'.'+ this.templItemClass +' a{text-decoration:none;}'+
 			'.'+ this.templItemClass +' a:hover{text-shadow:0 0 1px #FFF;}'+
-			'.aui-button.small-btn{height:auto; padding:2px 5px; color:#000;}'+
+			'.aui-button.small-btn{height:auto; padding:2px 5px; color:#000; background:#fff;}' +
 			'.add-templ-holder{text-align:center; border-top:1px solid #CCC; padding-top:10px; margin-top:10px;}'+
 			'.export-box, .import-box{width:50%; display:inline-block; vertical-align:top; box-sizing:border-box; padding:25px 10px; margin-bottom:5px;}'+
 			'.import-box{border-right:1px solid #CCC;}'+
@@ -637,7 +638,7 @@ try{
 			defaults: this.getSavedDefaults(),
 			uniqueAttr: uniqueAttr
 		};
-		return templatesHtml = _T.getT(this._templButton, data);
+		return _T.getT(this._templButton, data);
 	};
 	Templates.prototype.getCurDate = function(){
 		var today = new Date(),
