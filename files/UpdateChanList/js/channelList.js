@@ -14,7 +14,7 @@ var channelList = [
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
 	{dName: '2+2', sName: '2\\+2', flags: 'req'},
 	{dName: 'ТЕТ', sName: '', flags: 'req'},
-	{dName: 'Интер', sName: 'Интер|inter-ukraina', flags: ''},
+	{dName: 'Интер', sName: 'Интер|inter-ukraina|Интер\\+', flags: ''},
 	{dName: 'К1', sName: '', flags: 'req'},
 	{dName: 'К2', sName: '', flags: 'req'},
 	{dName: 'KVARTAL TV', sName: '', flags: 'req'},
