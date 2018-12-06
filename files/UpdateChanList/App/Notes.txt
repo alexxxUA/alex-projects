@@ -9,3 +9,6 @@ http://logo.fight-show.ru/logos/logo.zip
 
 Помойка:
 http://91.92.66.82/trash/ttv-list/
+
+Playlists:
+http://pomoyka.win/trash/ttv-list/ttv.all.tag.iproxy.m3u
