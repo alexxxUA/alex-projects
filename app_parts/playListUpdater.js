@@ -351,10 +351,11 @@ Channel.prototype = {
 		extend(channel, this.getObjFromFlags(channel.flags));
 	},
     updateChannelSname: function(channel){
-		var translitName = translit(channel.dName);
+		var encodedDName = channel.dName.replace(/(\(|\))/g, '\\$1');
+		var translitName = translit(encodedDName);
 
 		//Check if sName exist. If no -> add default one from dName property
-		channel.sName = channel.sName ? channel.sName : channel.dName;
+		channel.sName = channel.sName ? channel.sName : encodedDName;
 		//Add translit value of dName property
 		channel.sName += '|' + translitName;
 		//Code spaces with regExp
@@ -956,8 +957,8 @@ var SourceConfig = {
 	scheduleGenDelay: 0,
 	minReqDelay: 0,
     playlistUrl: [
-		'http://91.92.66.82/trash/ttv-list/ttv.json',
-		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
+		'http://91.92.66.82/trash/ttv-list/as.json'
 	],
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
@@ -972,18 +973,18 @@ var SourceConfig = {
 }
 
 /*
-    INIT Genarator instances
+    INIT Generator instances
 */
 
 var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
-	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json'
+	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json'
 }));
 
 var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
 	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
-	//backUpGen: BackUpGen_SOURCE
+	backUpGen: BackUpGen_SOURCE
 }));
 
 var SecondaryPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {

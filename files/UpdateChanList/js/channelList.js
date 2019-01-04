@@ -14,15 +14,20 @@ var channelList = [
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
 	{dName: '2+2', sName: '2\\+2', flags: 'req'},
 	{dName: 'ТЕТ', sName: '', flags: 'req'},
-	{dName: 'Интер', sName: 'Интер|inter-ukraina|Интер\\+', flags: ''},
-	{dName: 'К1', sName: '', flags: 'req'},
-	{dName: 'К2', sName: '', flags: 'req'},
-	{dName: 'KVARTAL TV', sName: '', flags: 'req'},
-	{dName: 'QTV', sName: '', flags: 'req'},
 	{dName: 'Мега', sName: '', flags: 'req'},
+	{dName: 'QTV', sName: 'QTV|OTSE', flags: 'req'},
+	{dName: 'К1', sName: '', flags: 'req'},
+	{dName: 'Пятница', sName: '', flags: ''},
+	{dName: 'KVARTAL TV', sName: '', flags: 'req'},
+	{dName: 'Интер', sName: 'Интер|inter-ukraina|Интер\\+', flags: ''},
+	{dName: 'Тиса-1', sName: 'Тиса-1|UA:закарпаття', flags: ''},
+	{dName: 'К2', sName: '', flags: 'req'},
+	{dName: 'ТРК Украина', sName: '', flags: 'req'},
 
 	//Мультики
 	{dName: 'ПлюсПлюс', sName: '', flags: ''},
+	{dName: 'Пиксель ТВ', sName: '', flags: ''},
+	{dName: 'Малятко ТВ', sName: '', flags: ''},
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
 	{dName: 'Мультимания', sName: '', flags: ''},
@@ -35,7 +40,6 @@ var channelList = [
 
 	//Разное
 	{dName: 'Мама', sName: '', flags: ''},
-	{dName: 'Пятница', sName: '', flags: ''},
 	{dName: 'Zoom', sName: '', flags: ''},
 	{dName: 'Перец', sName: 'Перец|Перец International', flags: ''},
 	{dName: 'Че', sName: '', flags: ''},
@@ -43,11 +47,12 @@ var channelList = [
 	{dName: 'ТНТ', sName: '', flags: 'req'},
 	{dName: 'Парк развлечений', sName: '', flags: ''},
 	{dName: 'English Club TV', sName: '', flags: ''},
-
+	
 	//Познавательные
 	{dName: 'Viasat History', sName: '', flags: 'req'},
 	{dName: 'Viasat Nature-History', sName: '', flags: 'hd req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', flags: 'req'},
+	{dName: 'HD Life', sName: '', flags: 'req'},
 	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe', flags: ''},
 	{dName: 'Discovery World !', sName: 'Discovery World|Discovеry Wоrld|Discovery World \\!', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', flags: 'req'},
@@ -74,9 +79,15 @@ var channelList = [
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ|Драйв', flags: ''},
 	{dName: 'Первый автомобильный', sName: 'Первый автомобильный|Первый автомобильный \\(укр\\)|Первый автомобильный \\(?Украина\\)?', flags: ''},
 	{dName: 'Extreme Sports', sName: '', flags: ''},
+
+	//Охота и рыбалка
+	{dName: 'Охота и рыбалка', sName: '', flags: ''},
+	{dName: 'Охотник и рыболов', sName: '', flags: 'hd'},
+
+	// Кухня
 	{dName: 'Еда HD', sName: 'Еда ТВ|Еда|Еда HD', flags: ''},
 	{dName: 'Кухня ТВ', sName: '', flags: 'req'},
-	{dName: 'Food Network', sName: 'Food NetworkFood Netwоrk', flags: ''},
+	{dName: 'Food Network', sName: 'Food Network|Food Netwоrk', flags: ''},
 	{dName: 'Food Network', sName: 'Food Netwоrk', flags: 'hd'},
 	
 	//Фильмы
@@ -84,25 +95,32 @@ var channelList = [
 	{dName: 'ID Xtra', sName: '', flags: 'hd req'},
 	{dName: 'Fox', sName: 'Fox\\.', flags: 'req'},
 	{dName: 'Fox Life', sName: '', flags: 'hd req'},
-	{dName: 'Остросюжетное', sName: '', flags: 'hd'},
+	{dName: 'Paramount Comedy', sName: 'Paramount Comedy|Paramount Comedy HD \\(Россия\\)', flags: ''},
 	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
 	{dName: 'TV 1000 World Kino', sName: '', flags: 'req'},
 	{dName: 'TV 1000 Action East', sName: 'TV 1000 ACTION', flags: 'req'},
 	{dName: 'TV1000 Action', sName: 'TV 1000 Action|TV 1000 Actiоn', flags: 'hd req'},
-	{dName: 'ViP Comedy', sName: 'ViP Comedy', flags: 'hd req'},
-	{dName: 'ViP Megahit', sName: 'ViP Megahit', flags: 'hd req'},
-	{dName: 'ViP Premiere', sName: 'ViP Premiere', flags: 'hd req'},
+	{dName: 'ViP Comedy', sName: '', flags: 'hd req'},
+	{dName: 'ViP Megahit', sName: '', flags: 'hd req'},
+	{dName: 'ViP Premiere', sName: '', flags: 'hd req'},
+	{dName: 'Остросюжетное', sName: '', flags: 'hd'},
+	{dName: 'КиноПремиум', sName: '', flags: 'hd req'},
+	{dName: 'Дом кино Премиум', sName: '', flags: 'hd req'},
+	{dName: 'Кинопоказ HD1', sName: 'Кинопоказ 1 HD|Кинопоказ HD1', flags: ''},
+	{dName: 'Кинопоказ HD2', sName: 'Кинопоказ 2 HD|Кинопоказ HD2', flags: ''},
+	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
 	{dName: 'Amedia Premium', sName: '', flags: 'hd req'},
 	{dName: 'Amedia Hit', sName: '', flags: 'hd'},
-	{dName: 'Paramount Comedy', sName: 'Paramount Comedy|Paramount Comedy HD \\(Россия\\)', flags: ''},
-	{dName: 'HD Life', sName: '', flags: 'req'},
-	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)', flags: 'req'},
-	{dName: 'Кино Премиум', sName: '', flags: 'hd req'},
+	{dName: 'Enter Film', sName: '', flags: ''},
+	{dName: 'Кино ТВ', sName: '', flags: ''},
+	{dName: 'Кинокомедия', sName: '', flags: 'req'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
-	{dName: 'Кинопоказ 1 HD', sName: 'Кинопоказ 1 HD | Кинопоказ Hd1', flags: ''},
-	{dName: 'Кинопоказ 2 HD', sName: 'Кинопоказ 2 HD | Кинопоказ Hd2', flags: ''},
-	{dName: 'HD Кино', sName: '', flags: 'req'},
-	{dName: 'HD Кино 2', sName: '', flags: ''},
+
+	// Новостные
+	{dName: '112 Украина', sName: '', flags: 'hd'},
+	{dName: '5 канал (Украина)', sName: '', flags: ''},
+	{dName: '24 Украина', sName: '', flags: ''},
+	{dName: 'Еспресо ТВ', sName: '', flags: ''},
 
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', flags: ''},
