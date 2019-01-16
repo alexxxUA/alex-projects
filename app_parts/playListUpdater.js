@@ -80,7 +80,8 @@ function Channel(params){
 	this.isCheckIdForUrl = false;
 
 	this.saveProxyList = true;
-	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?id='
+	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?'
+	this.aceliveGetter = 'http://91.92.66.82/trash/ttv-list/acelive/'
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -140,8 +141,7 @@ function Channel(params){
     this.cRegExps = [
 		// search in JSON
 		function(channel){
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:"(?:'+ channel.sName + ')\\s*' + isHd + '\\s*","url":"(.+?)?")', 'img');
+			return new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img');
 		},
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
@@ -356,10 +356,13 @@ Channel.prototype = {
 
 		//Check if sName exist. If no -> add default one from dName property
 		channel.sName = channel.sName ? channel.sName : encodedDName;
+
 		//Add translit value of dName property
-		channel.sName += '|' + translitName;
+		if(this.translitEnabled) {
+			channel.sName += '|' + translitName;
+		}
 		//Code spaces with regExp
-        channel.sName = channel.sName.replace(/\s+/g, '\\s*-*');
+        channel.sName = channel.sName.replace(/\s+/g, '(?:\\s|-)*');
     },
 	decodeChannelNames: function(channel){
 		if(channel.isCoded){
@@ -521,7 +524,11 @@ Channel.prototype = {
 	},
     getHdForRegexp: function(channel){
         return channel.isHd ? '(?:\\s*-*hd|\\s*-*cee|\\s*-*hq)' : '(?!\\s*-*hd)';
-    },
+	},
+	getBaseChannelRegExp: function (channel) {
+		const isHd = this.getHdForRegexp(channel);
+		return `(?:${channel.sName})\\s*${isHd}\\s*`
+	},
 	getFullChannelName: function(channel){
 		return channel.dName + this.getHdText(channel.isHd);
 	},
@@ -675,6 +682,11 @@ Channel.prototype = {
 	getLogoName: function(name){
 		return `${name.replace(/\./g, '')}.png`
 	},
+	getProxyUrl: function(cId) {
+		const isAceliveId = !!cId.match(/\.|-|_/);
+
+		return isAceliveId ? `${this.proxyListPrefix}url=${this.aceliveGetter}${cId}` : `${this.proxyListPrefix}id=${cId}`
+	},
 	formFullChannList: function(playListExt){
 		var channels = '';
 
@@ -716,7 +728,7 @@ Channel.prototype = {
 				}
 			case 'm3u':
 				var tvgName = cName.replace(/\s/g, '_'),
-					cUrl = this.isStringUrl(cId) ? cId : this.proxyListPrefix + cId;
+					cUrl = this.isStringUrl(cId) ? cId : this.getProxyUrl(cId);
 
 				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoName(cName) +'",'+ cName +
 						'\n'+ cUrl
@@ -950,7 +962,7 @@ var TuckaHomepageConfig = {
 /**
  * Main config for generating from source ttv.json
 **/
-var SourceConfig = {
+var SOURCE_CONFIG = {
 	isGenerateInTime: false,
 	generateCountPer24h: 48,
 	forceGenDelay: 0,
@@ -973,25 +985,69 @@ var SourceConfig = {
 }
 
 /*
+ * Main config for working with JSON
+*/
+const JSON_CONFIG = {
+	isGenerateInTime: false,
+	generateCountPer24h: 48,
+	forceGenDelay: 0,
+	scheduleGenDelay: 0,
+	minReqDelay: 0,
+	playlistUrl: 'http://91.92.66.82/trash/ttv-list/acelive.json',
+	storeValidList: function (resp) {
+		try {
+			this.validList = JSON.parse(resp);
+		} catch (err) {
+			this.isPlaylistFailed = true;
+			this.logErr('Error in parsing JSON!');
+			this.playlistFinished();
+		}
+	},
+	getIdFromJson: function(json, channel) {
+		const regExp = new RegExp(`${this.getBaseChannelRegExp(channel)}$`, 'i');
+		const result = json.filter(({name}) => name.match(regExp));
+
+		return result.length ? result[result.length-1].fname : null;
+	},
+	getChannelId: function (channel, callback, _that) {
+		var _that = _that || this,
+			chanId = this.getIdFromJson(this.validList, channel);
+
+		if (!chanId) {
+			_that.failed(channel, 'id not found on the page/frame');
+		} else {
+			callback(chanId);
+		}
+	}
+}
+
+/*
     INIT Generator instances
 */
 
-var BackUpGen_SOURCE = new Channel(extend({}, SourceConfig, {
+var BackUpGen_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json'
 }));
 
-var MainPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
+var MainPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
 	logName: 'log_torrent_stream.txt',
 	backUpGen: BackUpGen_SOURCE
 }));
 
-var SecondaryPlaylist_SOURCE = new Channel(extend({}, SourceConfig, {
+var MainPlaylist_SOURCE_JSON = new Channel(extend({}, JSON_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-acelive',
+	logName: 'TV-acelive-log.txt'
+}));
+
+var SecondaryPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV_List_tuchka',
 	logName: 'log_tuchka.txt',
-	backUpGen: BackUpGen_SOURCE
+	backUpGen: BackUpGen_SOURCE,
+	translitEnabled: true
 }));
 
 var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
@@ -1072,12 +1128,14 @@ var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			MainPlaylist_SOURCE.start(function(){
-				SecondaryPlaylist_SOURCE.start(function(){
-                    if(cf.playListChannelChecker){
-                        ChannelChangeTracker_tucka.start();
-                    }
-                });
+			MainPlaylist_SOURCE.start(function () {
+				MainPlaylist_SOURCE_JSON.start(function () {
+					SecondaryPlaylist_SOURCE.start(function(){
+						if(cf.playListChannelChecker){
+							ChannelChangeTracker_tucka.start();
+						}
+					});
+				});
 			});
 		}
         if(!cf.playlistEnabled && cf.playListChannelChecker){

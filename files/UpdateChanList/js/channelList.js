@@ -8,7 +8,7 @@
 
 var channelList = [
 	//Украинские
-	{dName: '1+1', sName: '1\\+1(?!\\s*international)|1-1', flags: 'req'},
+	{dName: '1+1', sName: '1\\+1', flags: 'req'},
 	{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)', flags: 'req'},
 	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', flags: 'req'},
 	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
@@ -31,7 +31,7 @@ var channelList = [
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
 	{dName: 'Мультимания', sName: '', flags: ''},
-	{dName: 'Nick Jr.', sName: 'Nickjr', flags: 'req'},
+	{dName: 'Nick Jr.', sName: 'Nick jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'hd req'},
 	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney', flags: 'req'},
@@ -93,12 +93,14 @@ var channelList = [
 	//Фильмы
 	{dName: 'ID Xtra', sName: '', flags: 'req'},
 	{dName: 'ID Xtra', sName: '', flags: 'hd req'},
-	{dName: 'Fox', sName: 'Fox\\.', flags: 'req'},
+	{dName: 'Fox', sName: 'Fox\\.|Fox', flags: 'req'},
+	{dName: 'Fox', sName: 'Fox\\.|Fox', flags: 'hd req'},
+	{dName: 'Fox Life', sName: '', flags: 'req'},
 	{dName: 'Fox Life', sName: '', flags: 'hd req'},
 	{dName: 'Paramount Comedy', sName: 'Paramount Comedy|Paramount Comedy HD \\(Россия\\)', flags: ''},
 	{dName: 'TV 1000', sName: 'TV 1000', flags: 'req'},
 	{dName: 'TV 1000 World Kino', sName: '', flags: 'req'},
-	{dName: 'TV 1000 Action East', sName: 'TV 1000 ACTION', flags: 'req'},
+	{dName: 'TV 1000 Action East', sName: 'TV 1000 ACTION East', flags: 'req'},
 	{dName: 'TV1000 Action', sName: 'TV 1000 Action|TV 1000 Actiоn', flags: 'hd req'},
 	{dName: 'ViP Comedy', sName: '', flags: 'hd req'},
 	{dName: 'ViP Megahit', sName: '', flags: 'hd req'},
