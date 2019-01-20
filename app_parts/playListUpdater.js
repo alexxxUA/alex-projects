@@ -1005,7 +1005,7 @@ const JSON_CONFIG = {
 	},
 	getIdFromJson: function(json, channel) {
 		const regExp = new RegExp(`${this.getBaseChannelRegExp(channel)}$`, 'i');
-		const result = json.filter(({name}) => name.match(regExp));
+		const result = json.filter(({name}) => name && name.match(regExp));
 
 		return result.length ? result[result.length-1].fname : null;
 	},
