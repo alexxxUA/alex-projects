@@ -5,7 +5,7 @@ function Navigation(param){
 		ajaxMsgSelector: '.js-ajax-msg',
 		link: '.js-dynamicReload',
 		reloads: 0,
-		readSpeed: 600 //Symbols per minute
+		readSpeed: 400 //Symbols per minute
 	};
 	param = param ? param : defaults;
 
@@ -472,6 +472,7 @@ FileExplorer.prototype.deleted = function(request, $form){
 function AdminPanel(params){
 	this.forceGenerSel = '.js-force-generate-playlists';
     this.aliasTableSel = '.js-alias-table';
+    this.aliasList = '.js-alias-list';
     this.usersTableSel = '.js-users-table';
 	this.onInputChangeSel = '.js-input-change';
     this.dataHolderSel = '.js-data-holder';
@@ -622,9 +623,9 @@ AdminPanel.prototype.removeData = function(e){
 AdminPanel.prototype.addAlias = function(res, $form){
 	var that = adminPanel,
 		newAlias = that.aliasLineItem(res),
-		$lastAliasItem = $(that.aliasTableSel +' '+ that.dataLineItemSel).last();
+		$lastAliasItem = $(that.aliasList);
 
-	$lastAliasItem.after(newAlias);
+	$lastAliasItem.append(newAlias);
 }
 AdminPanel.prototype.forceGeneratePlaylist = function(e){
 	e.preventDefault();

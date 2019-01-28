@@ -71,8 +71,7 @@ function init(app){
 			fPath = req.header('x-file-path'),
 			fRelativePath = path.join(fPath, fName),
 			fFullPath = decodeURI(path.join(filesP, fRelativePath)),
-			wStream = fs.createWriteStream(fFullPath),
-			body = '';
+			wStream = fs.createWriteStream(fFullPath);
 
 		req.pipe( wStream );
 		wStream.on('finish', function(){
@@ -167,7 +166,6 @@ function init(app){
 	app.get('/addAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
         Aliases.findOne({alias: req.query.alias_url}, function(err, result){
 			if(err) throw err;
-
 			if(result != null)
 				res.status('500').send('Alias already exist.');
 			else{
@@ -228,10 +226,10 @@ function init(app){
 	app.get('*', function(req, res){
 		var p =  decodeURI(path.join(filesP, req.path)),
 			pathArray = req.path.split('/'),
-			aliasPath = aliasesMap[req.path.slice(1)];
-		
+			aliasPath = aliasesMap[req.path];
+
 		if(typeof aliasPath != 'undefined' && aliasPath != ''){
-			res.redirect('/'+ aliasPath);
+			res.redirect(aliasPath);
 			return;
 		}
 

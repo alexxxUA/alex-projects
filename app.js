@@ -44,6 +44,6 @@ playlist.init();
 app.listen(cf.port, function(err){
 	if(err) throw error;
 
-	console.log(`Server started on: ${cf.port}`);
+	console.log(`Server started on port: http://${cf.ip}:${cf.port}`);
 	//open('http://'+ cf.ip +':'+ cf.port);
 });

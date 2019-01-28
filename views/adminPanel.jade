@@ -20,9 +20,9 @@ block adminPanel
 			div.panel-body
 				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias')
 					.form-group
-						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url', data-validate-type='notEmpty')
+						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url. E.g.: /testUrl', data-validate-type='notEmpty')
 					.form-group
-						input.form-control.input-sm(type='text', name='alias_real_url', placeholder='Actual relative url', data-validate-type='notEmpty')
+						input.form-control.input-sm(type='text', name='alias_real_url', placeholder='Actual relative url. E.g.: /real/url/here.mp3', data-validate-type='notEmpty')
 					input.btn.btn-success.btn-sm(type='submit', value='ADD')
 	div.col-md-8.reset-padding.aliases-list-container
 		div.panel.panel-info
@@ -35,7 +35,7 @@ block adminPanel
 							th.alias-url-title Alies relative url
 							th.alias-actual-url-title Actual relative url
 							th.alias-action-title.table-action-cell Actions
-						tbody
+						tbody.js-alias-list
 							-for(var i=0; i< aliases.length; i++)
 								tr.js-data-line-item
 									td

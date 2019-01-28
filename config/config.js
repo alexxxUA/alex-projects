@@ -17,6 +17,6 @@ if(process.env.NODE_IS_DEVELOPMENT == 'true'){
 }
 
 config = extendObj(config, require(`./config${configType}.js`));
-console.log(`Using "${configType}" config`);
+console.log(`"${configType}" config used.`);
 
 module.exports = config;
