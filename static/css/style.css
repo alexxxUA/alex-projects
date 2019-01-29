@@ -433,8 +433,8 @@ to { color: #92F099; }
 .center{
 	text-align: center;
 }
-.table-action-cell input {
-	margin: 0 2px;
+.table-action-cell .btn {
+	margin: 5px 2px;
 }
 .js-data-edid {
 	display: none;

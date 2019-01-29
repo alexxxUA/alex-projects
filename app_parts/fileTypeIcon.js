@@ -9,6 +9,7 @@ function get(name){
 	switch (fileExt) {
 		case 'zip':
 		case '7zip':
+		case '7z':
 		case 'rar':
 			imgName = 'compressed';
 			break;
@@ -20,6 +21,7 @@ function get(name){
 		case "js":
 		case "json":
 		case "bat":
+		case "exe":
 			imgName = 'developer';
 			break;
 		case "exel":
@@ -41,17 +43,33 @@ function get(name){
 			imgName = 'photoshop';
 			break;
 		case "txt":
+			imgName = 'txt';
+			break;
 		case "md":
 		case "md":
 			imgName = 'text';
 			break;
 		case "doc":
+			imgName = 'doc';
+			break;
 		case "docx":
+			imgName = 'docx';
+			break;
 		case "md":
 		case "eot":
 		case "ttf":
 		case "woff":
 			imgName = 'word';
+			break;
+		case "m3u":
+		case "xspf":
+			imgName = 'music';
+			break;
+		case "log":
+			imgName = 'log';
+			break;
+		case "xml":
+			imgName = 'xml';
 			break;
 	}
 
@@ -69,10 +87,8 @@ function get(name){
 				break;
 		}
 	}
-	if(imgName == '')
-		imgName = 'blank';
 
-	return imgName;
+	return imgName || 'blank';
 }
 
 module.exports.get = get;

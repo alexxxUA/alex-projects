@@ -18,7 +18,7 @@ block adminPanel
 			div.panel-heading
 				h3.panel-title New alias URL
 			div.panel-body
-				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias')
+				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias', autocomplete='off')
 					.form-group
 						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url. E.g.: /testUrl', data-validate-type='notEmpty')
 					.form-group
@@ -40,12 +40,13 @@ block adminPanel
 								tr.js-data-line-item
 									td
 										input(type='hidden', name='alias_id', value='#{aliases[i]._id}')
-										input.js-input-change(type='text', name='alias_url' value='#{aliases[i].alias}', data-before-edit='#{aliases[i].alias}')
+										input.js-input-change(type='text' autocomplete='off' name='alias_url' value='#{aliases[i].alias}' data-before-edit='#{aliases[i].alias}')
 									td
-										input.js-input-change.alias-actual-url(type='text', name='alias_real_url', value='#{aliases[i].path}', data-before-edit='#{aliases[i].path}')
+										input.js-input-change.alias-actual-url(type='text' autocomplete='off' name='alias_real_url' value='#{aliases[i].path}' data-before-edit='#{aliases[i].path}')
 									td.alias-action-cont.table-action-cell
 										input.js-data-edid.btn.btn-xs.btn-success(type='button', value='Edit')
 										input.js-data-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
+										a.btn.btn-xs.btn-info(href='#{aliases[i].alias}') Open
 		div.panel.panel-info
 			div.panel-heading
 				h3.panel-title Users

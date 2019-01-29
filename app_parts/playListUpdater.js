@@ -166,7 +166,7 @@ function Channel(params){
 	this.playListName = 'TV_List';
 	this.playlistExt = 'xspf'
 	this.proxyPlaylistExt = 'm3u'
-	this.logName = 'log.txt';
+	this.logName = '';
 	this._report = _.template(
 		'Playlist updated.'+
 		'\nUpdated: <%= updatedList.length %>'+
@@ -242,7 +242,7 @@ Channel.prototype = {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.playlistExt}`);
 		this.proxyPlaylistPath = path.join(filesP, `${this.outputPath}/Proxy-${this.playListName}.${this.proxyPlaylistExt}`);
-		this.logPath = path.join(filesP, this.outputPath + '/'+ this.logName);
+		this.logPath = path.join(filesP, `${this.outputPath}/${this.logName || this.playListName}.log`);
 
 		if(typeof this.initParams == 'function') this.initParams();
 
@@ -1032,54 +1032,46 @@ var BackUpGen_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 var MainPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt',
 	backUpGen: BackUpGen_SOURCE
 }));
 
 var MainPlaylist_SOURCE_JSON = new Channel(extend({}, JSON_CONFIG, {
 	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-acelive',
-	logName: 'TV-acelive-log.txt'
+	playListName: 'TV-acelive'
 }));
 
 var SecondaryPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV_List_tuchka',
-	logName: 'log_tuchka.txt',
 	backUpGen: BackUpGen_SOURCE,
 	translitEnabled: true
 }));
 
 var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt'
+    playListName: 'TV_List_torrent_stream'
 }));
 var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfig, {
     forceGenDelay: 4,
 	isCheckIdForUrl: true,
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt',
     playlistDomain: 'http://www.torrent-stream.ru',
     linksSel: '.menu-iconmenu li:not(.first):not(.last):not(.jsn-icon-mail):not(.jsn-icon-mountain) a',
     playlistPartSel: '#jsn-mainbody'
 }));
 var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt'
+    playListName: 'TV_List_torrent_stream'
 }));
 var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
-	playListName: 'TV_List_tuchka',
-	logName: 'log_tuchka.txt'
+	playListName: 'TV_List_tuchka'
 }));
 var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
 	channelsArray: [channels1],
-    playListName: 'TV_List_torrent_stream',
-	logName: 'log_torrent_stream.txt'
+    playListName: 'TV_List_torrent_stream'
 }));
 var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
     channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
