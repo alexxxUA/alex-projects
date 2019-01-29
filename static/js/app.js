@@ -116,6 +116,10 @@ Navigation.prototype.loadDom = function(url){
 			that.reloads += 1;
 			that.hideLoader();
 			$(that.dynContSelector).html(data);
+		},
+		error: function(err){
+			that.hideLoader();
+			that.showMsg(err.statusText, true);
 		}
 	});
 }
