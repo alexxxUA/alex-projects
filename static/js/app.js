@@ -147,7 +147,11 @@ function FileExplorer(param){
 			contextActionListItem: '.js-context-action',
 			cancelActionLink: '.js-action-cancel',
 			hideUploadWindow: '.js-hide-upload',
-			downloadActionLink: '.js-download'
+			downloadActionLink: '.js-download',
+			contextUpload: '.js-upload',
+			uploadInput: '.js-upload-input',
+			copyPath: '.js-copy-path',
+			copyPathInput: '.js-copy-path-input'
 		};
 	param = param ? param : defaults;
 	this.allFiles = [];
@@ -169,7 +173,7 @@ FileExplorer.prototype.registerEvents = function(){
 		$dropZone = $(that.dropZone);
 
 	if(typeof conf !== 'undefined' && conf.isLogged){
-		//Hover efect
+		//Hover effect
 		$dropZone[0].ondragover = function(e){
 			that.onDragMove(e);
 			return false;
@@ -183,7 +187,7 @@ FileExplorer.prototype.registerEvents = function(){
 		$dropZone[0].ondrop = function(e) {
 			e.preventDefault();
 			that.onDragEnd();
-			that.fileDroped(e);
+			that.fileDropped(e);
 		};
 	}
 
@@ -204,7 +208,7 @@ FileExplorer.prototype.registerEvents = function(){
 	});
 
 	//Select file action link
-	$(document).on('click', that.contextItem, function(e){
+	$(document).on('click', `${that.contextItem}:not(${that.contextUpload})`, function(e){
 		e.preventDefault();
 		that.showActionContainer(e);
 	});
@@ -215,8 +219,12 @@ FileExplorer.prototype.registerEvents = function(){
 		that.cancelAction();
 	});
 
+	//Context menu - Upload files
+	$(document).on('change', that.uploadInput, $.proxy(that.onContextUpload, that));
+
 	$(document).on('click', that.downloadActionLink, $.proxy(that.hideContextMenu, that));
 	$(document).on('click', that.hideUploadWindow, $.proxy(that.hideUploadSection, that));
+	$(document).on('click', that.copyPath, $.proxy(that.onCopyPath, that));
 }
 FileExplorer.prototype.onDragMove = function(e){
 	var $link = this.getNodeByE(e, this.rLink);
@@ -237,7 +245,22 @@ FileExplorer.prototype.getNodeByE = function(e, selector){
 
 	return $node;
 }
-FileExplorer.prototype.fileDroped = function(e){
+FileExplorer.prototype.onCopyPath = function(e){
+	var input = $(this.copyPathInput)[0];
+
+	//do selection
+	input.select();
+	// copy selection
+	document.execCommand('copy');
+
+	// clear selection in chrome
+	window.getSelection && window.getSelection().empty && window.getSelection().empty();
+}
+FileExplorer.prototype.onContextUpload = function(e){
+	this.hideContextMenu();
+	this.fileDropped($.extend(e, {dataTransfer: {files: e.currentTarget.files}}));
+}
+FileExplorer.prototype.fileDropped = function(e){
 	var that = this,
 		files = e.dataTransfer.files,
 		$link = that.getNodeByE(e, that.rLink);;
@@ -249,7 +272,7 @@ FileExplorer.prototype.fileDroped = function(e){
 	//Store main file array
 	that.allFiles.push.apply(that.allFiles, files);
 	//Check if all previous files were uploaded
-	isPrevUploaded = that.overalSize ==  that.uploadedSize ? true : false;
+	isPrevUploaded = that.overalSize == that.uploadedSize ? true : false;
 	//Update overal size
 	that.overalSize += that.calculateSize(files);
 	//Append files to the upload section
@@ -364,7 +387,7 @@ FileExplorer.prototype.showContextMenu = function(e){
 		pos = {},
 		fileData = {};
 
-	//Enable action links in context dropdown
+	//Enable action links in context drop-down for items where they enabled (files/folders)
 	that.showContextActionLinks(actionTypes);
 	//Get visible position of dropdown
 	pos = that.getVisiblePos(e, that.contextDropDown);
@@ -398,7 +421,7 @@ FileExplorer.prototype.getVisiblePos = function(e, selector){
 
 	return {y: nodeY, x: nodeX};
 }
-FileExplorer.prototype.hideContextMenu = function(e){
+FileExplorer.prototype.hideContextMenu = function(){
 	//Remove active class from link
 	$(this.contextLink).removeClass('active');
 
@@ -455,6 +478,7 @@ FileExplorer.prototype.getFileData = function($node){
 	fileData.oldPath = path.join('/') + '/';
 	fileData.oldName = $node.find(this.fileName).text();
 	fileData.fullPath = fileData.oldPath + fileData.oldName;
+	fileData.fullHref = `${location.origin}${fileData.oldPath}${fileData.oldName}`;
 	fileData.isFile = isFile;
 
 	return fileData;

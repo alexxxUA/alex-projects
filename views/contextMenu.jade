@@ -2,13 +2,21 @@
 	ul.dropdown-menu.js-context-dropdown(is-file="false" dyn-obj-prop="isFile" dyn-attr="is-file")
 		-if(user.accessEdit == true)
 			li
-				a.js-context-item.js-create-folder(data-action='create', href='#') Create Folder
+				a.context-item.js-context-item.js-create-folder(data-action='create', href='#') Create Folder
 			li
-				a.js-context-item.js-rename(data-action='rename', href='#') Rename
+				label.context-item.js-context-item.js-upload(data-action='upload' for='upload-files') Upload files
+				input.context-upload.js-upload-input(type='file' multiple id='upload-files')
 			li
-				a.js-context-item.js-delete(data-action='delete', href='#') Delete
+				a.context-item.js-context-item.js-rename(data-action='rename', href='#') Rename
+			li
+				a.context-item.js-context-item.js-delete(data-action='delete', href='#') Delete
 		li
-			a.js-download(href='#' dyn-obj-prop="fullPath" dyn-attr="href" download) Download
+			a.context-item.js-download(href='#' dyn-obj-prop="fullPath" dyn-attr="href" download) Download
+		li
+			span.context-item.input-group
+				input.js-copy-path-input.form-control(type="text" dyn-obj-prop="fullHref" dyn-attr="value")
+				span.js-copy-path.input-group-addon
+					img(src="/img/clippy.svg")
 	ul.js-context-action-list
 		-if(user.accessEdit == true)
 			li.js-context-action(data-action='create')

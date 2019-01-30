@@ -5,6 +5,7 @@ var config = {
 	email: process.env.EMAIL_LOGIN,
 	emailPass: process.env.EMAIL_PASS,
 	oneDay: 86400000,
+	FBv: 'v2.7',
 	playlistGenOnStart: false,
 	playlistEnabled: true,
 	playListChannelChecker: false,

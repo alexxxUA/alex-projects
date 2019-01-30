@@ -13,12 +13,12 @@
 		ul
 			each item in dirs
 				li.dir
-					a.js-dynamicReload.js-link-operations(href="#{item.link}" title="#{item.title}" data-type="dir" data-action-types="create rename delete")
+					a.js-dynamicReload.js-link-operations(href="#{item.link}" title="#{item.title}" data-type="dir" data-action-types="create rename delete upload")
 						div.glyphicon.glyphicon-cloud-upload
 						img(src="/img/fileTypes/folder.png")
 						span.js-file-name #{item.title}
 			each file in files
 				li.file
-					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete" target="_blank")
+					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete upload" target="_blank")
 						img(src="/img/fileTypes/#{file.imageName}.png")
 						span.js-file-name #{file.title}
