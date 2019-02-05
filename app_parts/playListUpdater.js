@@ -1121,12 +1121,10 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylist_SOURCE.start(function () {
-				MainPlaylist_SOURCE_JSON.start(function () {
-					SecondaryPlaylist_SOURCE.start(function(){
-						if(cf.playListChannelChecker){
-							ChannelChangeTracker_tucka.start();
-						}
-					});
+				SecondaryPlaylist_SOURCE.start(function(){
+					if(cf.playListChannelChecker){
+						ChannelChangeTracker_tucka.start();
+					}
 				});
 			});
 		}
