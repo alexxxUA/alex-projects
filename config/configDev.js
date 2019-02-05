@@ -5,7 +5,7 @@ var config = {
 	FBappId: '998511046825943',
 	FBsecret: '4092b64b251eb9491a59f79c1dca0350',
     playlistGenOnStart: true,
-	playlistEnabled: false,
+	playlistEnabled: true,
     playListChannelChecker: false,
 	playlistGenProxy: false,
     isConsoleLogPlaylist: true

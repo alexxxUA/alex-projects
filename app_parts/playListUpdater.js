@@ -505,10 +505,10 @@ Channel.prototype = {
     getValidPlaylistPart: function(url, callback){
         var that = this;
 
-		needle.request('GET', url, null, {}, function(err, resp) {
+		needle.request('GET', url, null, {compressed: true}, function(err, resp) {
 			if (err || resp.statusCode !== 200){
 				that.isPlaylistFailed = true;
-				that.logErr('Error in getting valid playlist! Source: '+ url +' .');
+				that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${resp.body.slice(0, 100)}`);
 				that.playlistFinished();
 				return;
 			}
