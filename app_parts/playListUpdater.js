@@ -8,7 +8,6 @@ var needle = require('needle'),
 	mkdirp = require('mkdirp'),
 	translit = require('./translitModule'),
 	cf = require('./../config/config.js'),
-	proxy = require('./proxy.js'),
 	email = require('./sendMail.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList,
@@ -23,22 +22,6 @@ Date.prototype.stdTimezoneOffset = function() {
 }
 Date.prototype.dst = function() {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
-}
-
-/**
- * Extend objects
- * @param   {objects}
- * @returns {object}
- */
-function extend(target) {
-    var sources = [].slice.call(arguments, 1);
-
-    sources.forEach(function (source) {
-        for (var prop in source) {
-            target[prop] = source[prop];
-        }
-    });
-    return target;
 }
 
 /**
@@ -177,7 +160,7 @@ function Channel(params){
 			'\nFailed channel list:'+
 			'<% _.each(failedList, function(item, index) { '+
 				'var channelFullName = item.dName + (item.isHd ? " HD" : ""); %>'+
-				'\n  <%= index+1 %>. <%= channelFullName %> '+
+				'\n\t<%= index+1 %>. <%= channelFullName %>'+
 				'<%= item.isReq ? "(Req)" : "" %> - <%= item.errMsg.join("|") %>'+
 			'<% }); %>'+
 		'<% } %>'
@@ -195,11 +178,13 @@ function Channel(params){
  * General methods for Channel class
 **/
 Channel.prototype = {
-	playlisGeneratorInstanses: [],
+	playlistGeneratorInstances: [],
+	cache: {},
+	// Cache lifeTime = 5 minutes
+	cacheLifeTime: 1000 * 60 * 5,
 	forceGeneratePlaylists: function(){
-        var playlists = this.playlisGeneratorInstanses,
-            playlistsLength = playlists.length,
-            playlistsCallStack;
+        var playlists = this.playlistGeneratorInstances,
+            playlistsLength = playlists.length;
 
         //Return if no playlists instances found
         if(!playlistsLength) return;
@@ -224,16 +209,16 @@ Channel.prototype = {
     },
 	logInfo: function(msg){
 		this.cLog('INFO: '+ msg);
-		prependFile(this.logPath, '[INFO - '+ this.getformatedDate(new Date, true) +'] '+ msg +'\n\n');
+		prependFile(this.logPath, '[INFO - '+ this.getFormatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
 	logErr: function(msg){
 		this.cLog('ERROR: '+ msg);
-		prependFile(this.logPath, '[ERROR - '+ this.getformatedDate(new Date, true) +'] '+ msg +'\n\n');
+		prependFile(this.logPath, '[ERROR - '+ this.getFormatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
     logStartGeneration: function(){
         var now = new Date(),
             approxEndGenMs = now.getTime() + this.generationSpentTime,
-            approxEndDateString = this.getformatedDate( new Date(approxEndGenMs), true ),
+            approxEndDateString = this.getFormatedDate( new Date(approxEndGenMs), true ),
             genTimeString = this.getGenTime().string;
 
         this.logInfo('Generation started and will take ~ '+ genTimeString +'. End time ~ '+ approxEndDateString +'.');
@@ -308,7 +293,7 @@ Channel.prototype = {
 	},
 	storeGenerator: function(){
 		//Push playlist generator instance to global prototype property for further regeneration
-		this.playlisGeneratorInstanses.push({
+		this.playlistGeneratorInstances.push({
 			that: this,
 			func: this.genValidPlaylist
 		});
@@ -348,7 +333,7 @@ Channel.prototype = {
 	updateFlags: function(channel){
 		channel.flags = channel.flags ? channel.flags : '';
 
-		extend(channel, this.getObjFromFlags(channel.flags));
+		Object.assign(channel, this.getObjFromFlags(channel.flags));
 	},
     updateChannelSname: function(channel){
 		var encodedDName = channel.dName.replace(/(\(|\))/g, '\\$1');
@@ -438,7 +423,7 @@ Channel.prototype = {
 
 		return tillTime - now;
 	},
-	getformatedDate: function(date, isNeedConvert){
+	getFormatedDate: function(date, isNeedConvert){
 		var now = isNeedConvert ? this.getDateOnZone(date) : date;
 
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
@@ -479,10 +464,10 @@ Channel.prototype = {
 
                 (function(j, url){
                     setTimeout(function(){
-                        that.getValidPlaylistPart(url, function(resp){
+                        that.getValidPlaylistPart(url, function(resp, isFromCache){
 							urlsIndex++
                             that.storeValidList(resp);
-                            that.cLog('Page: '+ (j+1) +';  '+ url +'. Downloaded');
+                            that.cLog(`Page: ${(j+1)};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
                             //Call callback in case all parts collected
                             if(callback && urlsIndex == urlsCount) {
                                 setTimeout(function(){
@@ -503,21 +488,40 @@ Channel.prototype = {
 		this.validList += respString;
 	},
     getValidPlaylistPart: function(url, callback){
-        var that = this;
+		const that = this,
+			fileName = url.split('/').pop(),
+			cacheResp = that.cache[fileName];
 
-		needle.request('GET', url, null, {compressed: true}, function(err, resp) {
-			if (err || resp.statusCode !== 200){
-				that.isPlaylistFailed = true;
-				that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${resp.body.slice(0, 100)}`);
-				that.playlistFinished();
-				return;
-			}
+		// check global cache
+		if (cacheResp) {
+			callback(cacheResp, true);
+		} else {
+			// If no cache response found -> do fresh request
+			needle.request('GET', url, null, {compressed: true}, function(err, resp) {
+				if (err || resp.statusCode !== 200){
+					that.isPlaylistFailed = true;
+					that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${resp.body.slice(0, 100)}`);
+					that.playlistFinished();
+					return;
+				}
+	
+				if(callback) {
+					// Parse response
+					let respString = resp.parser === 'json' ? JSON.stringify(resp.body) : resp.body.toString();
 
-			if(callback) {
-				let respString = resp.parser === 'json' ? JSON.stringify(resp.body) : resp.body.toString();
-				callback(respString);
-			}
-		});
+					// Run callback with response
+					callback(respString);
+
+					// Save response for further use
+					that.cache[fileName] = respString;
+					// Delete cached response after timeout
+					setTimeout(() => {
+						delete that.cache[fileName];
+					}, that.cacheLifeTime)
+				}
+			});
+		}
+
     },
 	getHdText: function(isHd){
 		return isHd ? ' HD' : '';
@@ -584,7 +588,7 @@ Channel.prototype = {
 	getIdFromFrame: function(cUrl, channel, callback, _that, isSkipUrlUpdate){
 		var that = this,
 			updChanUrl = isSkipUrlUpdate ? cUrl : that.getUpdatedPlayerUrl(cUrl),
-            reqParams = extend({}, this.reqParams);
+            reqParams = Object.assign({}, this.reqParams);
 
         reqParams.headers.Referer = updChanUrl;
 
@@ -703,7 +707,7 @@ Channel.prototype = {
 			case 'xspf':
 				return '<?xml version="1.0" encoding="UTF-8"?>' +
 						'\n<playlist version="1" xmlns="http://xspf.org/ns/0/">' +
-						'\n\t<title>TV playlist: '+ this.getformatedDate(new Date(), true) +'; failed channels: '+ this.report.failedList.length +'</title>' +
+						'\n\t<title>TV playlist: '+ this.getFormatedDate(new Date(), true) +'; failed channels: '+ this.report.failedList.length +'</title>' +
 						'\n\t<creator>Vasin Oleksiy</creator>' +
 						'\n\t<trackList>' + channels + '\n\t</trackList>' +
 						'\n</playlist>';
@@ -735,7 +739,7 @@ Channel.prototype = {
 		}
 	},
 	sendPlaylistGenFailedEmail: function(){
-		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date, true) +']',
+		var sbj = this.emailSubj +' ['+ this.getFormatedDate(new Date, true) +']',
 			msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
 
 		email.sendMail(sbj, this.emailRecipient, msg);
@@ -1025,33 +1029,33 @@ const JSON_CONFIG = {
     INIT Generator instances
 */
 
-var BackUpGen_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
+var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json'
 }));
 
-var MainPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
+var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
     playListName: 'TV_List_torrent_stream',
 	backUpGen: BackUpGen_SOURCE
 }));
 
-var MainPlaylist_SOURCE_JSON = new Channel(extend({}, JSON_CONFIG, {
+var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-acelive'
 }));
 
-var SecondaryPlaylist_SOURCE = new Channel(extend({}, SOURCE_CONFIG, {
+var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV_List_tuchka',
 	backUpGen: BackUpGen_SOURCE,
 	translitEnabled: true
 }));
 
-var MainPlaylist_torStream = new Channel(extend({}, TorStreamMainConfig, {
+var MainPlaylist_torStream = new Channel(Object.assign({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream'
 }));
-var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfig, {
+var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuckaHomepageConfig, {
     forceGenDelay: 4,
 	isCheckIdForUrl: true,
 	channelsArray: [channels1],
@@ -1060,20 +1064,20 @@ var MainPlaylistHomepage_torStreamRu = new Channel(extend({}, TuckaHomepageConfi
     linksSel: '.menu-iconmenu li:not(.first):not(.last):not(.jsn-icon-mail):not(.jsn-icon-mountain) a',
     playlistPartSel: '#jsn-mainbody'
 }));
-var MainPlaylistHomepage_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+var MainPlaylistHomepage_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream'
 }));
-var SecondaryPlaylist_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+var SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
 	playListName: 'TV_List_tuchka'
 }));
-var MainPlaylist_tucka = new Channel(extend({}, TuckaMainConfig, {
+var MainPlaylist_tucka = new Channel(Object.assign({}, TuckaMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV_List_torrent_stream'
 }));
-var ChannelChangeTracker_tucka = new Channel(extend({}, TuckaHomepageConfig, {
+var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
     channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
 	firstChannelId: false,
 	isGenerateInTime: false,
@@ -1121,10 +1125,12 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylist_SOURCE.start(function () {
-				SecondaryPlaylist_SOURCE.start(function(){
-					if(cf.playListChannelChecker){
-						ChannelChangeTracker_tucka.start();
-					}
+				MainPlaylist_SOURCE_JSON.start(function(){
+					SecondaryPlaylist_SOURCE.start(function(){
+						if(cf.playListChannelChecker){
+							ChannelChangeTracker_tucka.start();
+						}
+					});
 				});
 			});
 		}
@@ -1137,7 +1143,7 @@ module.exports = {
 
         //Check for errors
         if(generationInProgress){
-            errMsg = 'Playlist generation inprogress now. Please try later.';
+            errMsg = 'Playlist generation in progress now. Please try later.';
         }
         else if(!cf.playlistEnabled){
             errMsg = 'Playlist generation disabled!';
