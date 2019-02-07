@@ -489,8 +489,7 @@ Channel.prototype = {
 	},
     getValidPlaylistPart: function(url, callback){
 		const that = this,
-			fileName = url.split('/').pop(),
-			cacheResp = that.cache[fileName];
+			cacheResp = that.cache[url];
 
 		// check global cache
 		if (cacheResp) {
@@ -513,10 +512,10 @@ Channel.prototype = {
 					callback(respString);
 
 					// Save response for further use
-					that.cache[fileName] = respString;
+					that.cache[url] = respString;
 					// Delete cached response after timeout
 					setTimeout(() => {
-						delete that.cache[fileName];
+						delete that.cache[url];
 					}, that.cacheLifeTime)
 				}
 			});
