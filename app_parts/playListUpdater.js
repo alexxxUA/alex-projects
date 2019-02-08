@@ -498,8 +498,9 @@ Channel.prototype = {
 			// If no cache response found -> do fresh request
 			needle.request('GET', url, null, {compressed: true}, function(err, resp) {
 				if (err || resp.statusCode !== 200){
+					const errMsg = resp && resp.body || err.message;
 					that.isPlaylistFailed = true;
-					that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${resp.body.slice(0, 100)}`);
+					that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${errMsg.slice(0, 100)}`);
 					that.playlistFinished();
 					return;
 				}
