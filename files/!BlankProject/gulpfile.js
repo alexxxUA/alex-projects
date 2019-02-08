@@ -17,7 +17,7 @@ var processors = [
 		require('postcss-simple-vars'),
 		require('postcss-nested'),
 		require('pixrem')(), // add fallbacks for rem units
-		require('autoprefixer-core')({browsers: 'last 2 versions, ie 9, ios 6, android 4'}),
+		require('autoprefixer')({browsers: 'last 2 versions, ie 9, ios 6, android 4'}),
 		require('cssnext')()
 	];
 
@@ -136,8 +136,8 @@ gulp.task('watch', function () {
 	});
 });
 
-//Dafault task with postCss
-gulp.task('default', ['compass', 'watch']);
+//Default task with postCss
+gulp.task('default', gulp.series('compass', 'watch'));
 
 //Min files
-gulp.task('min', ['img-min', 'css-min', 'js-min']);
+gulp.task('min', gulp.series('img-min', 'css-min', 'js-min'));

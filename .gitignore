@@ -1,5 +1,6 @@
 /files/**/node_modules/
 /files/**/.sass-cache/
+/files/**/package-lock.json
 */.sass-cache/
 /app_parts/configDev.js
 /openshiftEnv.txt
