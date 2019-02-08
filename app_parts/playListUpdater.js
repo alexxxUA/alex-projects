@@ -63,8 +63,14 @@ function Channel(params){
 	this.isCheckIdForUrl = false;
 
 	this.saveProxyList = true;
-	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?'
-	this.aceliveGetter = 'http://91.92.66.82/trash/ttv-list/acelive/'
+	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?';
+	this.aceliveGetter = 'http://91.92.66.82/trash/ttv-list/acelive/';
+
+	/**
+	 * Relative URL for icons in m3u format playlist. In attribute tvg-logo="..."
+	 * @Value relative URL where icons located
+	 */
+	this.logoRelativeUrl = 'http://avasin.ml/UpdateChanList/App/Sources/Channel_icons/';
 	/**
 	 * Used for defining if playlist generates once in specified time, or in intervals
 	 * @Value true -> Generate playlist in specified time
@@ -683,8 +689,8 @@ Channel.prototype = {
 	getArrayOrObjCopy: function(array){
 		return JSON.parse(JSON.stringify(array));
 	},
-	getLogoName: function(name){
-		return `${name.replace(/\./g, '')}.png`
+	getLogoUrl: function(name){
+		return `${this.logoRelativeUrl}${name.replace(/\./g, '')}.png`
 	},
 	getProxyUrl: function(cId) {
 		const isAceliveId = !!cId.match(/\.|-|_/);
@@ -734,7 +740,7 @@ Channel.prototype = {
 				var tvgName = cName.replace(/\s/g, '_'),
 					cUrl = this.isStringUrl(cId) ? cId : this.getProxyUrl(cId);
 
-				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoName(cName) +'",'+ cName +
+				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoUrl(cName) +'",'+ cName +
 						'\n'+ cUrl
 		}
 	},
