@@ -94,7 +94,6 @@ class Convert2mp3 {
         `;
     }
 
-    
     init() {
         this.initDownloadBtn();
     }
