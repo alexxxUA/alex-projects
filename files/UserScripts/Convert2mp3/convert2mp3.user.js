@@ -1,8 +1,8 @@
 // ==UserScript==
-// @version         0.1
-// @name            Convert2mp3 -> download mp3 from YouTube | convert2mp3.net
+// @version         1.0
+// @name            YouTube -> download MP3 or MP4 from YouTube. convert2mp3.net
 // @author			A.Vasin
-// @description     Simple YouTube MP3 download button which use service "convert2mp3.net"
+// @description     Simple YouTube MP3 & MP4 download buttons. Simple and fast.
 // @compatible      chrome
 // @compatible      firefox
 // @compatible      opera
