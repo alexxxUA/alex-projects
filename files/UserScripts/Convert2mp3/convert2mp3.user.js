@@ -87,33 +87,9 @@ class Convert2mp3 {
                     flex-grow: 1;
                 "
             >
-            ${this.getLangProp('download.mp4')}
+                ${this.getLangProp('download.mp4')}
             </a>
         `;
-
-        /* return `
-            <select
-                onchange="window.open('${downloadUrl}&quality='+ this.value)"
-                target="_blank"
-                class="${this.downloadBtnClass}"
-                style="
-                    border: 2px solid #ff9800;
-                    padding: 10px;
-                    font-size: 15px;
-                    font-weight: 500;
-                    text-align: center;
-                    margin: 5px 4px 0;
-                    color: #ff9800;
-                    text-decoration: none;
-                "
-            >
-                <option>DOWNLOAD MP4</option>
-                <option value="1080">1080</option>
-                <option value="720">720</option>
-                <option value="480">480</option>
-                <option value="360">360</option>
-            </select>
-        `; */
     }
 
     
