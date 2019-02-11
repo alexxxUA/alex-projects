@@ -38,6 +38,7 @@ class Convert2mp3 {
                 'download.mp4': 'СКАЧАТЬ MP4'
             }
         }
+        this.currentProps = this.langProps[this.language] || this.langProps.en;
 
         this.init();
     }
@@ -111,9 +112,7 @@ class Convert2mp3 {
     }
 
     getLangProp(id) {
-        const props = this.langProps[this.language] || this.langProps.en;
-
-        return props[id];
+        return this.currentProps[id];
     }
     
     getDownloadUrl(params = {}) {
