@@ -1,6 +1,7 @@
 // ==UserScript==
 // @version         1.0
 // @name            YouTube -> download MP3 or MP4 from YouTube. convert2mp3.net
+// @namespace       http://avasin.ml
 // @author			A.Vasin
 // @description     Simple YouTube MP3 & MP4 download buttons. Simple and fast.
 // @compatible      chrome
