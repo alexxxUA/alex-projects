@@ -11,6 +11,8 @@ html
 		link(type='text/css', rel='stylesheet', href='/css/reset.css')
 		link(type='text/css', rel='stylesheet', href='/css/bootstrap.min.css')
 		link(type='text/css', rel='stylesheet', href='/css/style.css')
+		block pageConfigValues
+		include scriptInclude
 	body(class= user && user.isLogged == true ? 'user-logged' : '')
 		#section-container
 			#header
@@ -27,6 +29,3 @@ html
 		#loading
 			img(src="/img/ajax-loader1.gif", width="32", height="32", alt="loader")
 		.js-ajax-msg
-		div.script-container
-			block pageConfigValues
-			include scriptInclude

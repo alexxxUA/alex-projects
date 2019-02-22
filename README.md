@@ -1,4 +1,4 @@
 Projects
 ========
 
-[Project link] (http://avasin.cf)
+[Project link] (http://avasin.ml)
