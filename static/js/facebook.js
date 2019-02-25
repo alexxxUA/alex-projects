@@ -9,10 +9,11 @@
 
 
 (function(){
-	//Init FB
-	if(typeof conf == 'undefined')
+	if(typeof conf === 'undefined') {
 		return;
+	}
 
+	//Init FB
 	window.fbAsyncInit = function() {
 		FB.init({
 			appId : conf.FBappId,
@@ -24,12 +25,10 @@
 	};
 
 	//Main FB object
-	var fbLogin = {
+	const fbLogin = {
 		scope: 'email',
 		registerEvents: function(){
-			var that = this;
-
-			$(document).on('click', '.js-fb-logIn', $.proxy(this.doLogin, this));
+			$(document).on('click', '.js-fb-logIn', this.doLogin.bind(this));
 			$(document).on('click', '.js-fb-logOut', function(){
 				FB.logout(function(){
 					location.reload();
@@ -37,7 +36,7 @@
 			});
 		},
 		doLogin: function(){
-			var that = this;
+			const that = this;
 
 			FB.login(function(response){
 				if (response.authResponse)
@@ -45,21 +44,12 @@
 			},{ scope: that.scope });
 		},
 		login: function(token){
-			var that = this,
-				data = {
-					token: token
-				};
-
 			$.ajax({
 				url: '/login',
 				type: 'POST',
-				data: data,
-				success: function(response){
-					that.loggedIn(response);
-				},
-				error: function(err){
-					console.log(err);
-				}
+				data: { token: token },
+				success: this.loggedIn.bind(this),
+				error: console.error
 			});
 		},
 		loggedIn: function(response){
