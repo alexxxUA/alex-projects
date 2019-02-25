@@ -11,6 +11,9 @@ html
 		link(type='text/css', rel='stylesheet', href='/css/reset.css')
 		link(type='text/css', rel='stylesheet', href='/css/bootstrap.min.css')
 		link(type='text/css', rel='stylesheet', href='/css/style.css')
+		link(rel='dns-prefetch' href='//connect.facebook.net')
+		link(rel='dns-prefetch' href='//staticxx.facebook.com')
+		link(rel='dns-prefetch' href='//www.facebook.com')
 		block pageConfigValues
 		include scriptInclude
 	body(class= user && user.isLogged == true ? 'user-logged' : '')
