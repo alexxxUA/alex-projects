@@ -15,10 +15,16 @@
 				li.dir
 					a.js-dynamicReload.js-link-operations(href="#{item.link}" title="#{item.title}" data-type="dir" data-action-types="create rename delete upload")
 						div.glyphicon.glyphicon-cloud-upload
-						img(src="/img/fileTypes/folder.png")
+						picture
+							source(type="image/webp" srcset="/img/fileTypes/folder.webp")
+							source(type="image/png" srcset="/img/fileTypes/folder.png")
+							img(src="/img/fileTypes/folder.png")
 						span.js-file-name #{item.title}
 			each file in files
 				li.file
 					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete upload" target="_blank")
-						img(src="/img/fileTypes/#{file.imageName}.png")
+						picture
+							source(type="image/webp" srcset="/img/fileTypes/#{file.imageName}.webp")
+							source(type="image/png" srcset="/img/fileTypes/#{file.imageName}.png")
+							img(src="/img/fileTypes/#{file.imageName}.png")
 						span.js-file-name #{file.title}

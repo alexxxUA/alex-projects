@@ -1,10 +1,16 @@
 .login-container.js-login-container
 	-if(user.isLogged)
 		a.js-fb-logOut.fb-log
-			img(src="/img/fs_signOut.png", )
+			picture
+				source(type="image/webp" srcset="/img/fs_signOut.webp")
+				source(type="image/png" srcset="/img/fs_signOut.png")
+				img(src="/img/fs_signOut.png", )
 	-else
 		a.js-fb-logIn.fb-log
-			img(src="/img/fs_signIn.png", )
+			picture
+				source(type="image/webp" srcset="/img/fs_signIn.webp")
+				source(type="image/png" srcset="/img/fs_signIn.png")
+				img(src="/img/fs_signIn.png", )
 	-if(user.isLogged)
 		div.user-info
 			a(href="/admin")

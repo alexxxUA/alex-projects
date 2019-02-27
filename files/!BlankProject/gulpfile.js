@@ -1,4 +1,4 @@
-var gulp = require('gulp'),
+const gulp = require('gulp'),
 	browserSync = require('browser-sync').create(),
 	watch = require('gulp-watch'),
 	compass = require('gulp-compass'),
@@ -9,10 +9,11 @@ var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	uglify = require('gulp-uglify'),
 	plumber = require('gulp-plumber'),
-	notify = require('gulp-notify');
+	notify = require('gulp-notify'),
+	webp = require('gulp-webp');
 
 //Post css plugins
-var processors = [
+const processors = [
 		require('postcss-import')(),
 		require('postcss-simple-vars'),
 		require('postcss-nested'),
@@ -22,7 +23,7 @@ var processors = [
 	];
 
 //Paths
-var P = {
+const P = {
 	liveReload: ['./css/**/*.css', './js/**/*.js', './*.html'],
 	imgMin: {
 		src: './img/src/*',
@@ -51,7 +52,7 @@ var P = {
 };
 
 //Error notification settings for plumber
-var plumberErrorHandler = { errorHandler: notify.onError("Error: <%= error.message %>") };
+const plumberErrorHandler = { errorHandler: notify.onError("Error: <%= error.message %>") };
 
 //Post css task
 gulp.task('pcss', function(){
@@ -94,6 +95,8 @@ gulp.task('img-min', function(){
             svgoPlugins: [{removeViewBox: false}],
             use: [pngquant()]
         }))
+        .pipe(gulp.dest(P.imgMin.dest))
+        .pipe(webp())
         .pipe(gulp.dest(P.imgMin.dest));
 });
 
