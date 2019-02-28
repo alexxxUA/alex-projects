@@ -1,5 +1,6 @@
 function Navigation(param){
 	var defaults = {
+		swUrl: '/sw.js',
 		dynContSelector: '#dynamicContent',
 		loaderSelector: '#loading',
 		ajaxMsgSelector: '.js-ajax-msg',
@@ -20,6 +21,15 @@ Navigation.prototype.init = function(){
 	this.$ajaxLoader = $(this.loaderSelector);
 	this.$ajaxMsgHolder = $(this.ajaxMsgSelector);
 	this.registerEvents();
+
+	if(navigator.serviceWorker && !navigator.serviceWorker.controller) {
+		this.registerServiceWorker();
+	}
+}
+Navigation.prototype.registerServiceWorker = function(){
+	return navigator.serviceWorker.register(this.swUrl).then(function() {
+		console.log('Service worker registered');
+	})
 }
 Navigation.prototype.registerEvents = function(){
 	var that = this;
