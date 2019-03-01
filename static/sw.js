@@ -117,7 +117,7 @@ const fetchRules = [
   },
   request => {
     const {url, mode} = request;
-    return mode === 'navigate' ? url.endsWith('/') : true;
+    return mode === 'navigate' ? (url.endsWith('/') || url.endsWith('.html')) : true;
   }
 ];
 
@@ -202,7 +202,7 @@ function matchFallback (type) {
   const fallback = fallbacks.get(type);
   return fallback ?
     readCache(fallback) :
-    Promise.resolve(new Response())
+    Promise.resolve(new Response('Offline', {status: 500, statusText: 'Offline. Cache entity not found.'}))
 }
 
 /**

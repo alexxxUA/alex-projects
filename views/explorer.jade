@@ -22,7 +22,7 @@
 						span.js-file-name #{item.title}
 			each file in files
 				li.file
-					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete upload" target="_blank")
+					a.js-link-operations(href="#{file.link}" title="#{file.title}" data-type="file" data-action-types="create rename delete upload" target="_blank" rel="nofollow noopener")
 						picture
 							source(type="image/webp" srcset="/img/fileTypes/#{file.imageName}.webp")
 							source(type="image/png" srcset="/img/fileTypes/#{file.imageName}.png")
