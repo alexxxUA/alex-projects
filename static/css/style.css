@@ -575,6 +575,12 @@ to { color: #92F099; }
 	background: #00013F;
 	color: #FF7D7D;
 }
+.offline-content {
+    text-align: center;   
+}
+.offline-content svg {
+    max-width: 500px;
+}
 @media (max-width: 1000px) {
 	.modal {
 		left: 2%;

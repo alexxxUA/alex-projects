@@ -1,0 +1,19 @@
+doctype
+html
+    head
+        title Offline
+        include metaInclude
+        include stylesInclude
+    body
+        #section-container
+            #header
+                h1 You are offline
+            #content(class='clearfix offline-content')
+                include ./../static/img/offline.svg
+        script.
+            //- Reload page only in case we are on some page which goes offline
+            if(!location.pathname.includes('offline')) {
+                setInterval(function(){
+                    location.reload();
+                }, 2500);
+            }

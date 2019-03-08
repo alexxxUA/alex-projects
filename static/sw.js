@@ -21,12 +21,12 @@ const startPage = '/';
 /**
  * The generic offline page URL.
  */
-const offlinePage = '/error404';
+const offlinePage = '/offline';
 
 /**
  * The generic fallback image URL. This will be served in place of image 404s.
  */
-const fallbackImage = '/TODO-add-image-url';
+const fallbackImage = '/img/fileTypes/blank.png';
 
 /**
  * The asset "types" to represent various page subresources.
@@ -96,7 +96,7 @@ const hosts = [
  * Including: WordPress admin pages, preview posts, etc.
  */
 const exclusions = [
-  /preview=true/
+  /cache=false/
 ];
 
 /**
@@ -114,10 +114,6 @@ const fetchRules = [
     return exclusions.every(pattern =>
       !url.match(pattern) && !referrer.match(pattern)
     );
-  },
-  request => {
-    const {url, mode} = request;
-    return mode === 'navigate' ? (url.endsWith('/') || url.endsWith('.html')) : true;
   }
 ];
 
@@ -138,10 +134,6 @@ function readCache (request) {
  * Clone a response and add it to a cache.
  */
 function writeCache (name, request, response) {
-  // TODO: fix this. It's needed to allow special treatment for the 404 page.
-  if (response.status === 404) {
-    return response;
-  }
   caches.open(name)
     .then(cache => cache.put(request, response))
     .then(() => logCached(request, response))
@@ -232,7 +224,10 @@ function fetchJSON (request) {
  */
 function fetchObject (request) {
   return fetchJSON(request)
-    .catch(() => ({}));
+    .catch(err => {
+      console.error(err);
+      return {};
+    });
 }
 
 /**
@@ -250,7 +245,8 @@ function isGoodResponse (response, request) {
   return response && (
     (response.ok) ||
     (response.status === 404 && request.mode === 'navigate') ||
-    (response.type === 'opaque')
+    (response.type === 'opaque') ||
+    (response.type === 'opaqueredirect')
   );
 }
 
@@ -290,8 +286,8 @@ addEventListener('install', event => {
   return event.waitUntil(
     Promise.all([caches.open(cacheName), dependencies])
       .then(([cache, urls]) => cache.addAll(urls))
-      .catch(() => {
-        console.warn('Service worker failed to install dependencies');
+      .catch(err => {
+        console.warn(`Service worker failed to install dependencies:\n${err}`);
       })
       .then(skipWaiting())
   );

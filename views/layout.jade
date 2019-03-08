@@ -4,16 +4,8 @@ doctype
 html
 	head
 		title Explorer
-		link(rel="shortcut icon", type="image/x-icon", href="/img/favicon.ico")
-		meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
-		meta(name='theme-color', content='#172D3B')
-		meta(name='msapplication-navbutton-color', content='#172D3B')
-		link(type='text/css', rel='stylesheet', href='/css/reset.css')
-		link(type='text/css', rel='stylesheet', href='/css/bootstrap.min.css')
-		link(type='text/css', rel='stylesheet', href='/css/style.css')
-		link(rel='dns-prefetch' href='//connect.facebook.net')
-		link(rel='dns-prefetch' href='//staticxx.facebook.com')
-		link(rel='dns-prefetch' href='//www.facebook.com')
+		include metaInclude
+		include stylesInclude
 		block pageConfigValues
 		include scriptInclude
 	body(class= user && user.isLogged == true ? 'user-logged' : '')

@@ -219,6 +219,10 @@ function init(app){
 		proxy.makeProxyRequest(req.query, res);
 	});
 
+	app.get('/offline', function(req, res){
+		res.render('offline.jade');
+	});
+
 	app.get('/error404', function(req, res){
 		res.status(404).render('error404.jade');
 	});
