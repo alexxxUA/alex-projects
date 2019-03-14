@@ -1,8 +1,8 @@
 {
-  "name": "Explorer",
+  "name": "explorer",
   "description": "Simple explorer for test projects",
   "version": "0.1.0",
-  "homepage": "http://avasin-explorer.herokuapp.com",
+  "homepage": "http://avasin.ml",
   "author": {
     "name": "Alexey Vasin",
     "email": "aluaex@gmail.com"
@@ -12,7 +12,11 @@
     "url": "https://github.com/alexxxUA/Projects.git"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "develop": "nodemon app.js",
+    "debug": "node --inspect --debug-brk app.js",
+    "deploy": "git push heroku",
+    "bash": "heroku run bash --app avasin-explorer"
   },
   "main": "app.js",
   "dependencies": {

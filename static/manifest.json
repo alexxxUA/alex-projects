@@ -1,0 +1,20 @@
+{
+  "short_name": "File Explorer",
+  "name": "File Explorer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#172D3B",
+  "theme_color": "#172D3B",
+  "icons": [
+    {
+      "src": "/img/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
