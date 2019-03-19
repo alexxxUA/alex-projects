@@ -1036,7 +1036,9 @@ const JSON_CONFIG = {
 */
 
 var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json'
+	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
+	channelsArray: [channels1, channelListSk],
+    playListName: 'TV_List_AS'
 }));
 
 var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
@@ -1131,11 +1133,13 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylist_SOURCE.start(function () {
-				MainPlaylist_SOURCE_JSON.start(function(){
-					SecondaryPlaylist_SOURCE.start(function(){
-						if(cf.playListChannelChecker){
-							ChannelChangeTracker_tucka.start();
-						}
+				BackUpGen_SOURCE.start(function () {
+					MainPlaylist_SOURCE_JSON.start(function(){
+						SecondaryPlaylist_SOURCE.start(function(){
+							if(cf.playListChannelChecker){
+								ChannelChangeTracker_tucka.start();
+							}
+						});
 					});
 				});
 			});

@@ -8,9 +8,9 @@ var auth = {
 			throw Error('FBappId or FBsecret is not configured. Please check config / ENV variables!');
 		}
 
-		var that = auth,
+		const that = auth,
 			token = req.cookies['fbsr_'+ cf.FBappId],
-			userId = token ? fbParser.parse(token, cf.FBsecret).user_id : '';
+			{user_id: userId} = token ? (fbParser.parse(token, cf.FBsecret) || {}) : {};
 
 		User.findOne({id: userId}, function(err, user){
 			if(err) throw err;
