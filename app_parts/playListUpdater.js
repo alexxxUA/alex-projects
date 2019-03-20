@@ -183,6 +183,10 @@ Channel.prototype = {
 	cache: {},
 	// Cache lifeTime = 5 minutes
 	cacheLifeTime: 1000 * 60 * 5,
+	// Dynamic offset start time
+	// Each new playlist instance will be started with time offset
+	currentStartOffset: 0,
+	startOffset: 65*1000,
 	forceGeneratePlaylists: function(){
         var playlists = this.playlistGeneratorInstances,
             playlistsLength = playlists.length;
@@ -367,16 +371,16 @@ Channel.prototype = {
             h = date.getUTCHours(),
             m = date.getUTCMinutes(),
             s = date.getUTCSeconds(),
-            hString = h ? h+'h ' : '',
-            mString = m ? m+'m ' : '',
-            sString = s ? s+'s ' : '',
+            hString = h ? `${h}h ` : '',
+            mString = m ? `${m}m ` : '',
+            sString = s ? `${s}s ` : '',
             string = hString + mString + sString;
 
         return {
             time: +time.toFixed(2),
             h: h,
             m: m,
-            string: string.slice(0, string.length-1)
+            string: string.slice(0, string.length-1) || 'few seconds'
         }
 	},
 	/**
@@ -384,8 +388,11 @@ Channel.prototype = {
      * @returns {number} milliseconds
      */
 	getNextTimeOffset: function(){
-		var generationSpentTime = this.getGenTime(false).time,
-            nextTimeOffset = (this.generateTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime;
+		const generationSpentTime = this.getGenTime(false).time,
+            nextTimeOffset = (this.generateTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime + this.currentStartOffset;
+
+		// Update offset time for next playlist instances
+		this.currentStartOffset += this.startOffset;
 
 		return nextTimeOffset > 0 ? nextTimeOffset : nextTimeOffset + 60*60*1000;
 	},
@@ -444,37 +451,38 @@ Channel.prototype = {
 			that.getList();
 		});
 	},
-	getPlaylistParts: function(playlistUrl, callback) {
+	getPlaylistParts: function (playlistUrl, isGenInProgress, callback) {
 		if (callback) {
 			callback(typeof playlistUrl === 'string' ? [playlistUrl] : playlistUrl)
 		}
 	},
 	getValidPlaylist: function(callback){
-		var that = this,
-			urlsIndex = 0;
+		const that = this;
+		const isGenInProgress = !!callback;
 
 		// reset valid list
 		that.resetValidList();
 
 		//Save playlist page for backup
 		if(that.backUpGen){
-            that.backUpGen.getValidPlaylist.call(that.backUpGen);
-        }
+			that.backUpGen.getValidPlaylist.call(that.backUpGen);
+		}
 
-        that.getPlaylistParts(that.playlistUrl, function(urls){
-            var urlsCount = urls.length;
+		that.getPlaylistParts(that.playlistUrl, isGenInProgress, function(urls) {
+			const urlsCount = urls.length;
+			let urlsIndex = 0;
 
             for(var i = 0; i < urlsCount; i++){
                 var pageUrl = urls[i];
 
                 (function(j, url){
                     setTimeout(function(){
-                        that.getValidPlaylistPart(url, function(resp, isFromCache){
+                        that.getValidPlaylistPart(url, isGenInProgress, function(resp, isFromCache) {
 							urlsIndex++
                             that.storeValidList(resp);
                             that.cLog(`Page: ${(j+1)};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
                             //Call callback in case all parts collected
-                            if(callback && urlsIndex == urlsCount) {
+                            if(callback && urlsIndex === urlsCount) {
                                 setTimeout(function(){
                                     that.cLog('All playlist\'s parts are downloaded. Starting generation.');
                                     callback();
@@ -492,7 +500,7 @@ Channel.prototype = {
 	storeValidList: function (respString){
 		this.validList += respString;
 	},
-    getValidPlaylistPart: function(url, callback){
+    getValidPlaylistPart: function (url, isGenInProgress, callback) {
 		const that = this,
 			cacheResp = that.cache[url];
 
@@ -504,9 +512,14 @@ Channel.prototype = {
 			needle.request('GET', url, null, {compressed: true, follow_max: 5}, function(err, resp) {
 				if (err || resp.statusCode !== 200){
 					const errMsg = resp && resp.body || err.message;
-					that.isPlaylistFailed = true;
 					that.logErr(`Error in getting valid playlist for: ${url} .\n Response: ${errMsg.slice(0, 100)}`);
-					that.playlistFinished();
+
+					// Finish generation of playlist
+					// only in case generation in progress - not Backup generator call
+					if (isGenInProgress) {
+						that.isPlaylistFailed = true;
+						that.playlistFinished();
+					}
 					return;
 				}
 	
@@ -523,7 +536,6 @@ Channel.prototype = {
 				// Run callback with response
 				if(callback) {
 					callback(respString);
-
 				}
 			});
 		}
@@ -924,10 +936,10 @@ var TuchkaHomepageConfig = {
     initParams: function(){
         this.playlistUrl = this.playlistDomain;
     },
-    getPlaylistParts: function(url, callback){
+    getPlaylistParts: function (url, isGenInProgress, callback) {
         var that = this;
 
-        that.getValidPlaylistPart(url, function(resp){
+        that.getValidPlaylistPart(url, isGenInProgress, function(resp) {
             var $ = that.getDom(resp),
                 $links = $(that.linksSel),
                 linksArray = [];
