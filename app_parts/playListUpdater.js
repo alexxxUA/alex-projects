@@ -269,7 +269,6 @@ Channel.prototype = {
 			updatedList: [],
 			reqFailedList: []
 		};
-        this.validList = '';
 		this.channelCounter = 0;
 		this.isPlaylistFailed = false;
 		this.resetChannelsObject();
