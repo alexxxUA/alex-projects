@@ -72,12 +72,6 @@ function Channel(params){
 	 */
 	this.logoRelativeUrl = 'http://avasin.ml/UpdateChanList/App/Sources/Channel_icons/';
 	/**
-	 * Used for defining if playlist generates once in specified time, or in intervals
-	 * @Value true -> Generate playlist in specified time
-	 * @Value false -> Generate in intervals
-	 */
-	this.isGenerateInTime = true;
-	/**
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
 	 */
@@ -105,10 +99,10 @@ function Channel(params){
 	 */
 	this.restartDelay = 10;
 	/**
-	 * Generate in specified time (used if @isGenerateInTime = true)
-	 * @Value in format: 4:00 (24h format)
+	 * Generate in specified time
+	 * @Value in format: 5:45 (24h format)
 	 */
-	this.generateTime = '5:45';
+	this.generateTime = null;
 	this.timeZone = 1;
 
     this.torApiUrl = 'http://api.torrentstream.net/upload/jsonp?callback=c&url=';
@@ -387,7 +381,7 @@ Channel.prototype = {
     },
 	getNextTimeOffset: function(){
 		var generationSpentTime = this.getGenTime(false).time,
-            nextTimeOffset = (this.isGenerateInTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime;
+            nextTimeOffset = (this.generateTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime;
         return nextTimeOffset > 0 ? nextTimeOffset : 0;
 	},
 	getDom: function(html){
@@ -1038,6 +1032,7 @@ const JSON_CONFIG = {
 var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
 	channelsArray: [channels1, channelListSk],
+	generateTime: '6:15',
     playListName: 'TV_List_AS'
 }));
 
