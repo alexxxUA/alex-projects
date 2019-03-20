@@ -26,7 +26,7 @@ var channelList = [
 
 	//Мультики
 	{dName: 'ПлюсПлюс', sName: '', flags: ''},
-	{dName: 'Пиксель ТВ', sName: '', flags: ''},
+	{dName: 'Пиксель ТВ', sName: 'Пиксель', flags: ''},
 	{dName: 'Малятко ТВ', sName: '', flags: ''},
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', flags: ''},
