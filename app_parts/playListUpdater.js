@@ -379,11 +379,16 @@ Channel.prototype = {
             m: m,
             string: string.slice(0, string.length-1)
         }
-    },
+	},
+	/**
+     * Return milliseconds till next hour 
+     * @returns {number} milliseconds
+     */
 	getNextTimeOffset: function(){
 		var generationSpentTime = this.getGenTime(false).time,
             nextTimeOffset = (this.generateTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime;
-        return nextTimeOffset > 0 ? nextTimeOffset : 0;
+
+		return nextTimeOffset > 0 ? nextTimeOffset : nextTimeOffset + 60*60*1000;
 	},
 	getDom: function(html){
 		return cheerio.load(html, {decodeEntities: false}, { features: { QuerySelector: true }});
