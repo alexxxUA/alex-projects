@@ -1033,14 +1033,15 @@ const JSON_CONFIG = {
 var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
 	channelsArray: [channels1, channelListSk],
-	generateTime: '6:15',
     playListName: 'TV_List_AS'
 }));
 
 var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
-    playListName: 'TV_List_torrent_stream',
-	backUpGen: BackUpGen_SOURCE
+	playListName: 'TV_List_torrent_stream',
+	generateCountPer24h: 24,
+	maxRestartCount: 2,
+	// backUpGen: BackUpGen_SOURCE
 }));
 
 var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
