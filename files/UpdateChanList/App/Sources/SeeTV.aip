@@ -34,16 +34,19 @@
     <ROW Property="AI_STARTUP_SH" Type="4" MsiKey="AI_STARTUP_SH"/>
     <ROW Property="AI_ThemeStyle" Value="default" MsiKey="AI_ThemeStyle"/>
     <ROW Property="ALLUSERS" Value="1"/>
-    <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
+    <ROW Property="ARPCOMMENTS" Value="Torrent TV + Playlists" ValueLocId="*"/>
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
-    <ROW Property="ARPPRODUCTICON" Value="TVinstall.exe" Type="8"/>
+    <ROW Property="ARPPRODUCTICON" Value="TVinstall_1.exe" Type="8"/>
+    <ROW Property="ARPURLINFOABOUT" Value="https://avasin.ml/UpdateChanList/App/SeeTV.exe"/>
+    <ROW Property="ARPURLUPDATEINFO" Value="https://avasin.ml/UpdateChanList/App/SeeTV.exe"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Alex corp."/>
     <ROW Property="ProductCode" Value="1033:{739D6800-0D52-4A1C-9B11-0CD5791BC56A} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="SeeTV"/>
     <ROW Property="ProductVersion" Value="1.0.0" Type="32"/>
+    <ROW Property="REBOOT" MultiBuildValue="DefaultBuild:ReallySuppress"/>
     <ROW Property="RUNAPPLICATION" Value="1" Type="4"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND;AI_SETUPEXEPATH;SETUPEXEDIR"/>
     <ROW Property="UpgradeCode" Value="{DB29C70C-CFF7-453C-8E42-0DBDA25306E6}"/>
@@ -64,21 +67,21 @@
     <ROW Component="AIShRegAnswer" ComponentId="{DD6897BD-53D2-4118-9FDC-D5A33FA25CEF}" Directory_="APPDIR" Attributes="4" KeyPath="AIShRegAnswer"/>
     <ROW Component="AI_ExePath" ComponentId="{DEBE4F9E-A506-4702-9427-0D7B1A41EAC6}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
     <ROW Component="TV.bat" ComponentId="{B2EE118D-40B9-4119-9614-A6A791D30372}" Directory_="APPDIR" Attributes="0" KeyPath="SeeTvTorStream.bat"/>
-    <ROW Component="TV18.bat" ComponentId="{3A46158A-9D4A-4503-BC02-9086FCEAD17F}" Directory_="APPDIR" Attributes="0" KeyPath="SeeTvTuchka.bat"/>
+    <ROW Component="TVplus.bat" ComponentId="{3A46158A-9D4A-4503-BC02-9086FCEAD17F}" Directory_="APPDIR" Attributes="0" KeyPath="SeeTvTuchka.bat"/>
     <ROW Component="enablePort.ps1" ComponentId="{33FE3BA1-08DC-4533-B296-21AD4C24E1CB}" Directory_="APPDIR" Attributes="0" KeyPath="enablePort.ps1" Type="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AIShRegAnswer AI_ExePath TV.bat TV18.bat enablePort.ps1"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AIShRegAnswer AI_ExePath TV.bat TVplus.bat enablePort.ps1"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="SeeTvTorStream.bat" Component_="TV.bat" FileName="TV.bat" Attributes="0" SourcePath="..\SeeTvTorStream.bat" SelfReg="false" NextFile="SeeTvTuchka.bat"/>
-    <ROW File="SeeTvTuchka.bat" Component_="TV18.bat" FileName="TV18_~1.BAT|TV 18+.bat" Attributes="0" SourcePath="..\SeeTvTuchka.bat" SelfReg="false" NextFile="tv.ico"/>
-    <ROW File="enablePort.ps1" Component_="enablePort.ps1" FileName="ENABLE~1.PS1|enablePort.ps1" Attributes="0" SourcePath="..\enablePort.ps1" SelfReg="false" NextFile="SeeTvTorStream.bat"/>
-    <ROW File="tv.ico" Component_="enablePort.ps1" FileName="tv.ico" Attributes="0" SourcePath="..\tv.ico" SelfReg="false"/>
+    <ROW File="SeeTvTorStream.bat" Component_="TV.bat" FileName="TV.bat" Attributes="0" SourcePath="SeeTv.bat" SelfReg="false" NextFile="SeeTvTuchka.bat"/>
+    <ROW File="SeeTvTuchka.bat" Component_="TVplus.bat" FileName="TVplus.bat" Attributes="0" SourcePath="SeeTvPlus.bat" SelfReg="false" NextFile="tv.ico"/>
+    <ROW File="enablePort.ps1" Component_="enablePort.ps1" FileName="ENABLE~1.PS1|enablePort.ps1" Attributes="0" SourcePath="enablePort.ps1" SelfReg="false" NextFile="SeeTvTorStream.bat"/>
+    <ROW File="tv.ico" Component_="enablePort.ps1" FileName="tv.ico" Attributes="0" SourcePath="tv.ico" SelfReg="false"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder=".." Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="..\TVinstall.ico" ExtractionFolder="[AppDataFolder]\[|ProductName] [|ProductVersion]\install" UseLargeSchema="true" ExeName="SeeTV"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder=".." Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="TVinstall.ico" ExtractionFolder="[AppDataFolder]\[|ProductName] [|ProductVersion]\install" UseLargeSchema="true" ExeName="SeeTV"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
@@ -206,7 +209,7 @@
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="TVinstall.exe" SourcePath="..\TVinstall.ico" Index="0"/>
+    <ROW Name="TVinstall_1.exe" SourcePath="TVinstall.ico" Index="0"/>
     <ROW Name="tv.exe" SourcePath="..\tv.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
@@ -258,7 +261,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiShortsComponent">
     <ROW Shortcut="TV" Directory_="DesktopFolder" Name="TV" Component_="TV.bat" Target="[#SeeTvTorStream.bat]" Hotkey="0" Icon_="tv.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
-    <ROW Shortcut="TV18" Directory_="DesktopFolder" Name="TV18_~1|TV 18+" Component_="TV18.bat" Target="[#SeeTvTuchka.bat]" Hotkey="0" Icon_="tv.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
+    <ROW Shortcut="TV18" Directory_="DesktopFolder" Name="TV-plus" Component_="TVplus.bat" Target="[#SeeTvTuchka.bat]" Hotkey="0" Icon_="tv.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR"/>
     <ROW Shortcut="TV_1" Directory_="StartupFolder" Name="TV" Component_="TV.bat" Target="[#SeeTvTorStream.bat]" Hotkey="0" Icon_="tv.exe" IconIndex="0" ShowCmd="1" WkDir="APPDIR" Advertised="true"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
@@ -269,7 +272,7 @@
     <ROW UpgradeCode="[|UpgradeCode]" VersionMin="[|ProductVersion]" Attributes="2" ActionProperty="AI_NEWERPRODUCTFOUND"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqComponent">
-    <ROW PrereqKey="_" DisplayName="Ace stream media player" SetupFileUrl="..\..\..\Downloads\Ace_Stream_Media_3.1.12.1.exe" Location="0" ExactSize="0" Operator="1" Options="iz" TargetName="Ace_Stream_Media_3.1.12.1.exe"/>
+    <ROW PrereqKey="_" DisplayName="Ace Stream Media" SetupFileUrl="http://dl.acestream.org/products/acestream-full/win/latest" Location="1" ExactSize="0" Operator="1" Options="i"/>
     <ATTRIBUTE name="PrereqsOrder" value="_"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.PreReqSearchComponent">
