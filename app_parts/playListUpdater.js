@@ -505,19 +505,20 @@ Channel.prototype = {
 					return;
 				}
 	
-				if(callback) {
-					// Parse response
-					let respString = resp.parser === 'json' ? JSON.stringify(resp.body) : resp.body.toString();
+				// Parse response
+				const respString = resp.parser === 'json' ? JSON.stringify(resp.body) : resp.body.toString();
+				// Save response for further use
+				that.cache[url] = respString;
+				// Delete cached response after timeout
+				setTimeout(() => {
+					delete that.cache[url];
+				}, that.cacheLifeTime);
 
-					// Run callback with response
+
+				// Run callback with response
+				if(callback) {
 					callback(respString);
 
-					// Save response for further use
-					that.cache[url] = respString;
-					// Delete cached response after timeout
-					setTimeout(() => {
-						delete that.cache[url];
-					}, that.cacheLifeTime)
 				}
 			});
 		}
