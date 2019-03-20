@@ -527,8 +527,9 @@ function AdminPanel(params){
 			'</td><td>'+
 				'<input type="text" name="alias_real_url" value="<%= path %>" data-before-edit="<%= path %>" class="'+ this.onInputChangeSel.slice(1) +' alias-actual-url">'+
 			'</td><td class="alias-action-cont">'+
-				'<input type="button" value="Edit" class="'+ this.dataEditSel.slice(1) +' btn btn-xs btn-success">'+
+				'<input type="button" value="Save" class="'+ this.dataEditSel.slice(1) +' btn btn-xs btn-success">'+
 				'<input type="button" value="Remove" class="'+ this.dataRemoveSel.slice(1) +' btn btn-xs btn-danger">'+
+				'<a href="<%= alias %>" class="btn btn-xs btn-info">Open</a>'+
 			'</td>'+
 		'</tr>');
 

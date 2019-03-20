@@ -135,20 +135,18 @@ function init(app){
 	});
 	
 	app.get('/updateAlias', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		Aliases.findOne({alias: req.query.alias_url}, function(err, result){
+		Aliases.findById(req.query.alias_id, function(err, alias){
 			if(err) throw err;
 
-			Aliases.findById(req.query.alias_id, function(err, alias){
-                if(err) throw err;
+			alias.alias = req.query.alias_url;
+			alias.path = req.query.alias_real_url;
+			alias.save(err => {
+				if(err) console.error(err);
 
-                alias.alias = req.query.alias_url;
-                alias.path = req.query.alias_real_url;
-                alias.save();
-
-                //Update alias map
-                setAliasMap()
-                res.send();
-            });
+				//Update alias map
+				setAliasMap()
+				res.send();
+			});
 		});
 	});
     
