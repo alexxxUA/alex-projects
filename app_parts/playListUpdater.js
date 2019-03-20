@@ -1067,7 +1067,6 @@ var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
 var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV-plus',
-	backUpGen: BackUpGen_SOURCE,
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
 	translitEnabled: true
 }));
