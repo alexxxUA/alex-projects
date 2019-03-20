@@ -914,7 +914,7 @@ var TuckaMainConfig = {
 /**
  * Main config for "Tuchka" source from homepage
 **/
-var TuckaHomepageConfig = {
+var TuchkaHomepageConfig = {
     scheduleGenDelay: 15,
     forceGenDelay: 7,
 	maxRestartCount: 2,
@@ -1061,7 +1061,7 @@ var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	translitEnabled: true
 }));
 
-var MainPlaylistHomepage_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
+var MainPlaylistHomepage_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	channelsArray: [channels1],
 	playListName: 'TV-List-tuchka',
 	generateCountPer24h: 24,
@@ -1073,7 +1073,7 @@ var MainPlaylist_torStream = new Channel(Object.assign({}, TorStreamMainConfig, 
     playListName: 'TV-List-torrent-stream'
 }));
 
-var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuckaHomepageConfig, {
+var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	forceGenDelay: 4,
 	isCheckIdForUrl: true,
 	channelsArray: [channels1],
@@ -1083,7 +1083,7 @@ var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuckaHomepa
 	playlistPartSel: '#jsn-mainbody'
 }));
 
-var SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
+var SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
 	playListName: 'TV-List-tuchka-plus'
@@ -1094,7 +1094,7 @@ var MainPlaylist_tucka = new Channel(Object.assign({}, TuckaMainConfig, {
     playListName: 'TV-List-tuchka-player'
 }));
 
-var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuckaHomepageConfig, {
+var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
     channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
 	firstChannelId: false,
 	generateCountPer24h: 48,
