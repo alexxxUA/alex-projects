@@ -147,6 +147,7 @@ function Channel(params){
 	this.emailRecipient = 'aluaex@gmail.com';
 
 	this.outputPath = cf.playlistOutputPath;
+	this.logsOutputPath = `${cf.playlistOutputPath}/Logs`
 	this.playListName = 'TV_List';
 	this.playlistExt = 'xspf'
 	this.proxyPlaylistExt = 'm3u'
@@ -232,14 +233,14 @@ Channel.prototype = {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.playlistExt}`);
 		this.proxyPlaylistPath = path.join(filesP, `${this.outputPath}/Proxy-${this.playListName}.${this.proxyPlaylistExt}`);
-		this.logPath = path.join(filesP, `${this.outputPath}/${this.logName || this.playListName}.log`);
+		this.logPath = path.join(filesP, `${this.logsOutputPath}/${this.logName || this.playListName}.log`);
 
 		if(typeof this.initParams == 'function') this.initParams();
 
 		this.createFolder(this.outputPath);
+		this.createFolder(this.logsOutputPath);
 		this.setChannels(this.channelsArray);
 		this.initChannelsObject();
-
 	},
     start: function(callback){
         if(this.isGenOnStart){
