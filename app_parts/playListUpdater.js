@@ -392,7 +392,7 @@ Channel.prototype = {
             nextTimeOffset = (this.generateTime ? this.getOffsetTillTime(this.generateTime) : this.getOffsetNextHour()) - generationSpentTime + this.currentStartOffset;
 
 		// Update offset time for next playlist instances
-		this.currentStartOffset += this.startOffset;
+		this.__proto__.currentStartOffset = this.currentStartOffset + this.startOffset;
 
 		return nextTimeOffset > 0 ? nextTimeOffset : nextTimeOffset + 60*60*1000;
 	},
@@ -1046,9 +1046,12 @@ const JSON_CONFIG = {
 */
 
 var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
+	playlistUrl: [
+		'http://91.92.66.82/trash/ttv-list/as.json',
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
+	],
 	channelsArray: [channels1, channelListSk],
-    playListName: 'TV-List-AS'
+	playListName: 'TV-List-AS'
 }));
 
 var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
@@ -1071,8 +1074,8 @@ var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	translitEnabled: true
 }));
 
-var MainPlaylistHomepage_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
-	channelsArray: [channels1],
+var MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-tuchka',
 	generateCountPer24h: 24,
 	backUpGen: BackUpGen_SOURCE
@@ -1115,13 +1118,13 @@ var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageCon
 	logName: 'log_channelChecker.txt',
 	getChannelChangeEmailContent: function(channel){
 		return '<h2>Channel\'s id has been changed:</h2>'+
-			'<strong>Time:</strong> '+ this.getformatedDate(new Date, true) +
+			'<strong>Time:</strong> '+ this.getFormatedDate(new Date, true) +
 			'<br><strong>Channel:</strong> '+ this.getFullChannelName(channel) +
 			'<br><strong>Old ID value:</strong> '+ this.firstChannelId +
 			'<br><strong>New ID value:</strong> '+ channel.id;
 	},
 	sendChannelChangeEmail: function(channel){
-		var sbj = this.emailSubj +' ['+ this.getformatedDate(new Date, true) +']';
+		var sbj = this.emailSubj +' ['+ this.getFormatedDate(new Date, true) +']';
 		email.sendMail(sbj, this.emailRecipient, this.getChannelChangeEmailContent(channel));
 	},
 	isChannelChanged: function(channel){
@@ -1154,7 +1157,7 @@ module.exports = {
 				BackUpGen_SOURCE.start(function () {
 					MainPlaylist_SOURCE_JSON.start(function(){
 						SecondaryPlaylist_SOURCE.start(function(){
-							MainPlaylistHomepage_tucka.start(function () {
+							MainPlaylistHomepage_tuchka.start(function () {
 								if(cf.playListChannelChecker){
 									ChannelChangeTracker_tucka.start();
 								}
