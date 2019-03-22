@@ -994,14 +994,15 @@ $(document).delegate('form', 'submit', function(e){
 	const $form = $(this);
 	const isFormValid = Validator.validateForm($form);
 	const isAjaxForm = $form.attr('ajax') === 'true';
-	
-	// if form not valid || it is Ajax form -> prevent submission
-	if (!isFormValid || isAjaxForm) {
-		e.preventDefault();
-	}
 
-	//In case form valid and it is not ajax form -> skip further logic
-	if(!isAjaxForm) {
+	// If it is Ajax form -> prevent default behavior
+	if(isAjaxForm) e.preventDefault();
+
+	if (!isFormValid) {
+		// If form not valid -> prevent submission and skip further logic
+		return false;
+	} else if(!isAjaxForm){
+		//In case form valid and it is not ajax form -> skip further logic
 		return true;
 	}
 
