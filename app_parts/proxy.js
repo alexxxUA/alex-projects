@@ -142,15 +142,20 @@ var Proxy = {
 				callback(null, resp)
 			}
 			else if(res){
-				res.header({
-					...that.respHeaders,
+				const respHeaders = Object.assign({}, that.respHeaders, {
 					'content-type': resp.headers['content-type'],
 					'transfer-encoding': resp.headers['transfer-encoding'],
 					'content-weight': resp.headers['content-length'],
 					'last-modified': resp.headers['last-modified'],
 					'redirect-to': decodeURIComponent(resp.headers['location']),
-					...(!isHtml ? {'content-encoding': resp.headers['content-encoding']} : {})
-				});
+				})
+
+				if(!isHtml) {
+					Object.assign(respHeaders, {
+						'content-encoding': resp.headers['content-encoding']
+					});
+				}
+				res.header(respHeaders);
 				res.send(isHtml ? that.updateHtmlUrls(resp.body, url) : resp.raw);
 			}
 		});
