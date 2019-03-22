@@ -1,10 +1,11 @@
-var needle = require('needle'),
-	legacy = require('legacy-encoding');
+const needle = require('needle'),
+	legacy = require('legacy-encoding'),
+	URL = require('url').URL;
 
 /*
 cookieList: {
 	domain: {
-		validTill: milisec,
+		validTill: milliseconds,
 		cookies: []
 	},
 	......
@@ -17,7 +18,8 @@ var Proxy = {
 		headers: {
 			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
 		},
-		method: 'HEAD'
+		method: 'HEAD',
+		compressed: true
 	},
 	respHeaders: {
 		'Access-Control-Allow-Origin': '*',
@@ -126,23 +128,46 @@ var Proxy = {
 					res.header(that.respHeaders).status(500).send("Can't access url: "+ url);
 				return;
 			}
+			const isHtml = resp.headers['content-type'].includes('text/html');
+			const isUtf8 = resp.headers['content-type'].includes('utf-8');
 
-			resp.body = legacy.decode(resp.raw, 'utf8', {
-				mode: 'html'
-			});
+			/*
+			if(isHtml && !isUtf8) {
+				resp.body = legacy.decode(resp.raw, 'utf8', {
+					mode: 'html'
+				});
+			} */
 
 			if(callback){
 				callback(null, resp)
 			}
 			else if(res){
-				res.header(that.extendObj({}, that.respHeaders, {				
-					'Content-Weight': resp.headers['content-length'],
-					'Last-Modified': resp.headers['last-modified'],
-					'Redirect-To': decodeURIComponent(resp.headers['location'])
-				}));
-				res.send(resp.body);
+				res.header({
+					...that.respHeaders,
+					'content-type': resp.headers['content-type'],
+					'transfer-encoding': resp.headers['transfer-encoding'],
+					'content-weight': resp.headers['content-length'],
+					'last-modified': resp.headers['last-modified'],
+					'redirect-to': decodeURIComponent(resp.headers['location']),
+					...(!isHtml ? {'content-encoding': resp.headers['content-encoding']} : {})
+				});
+				res.send(isHtml ? that.updateHtmlUrls(resp.body, url) : resp.raw);
 			}
 		});
+	},
+	updateHtmlUrls: function(html, url) {
+		const {origin, pathname} = new URL(url);
+		const pathArray = pathname.split('/');
+		const baseUrl = '/proxy?url=';
+
+		// remove last item from path array
+		pathArray.pop();
+
+		return html
+			// Update relative urls which do not start with any slash
+			.replace(/(href|src)=(?:"|')*(?!#|http|\/\/|\/)([^("|'|\s|>|)]+)/gmi, `$1="${baseUrl}${origin}${pathArray.join('/')}/$2"`)
+			// Update relative urls which start with single slash
+			.replace(/(href|src)=(?:"|')*(?!#|http|\/\/|\/proxy)([^("|'|\s|>|)]+)/gmi, `$1="${baseUrl}${origin}$2"`);
 	},
 	makeProxyRequest: function(params, res, skipCookieCheck, callback){
 		if(!skipCookieCheck && params.isCookies == 'true' && !this.isValidCookies(params)){

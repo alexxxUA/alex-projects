@@ -17,13 +17,23 @@ block adminPanel
 		div.panel.panel-info.add-alias-pan
 			div.panel-heading
 				h3.panel-title New alias URL
-			div.panel-body
+			div.panel-body.visible
 				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias', autocomplete='off')
 					.form-group
 						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url. E.g.: /testUrl', data-validate-type='notEmpty')
 					.form-group
 						input.form-control.input-sm(type='text', name='alias_real_url', placeholder='Redirect url. E.g.: /real/url/here.mp3', data-validate-type='notEmpty')
 					input.btn.btn-success.btn-sm(type='submit', value='ADD')
+		div.panel.panel-info
+			div.panel-heading
+				h3.panel-title Open URL via proxy
+			div.panel-body.visible
+				form(action='/proxy', autocomplete='off')
+					.input-group.form-group
+						input.form-control.input-sm(type='text', name='url', placeholder='Type URL here', data-validate-type='notEmpty')
+						.input-group-btn
+							input.btn.btn-success.btn-sm(type='submit', value='Open')
+							
 	div.col-md-8.reset-padding.aliases-list-container
 		div.panel.panel-info
 			div.panel-heading

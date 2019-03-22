@@ -312,7 +312,8 @@ to { color: #92F099; }
 	padding: 5px 0;
 }
 .error-message{
-	top: 0px;
+    top: 0px;
+    left: 0;
 	color: #FF6F6F;
 	position: absolute;
 	font-size: 12px;
@@ -336,6 +337,10 @@ to { color: #92F099; }
 	left: 50%;
 	margin-left: -10px;
 	bottom: 0;
+}
+.form-control:focus {
+    position: relative;
+    z-index: 1001;
 }
 .js-context-action,
 .js-context-dropdown{
@@ -476,8 +481,8 @@ to { color: #92F099; }
 .add-alias-pan input[type="text"] {
 	margin-bottom: 4px;
 }
-.add-alias-pan .panel-body {
-	overflow: visible;
+.visible {
+    overflow: visible;
 }
 .user-isadmin-title {
 	width: 10%

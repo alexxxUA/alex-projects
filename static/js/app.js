@@ -907,6 +907,17 @@ var Validator = {
 			}
 		}
 	},
+	validateForm: function($form){
+		let isValid = true;
+
+		$form.find('[data-validate-type]').trigger('focusout');
+		var formErrors = $form.find(':regex(class, data-error.*)');
+		if(formErrors.length > 0){
+			console.log('Detected form errors!!');
+			isValid = false;
+		}
+		return isValid;
+	},
 	showErrorMessage: function(e, data, validatorType){
 		var targetWidth = $(e.currentTarget).outerWidth(),
 			$closestField = $(e.currentTarget).closest('.'+ this.fieldClass),
@@ -972,17 +983,29 @@ function executeFunctionByName(functionName, context , args) {
 }
 
 //Ajax form submit
-$(document).delegate('form[ajax="true"]', 'keydown', function(e){
+$(document).delegate('form', 'keydown', function(e){
 	if(e.keyCode == 13 && e.ctrlKey){
 		//Click for native html5 validation
 		$(e.currentTarget).find(':submit').click();
 	}
 });
-$(document).delegate('form[ajax="true"]', 'submit', function(e){
-	e.preventDefault();
 
-	var $form = $(this),
-		method = $form.attr('method'),
+$(document).delegate('form', 'submit', function(e){
+	const $form = $(this);
+	const isFormValid = Validator.validateForm($form);
+	const isAjaxForm = $form.attr('ajax') === 'true';
+	
+	// if form not valid || it is Ajax form -> prevent submission
+	if (!isFormValid || isAjaxForm) {
+		e.preventDefault();
+	}
+
+	//In case form valid and it is not ajax form -> skip further logic
+	if(!isAjaxForm) {
+		return true;
+	}
+
+	const method = $form.attr('method'),
 		isNoReset = $form.data('no-reset'),
 		$inputs = $form.find('input:not([type="submit"]), textarea'),
 		formAction = $form.attr('action'),
@@ -990,14 +1013,6 @@ $(document).delegate('form[ajax="true"]', 'submit', function(e){
 		formBeforeSend = $form.attr('ajax-before'),
 		formSuccess = $form.attr('ajax-success'),
 		formError = $form.attr('ajax-err');
-
-	$form.find('[data-validate-type]').trigger('focusout');
-
-	var formErrors = $form.find(':regex(class, data-error.*)');
-	if(formErrors.length > 0){
-		console.log('Detected form errors!!');
-		return false;
-	}
 
 	$.ajax({
 		type: method ? method : 'GET',
