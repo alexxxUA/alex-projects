@@ -128,8 +128,9 @@ var Proxy = {
 					res.header(that.respHeaders).status(500).send("Can't access url: "+ url);
 				return;
 			}
-			const isHtml = resp.headers['content-type'].includes('text/html');
-			const isUtf8 = resp.headers['content-type'].includes('utf-8');
+			const contentType = resp.headers['content-type'];
+			const isHtml = !!contentType && contentType.includes('text/html');
+			const isUtf8 = !!contentType && contentType.includes('utf-8');
 
 			/*
 			if(isHtml && !isUtf8) {
