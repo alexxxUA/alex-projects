@@ -1,6 +1,6 @@
 const needle = require('needle'),
 	legacy = require('legacy-encoding'),
-	URL = require('url').URL;
+	parse = require('url-parse');
 
 /*
 cookieList: {
@@ -161,7 +161,7 @@ var Proxy = {
 		});
 	},
 	updateHtmlUrls: function(html, url) {
-		const {origin, pathname} = new URL(url);
+		const {origin, pathname} = parse(url);
 		const pathArray = pathname.split('/');
 		const baseUrl = '/proxy?url=';
 
