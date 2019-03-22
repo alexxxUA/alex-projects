@@ -39,13 +39,11 @@
     "underscore": "^1.8.3",
     "legacy-encoding": "^3.0.0",
     "nodemon": "*",
-    "translit": "0.0.1"
+    "translit": "0.0.1",
+    "url": "^0.11.0"
   },
   "private": true,
   "engines": {
     "node": "6.11.0"
   },
-  "devDependencies": {
-    "url": "^0.11.0"
-  }
 }
