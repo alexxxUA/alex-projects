@@ -111,7 +111,7 @@ var Proxy = {
 			if(callback)
 				callback(new Error(errUrlMsg), {});
 			else if(res)
-				res.staus(404).send(errUrlMsg)
+				res.status(404).send(errUrlMsg)
 			return;
 		}
         //Check if http prefix exist
