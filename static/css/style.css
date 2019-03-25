@@ -39,6 +39,16 @@ th{
     position: relative;
     z-index: 1;
 }
+.logo {
+    width: 20px;
+    margin: 0 2px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#header h1:hover .logo .st2 {
+    stroke: #FFF;
+}
 #content{
     padding: 0 50px 50px;
 }

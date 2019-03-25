@@ -1,5 +1,3 @@
--var mainTitle = typeof title != 'undefined' ? title : 'File Explorer';
-
 doctype
 html
 	head
@@ -12,7 +10,13 @@ html
 		#section-container
 			#header
 				h1
-					a(href="/", title="Go to home page")=mainTitle
+					a(href="/", title="Go to home page")
+						span File Expl
+						span.logo
+							include ./../static/img/icon.svg
+						span rer
+					-if(title)
+						span - #{title}
 				block facebookLogin
 			#content(class='clearfix')
 				#dynamicContent
