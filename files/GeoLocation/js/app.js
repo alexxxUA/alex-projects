@@ -1,5 +1,5 @@
 const GEO = {
-    key: 'AIzaSyCkGUiH-i3oF8Y0ropKElJklhaE8miaJdc',
+    key: 'testKey',
     linkSel: '#getLocation',
 	postalCodeKey: 'postal_code',
 	defaultErrorMsg: 'Failed to get location',
