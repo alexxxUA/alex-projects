@@ -26,7 +26,9 @@ const GEO = {
 
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(that.showPosition.bind(that), function(err){
-				that.locationError('Access to geolocation has been denied.')
+				that.locationError(
+                    'Access to geolocation has been denied. Please update browser preferences in order to enable location detection.'
+                )
 			});
 		} else { 
 			that.locationError('Geolocation is not supported by this device/browser.');
