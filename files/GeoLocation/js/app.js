@@ -7,7 +7,9 @@ const GEO = {
         this.events();
     },
     setKey: function(){
-        this.key = prompt('Please enter Google Maps API KEY');
+        if(!this.key) {
+            this.key = prompt('Please enter Google Maps API KEY');
+        }
     },
     events: function(){
         const link = document.querySelector(this.linkSel);
@@ -18,10 +20,9 @@ const GEO = {
         e.preventDefault();
         const that = this;
 
-        if(!that.key) {
-            this.setKey();
-            return;
-        }
+        this.setKey();
+
+        if(!that.key) return;
 
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(that.showPosition.bind(that), function(err){
