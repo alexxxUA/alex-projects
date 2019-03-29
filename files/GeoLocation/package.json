@@ -1,0 +1,32 @@
+{
+  "name": "Blank",
+  "storecode": "Blank",
+  "version": "0.1.0",
+  "description": "Blank project",
+  "main": "index.html",
+  "author": "Alexey Vasin",
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^6.0.1",
+    "browser-sync": "^2.8.2",
+    "cssnext": "^1.8.3",
+    "gulp": "^4.0.0",
+    "gulp-compass": "^2.1.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-imagemin": "^5.0.3",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-minify-css": "^1.2.0",
+    "gulp-notify": "^3.2.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.1",
+    "gulp-watch": "^5.0.1",
+    "gulp-webp": "^4.0.1",
+    "imagemin-pngquant": "^7.0.0",
+    "pixrem": "^5.0.0",
+    "postcss-import": "^12.0.1",
+    "postcss-nested": "^4.1.1",
+    "postcss-simple-vars": "^5.0.1"
+  }
+}
