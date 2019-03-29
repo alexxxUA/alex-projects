@@ -1,10 +1,13 @@
 const GEO = {
-    key: 'testKey',
+    key: '',
     linkSel: '#getLocation',
 	postalCodeKey: 'postal_code',
 	defaultErrorMsg: 'Failed to get location',
 	init: function(){
-		this.events();
+        this.events();
+    },
+    setKey: function(){
+        this.key = prompt('Please enter Google Maps API KEY');
     },
     events: function(){
         const link = document.querySelector(this.linkSel);
@@ -14,6 +17,11 @@ const GEO = {
     getGeolocation: function(e){
         e.preventDefault();
         const that = this;
+
+        if(!that.key) {
+            this.setKey();
+            return;
+        }
 
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(that.showPosition.bind(that), function(err){
