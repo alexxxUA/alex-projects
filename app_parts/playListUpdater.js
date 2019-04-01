@@ -992,7 +992,7 @@ var SOURCE_CONFIG = {
 	minReqDelay: 0,
     playlistUrl: [
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
-		'http://91.92.66.82/trash/ttv-list/ttv.json'
+		'http://91.92.66.82/trash/ttv-list/as.json'
 	],
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
@@ -1047,20 +1047,17 @@ const JSON_CONFIG = {
 */
 
 var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	playlistUrl: [
-		'http://91.92.66.82/trash/ttv-list/as.json',
-		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all'
-	],
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-AS'
 }));
 
 var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json',
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-TTV',
-	generateCountPer24h: 24,
-	maxRestartCount: 2,
-	// backUpGen: BackUpGen_SOURCE
+	generateTime: '8:00',
+	generateCountPer24h: 1,
+	maxRestartCount: 1
 }));
 
 var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
@@ -1071,7 +1068,6 @@ var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
 var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV-plus',
-	playlistUrl: 'http://91.92.66.82/trash/ttv-list/as.json',
 	translitEnabled: true
 }));
 
