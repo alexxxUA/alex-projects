@@ -1,6 +1,6 @@
 Программа:
-1) https://teleguide.info/download/new3/xmltv.xml.gz
-2) http://epg.it999.ru/edem.xml.gz
+1) http://epg.it999.ru/edem.xml.gz
+2) https://teleguide.info/download/new3/xmltv.xml.gz
 3) http://api.torrent-tv.ru/ttv.xmltv.xml.gz
 4) http://programtv.ru/xmltv.xml.gz
 
