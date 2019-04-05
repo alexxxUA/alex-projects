@@ -8,11 +8,11 @@
 
 var channelList = [
 	//Украинские
-	{dName: '1+1', sName: '1\\+1', flags: 'req'},
+	{dName: '1+1', sName: '1\\+1', pName: 'Канал 1+1', flags: 'req'},
 	{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)', flags: 'req'},
-	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', pName: 'Новий канал',flags: 'req'},
-	{dName: 'ICTV', sName: 'ICTV', flags: 'req'},
-	{dName: '2+2', sName: '2\\+2', flags: 'req'},
+	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', pName: 'Новый канал',flags: 'req'},
+	{dName: 'ICTV', sName: 'ICTV', pName: 'ICTV (Украина)', flags: 'req'},
+	{dName: '2+2', sName: '2\\+2', pName: '2+2 (кино)', flags: 'req'},
 	{dName: 'ТЕТ', sName: '', flags: 'req'},
 	{dName: 'Мега', sName: '', flags: 'req'},
 	{dName: 'ОЦЕ', sName: 'QTV|OTSE|ОЦЕ', pName: 'ОЦЕ', flags: 'req'},
