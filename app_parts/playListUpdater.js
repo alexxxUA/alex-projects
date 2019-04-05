@@ -750,7 +750,7 @@ Channel.prototype = {
 							'\n\t\t</track>';
 				}
 			case 'm3u':
-				var tvgName = cName.replace(/\s/g, '_'),
+				var tvgName = channel.pName || cName.replace(/\s/g, '_'),
 					cUrl = this.isStringUrl(cId) ? cId : this.getProxyUrl(cId);
 
 				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoUrl(cName) +'",'+ cName +
