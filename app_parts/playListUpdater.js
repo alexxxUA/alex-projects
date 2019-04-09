@@ -1153,7 +1153,6 @@ module.exports = {
 			MainPlaylist_SOURCE.start(function () {
 				BackUpGen_SOURCE.start(function () {
 					MainPlaylist_SOURCE_JSON.start(function(){
-						SecondaryPlaylist_SOURCE.start(function(){
 							MainPlaylistHomepage_tuchka.start(function () {
 								if(cf.playListChannelChecker){
 									ChannelChangeTracker_tucka.start();
@@ -1162,9 +1161,7 @@ module.exports = {
 						});
 					});
 				});
-			});
-		}
-        if(!cf.playlistEnabled && cf.playListChannelChecker){
+		} else if (cf.playListChannelChecker) {
             ChannelChangeTracker_tucka.start();
         }
 	},
