@@ -996,7 +996,7 @@ var SOURCE_CONFIG = {
 	],
 	getChannelId: function(channel, callback, _that){
 		var _that = _that || this,
-		chanId = this.getIdFromSourceString(this.validList, channel);
+			chanId = this.getIdFromSourceString(this.validList, channel);
 
 		if(!chanId){
             _that.failed(channel, 'id not found on the page/frame');

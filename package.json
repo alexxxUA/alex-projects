@@ -14,9 +14,11 @@
   "scripts": {
     "start": "node app.js",
     "develop": "nodemon app.js",
-    "debug": "node --inspect --debug-brk app.js",
+    "debug": "node --inspect-brk app.js",
     "deploy": "git push heroku",
-    "bash": "heroku run bash --app avasin-explorer"
+    "bash": "heroku run bash --app avasin-explorer",
+    "logs": "heroku logs -n 1500 -t",
+    "logs:app": "heroku logs --source app -n 1500 -t"
   },
   "main": "app.js",
   "dependencies": {
