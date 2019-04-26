@@ -44,7 +44,7 @@ function init(app){
 	});
 
 	app.get('/admin', auth.isLogged, auth.isHaveEditAccess, function(req, res){
-		Aliases.find({}, function(err, aliases){
+		Aliases.find({}, null, {sort: {alias: 1}}, function(err, aliases){
 			if(err) throw err;
 			
 			User.find({}, function(err, users){
@@ -190,8 +190,12 @@ function init(app){
 			to = req.body.to,
 			method = req.body.method;
 		
-		function callback(err, msg){
-			if(err) console.log('Email was not send.\n'+ err);
+		function callback(res, err){
+			if(err){
+				return res.status('401').send(`Email was not send: ${err}`);
+			}
+
+			res.send('Message successfully sended!');
 		}
 		if(method == 'url'){
 			needle.get(mailUrl, function(err, resp) {
@@ -202,13 +206,12 @@ function init(app){
 				mail = legacy.decode(resp.raw, 'utf8', {
 					mode: 'html'
 				});
-				email.sendMail(subj, to, mail, callback);
-				res.send('Message successfully sended!');
+				email.sendMail(subj, to, mail, err => callback(res, err));
+				
 			});
 		}
 		else{
-			email.sendMail(subj, to, mail, callback);
-			res.send('Message successfully sended!');
+			email.sendMail(subj, to, mail, err => callback(res, err));
 		}
 	});
 

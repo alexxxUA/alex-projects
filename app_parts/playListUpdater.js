@@ -122,24 +122,38 @@ function Channel(params){
 
     //RegExps array for search channel id or url
     this.cRegExps = [
-		// search in JSON
-		function(channel){
-			return new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img');
+		// Search in .m3u playlist with URL contains "kyivstar"
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kyivstar.*))', 'img');
 		},
+		// Search in .m3u playlist with URL contains "streams"
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streams.*))', 'img');
+		},
+		// Search in .m3u playlist with URL contains "play/"
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
+		},
+		// Search in .m3u playlist
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+		},
+		// search in JSON
+		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
         new RegExp('(?:acestream\:\/\/(.+)?(?:"|\'))', 'img'),
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'img'),
 		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]+)', 'img'),
-        //Search for id in jsonp responce from "this.torApiUrl"
+        //Search for id in jsonp response from "this.torApiUrl"
 		new RegExp('(?:id":")(.+)?(?:",)', 'img'),
-		function(channel){
+		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
-		},
-		function(channel){
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 		}
     ];
 
@@ -1046,12 +1060,23 @@ const JSON_CONFIG = {
     INIT Generator instances
 */
 
-var BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-AS'
 }));
 
-var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-List-VK+Voron',
+	playlistUrl: [
+		'http://urlcut.ru/t.m3u',
+		//'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8'
+	],
+	generateCountPer24h: 24,
+	backUpGen: BackUpGen_SOURCE
+}));
+
+const MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json',
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-TTV',
@@ -1060,30 +1085,30 @@ var MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	maxRestartCount: 1
 }));
 
-var MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
+const MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-acelive'
 }));
 
-var SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV-plus',
 	translitEnabled: true
 }));
 
-var MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-tuchka',
 	generateCountPer24h: 24,
 	backUpGen: BackUpGen_SOURCE
 }));
 
-var MainPlaylist_torStream = new Channel(Object.assign({}, TorStreamMainConfig, {
+const MainPlaylist_torStream = new Channel(Object.assign({}, TorStreamMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV-List-torrent-stream'
 }));
 
-var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	forceGenDelay: 4,
 	isCheckIdForUrl: true,
 	channelsArray: [channels1],
@@ -1093,18 +1118,18 @@ var MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuchkaHomep
 	playlistPartSel: '#jsn-mainbody'
 }));
 
-var SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
 	playListName: 'TV-List-tuchka-plus'
 }));
 
-var MainPlaylist_tucka = new Channel(Object.assign({}, TuckaMainConfig, {
+const MainPlaylist_tucka = new Channel(Object.assign({}, TuckaMainConfig, {
 	channelsArray: [channels1],
     playListName: 'TV-List-tuchka-player'
 }));
 
-var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
     channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
 	firstChannelId: false,
 	generateCountPer24h: 48,
@@ -1150,7 +1175,7 @@ var ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageCon
 module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
-			MainPlaylist_SOURCE.start(function () {
+			MainPlaylistFromM3u.start(function () {
 				BackUpGen_SOURCE.start(function () {
 					MainPlaylist_SOURCE_JSON.start(function(){
 							MainPlaylistHomepage_tuchka.start(function () {
