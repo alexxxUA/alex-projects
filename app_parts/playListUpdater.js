@@ -717,7 +717,7 @@ Channel.prototype = {
 		return JSON.parse(JSON.stringify(array));
 	},
 	getLogoUrl: function(name){
-		return `${this.logoRelativeUrl}${name.replace(/\./g, '').replace(/\s/g, '_')}.png`
+		return `${this.logoRelativeUrl}${name.replace(/\./g, '').replace(/:/g, '').replace(/\s/g, '_')}.png`
 	},
 	getProxyUrl: function(cId) {
 		const isAceliveId = !!cId.match(/\.|-|_/);
