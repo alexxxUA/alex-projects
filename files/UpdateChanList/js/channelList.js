@@ -15,9 +15,9 @@ var channelList = [
 	{dName: '2+2', sName: '2\\+2', pName: '2+2 (кино)', flags: 'req'},
 	{dName: 'ТЕТ', sName: '', flags: 'req'},
 	{dName: 'Сонце', sName: '', flags: 'req'},
-	{dName: 'Україна', sName: 'Україна|ТРК Украина|Украина', flags: 'req'},
-	{dName: 'UA: Перший', sName: 'UA\\: Перший', flags: 'req'},
-	{dName: 'Мега', sName: '', flags: 'req'},
+	{dName: 'Україна', sName: 'Україна|ТРК Украина|Украина', pName: 'Украина', flags: 'req'},
+	{dName: 'UA: Перший', sName: 'UA\\: Перший', pName: 'UA:Перший', flags: 'req'},
+	{dName: 'Мега', sName: '', pName: 'ТК Мега', flags: 'req'},
 	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV|НЛО', pName: 'НЛО-ТВ', flags: ''},
 	{dName: 'ОЦЕ', sName: 'QTV|OTSE|ОЦЕ', pName: 'ОЦЕ', flags: 'req'},
 	{dName: 'К1', sName: 'К1|K1', flags: 'req'},
@@ -29,17 +29,17 @@ var channelList = [
 
 	//Мультики
 	{dName: 'ПлюсПлюс', sName: 'Плюс Плюс', flags: ''},
-	{dName: 'Пиксель ТВ', sName: 'Пиксель', flags: ''},
-	{dName: 'Малятко ТВ', sName: '', pName: 'Малятко ТВ', flags: ''},
+	{dName: 'Пиксель ТВ', sName: 'Пиксель', pName: 'Пиксель', flags: ''},
+	{dName: 'Малятко ТВ', sName: '', flags: ''},
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', pName: 'Детский мир', flags: ''},
 	{dName: 'Мультимания', sName: '', flags: ''},
 	{dName: 'Nick Jr.', sName: 'Nick jr', pName: 'Nick Jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', pName: 'Nickelodeon HD', flags: 'hd req'},
-	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал', pName: 'Disney', flags: 'req'},
+	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал', flags: 'req'},
 	{dName: 'Cartoon Network', sName: '', pName: 'Cartoon Network', flags: 'req'},
-	{dName: '2X2', sName: '', flags: 'req'},
+	{dName: '2X2', sName: '', pName: 'Канал 2x2', flags: 'req'},
 
 	//Разное
 	{dName: 'Мама', sName: '', flags: ''},
@@ -56,7 +56,7 @@ var channelList = [
 	{dName: 'Viasat Nature-History', sName: 'Viasat Nature-History|Viasat Nature/History', pName: 'Viasat Nature/History HD', flags: 'hd req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', pName: 'Viasat Explore', flags: 'req'},
 	{dName: 'HD Life', sName: '', pName: 'HD Life', flags: 'req'},
-	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe|Investigation Discovery', flags: ''},
+	{dName: 'Discovery Investigation', sName: 'Discovery Investigation|Investigation Discovery Europe|Investigation Discovery', pName: 'ID Investigation Discovery', flags: ''},
 	{dName: 'Discovery World !', sName: 'Discovery World|Discovеry Wоrld|Discovery World \\!', flags: ''},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', pName: 'Discovery Science', flags: 'req'},
 	{dName: 'Discovery Science', sName: 'Discovery Science|Discovеry Sciеnce|Discovery  Science', pName: 'Discovery Science', flags: 'hd req'},
@@ -126,7 +126,7 @@ var channelList = [
 	{dName: 'Кинопоказ', sName: '', flags: ''},
 
 	// Новостные
-	{dName: '112 Украина', sName: '', flags: 'hd'},
+	{dName: '112 Украина', sName: '', pName: '112 Україна', flags: 'hd'},
 	{dName: '5 канал (Украина)', sName: '5 канал \\(Украина\\)|5 канал', pName: '5 канал', flags: ''},
 	{dName: '24 Украина', sName: '', flags: ''},
 	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо', flags: ''},
