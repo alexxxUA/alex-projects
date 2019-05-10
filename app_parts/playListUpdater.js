@@ -151,6 +151,8 @@ function Channel(params){
 		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]+)', 'img'),
         //Search for id in jsonp response from "this.torApiUrl"
 		new RegExp('(?:id":")(.+)?(?:",)', 'img'),
+		// JW player
+		new RegExp('(?:file\:\\s*?(?:"|\')(.+)?(?:"|\'))', 'img'),
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
@@ -579,7 +581,7 @@ Channel.prototype = {
 
 		return flagsObj;
 	},
-	getChannelPageUrl: function(channel, _that){
+	getChannelPageUrl: function(channel, _that, isSkipLog){
 		var _that = _that || this,
 			isHd = this.getHdForRegexp(channel),
 			regExpArray = [
@@ -599,7 +601,11 @@ Channel.prototype = {
 
 		//If not found -> failed channel then
 		if(!chanPageUrl){
+			if(isSkipLog) {
+				return false;
+			} else {
 			_that.failed(channel, 'not found on the playlist page');
+		}
 		}
 		//If chanPageUrl with relative path -> add domain value for it
 		else if(!this.isStringUrl(chanPageUrl)){
@@ -1008,14 +1014,23 @@ var SOURCE_CONFIG = {
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'http://91.92.66.82/trash/ttv-list/as.json'
 	],
-	getChannelId: function(channel, callback, _that){
+	getChannelId: function(channel, callback, _that, source = this.validList, isSkipPageUrl){
 		var _that = _that || this,
-			chanId = this.getIdFromSourceString(this.validList, channel);
+			chanId = _that.getIdFromSourceString(source, channel),
+			channelPageUrl = _that.getChannelPageUrl(channel, _that, true);
 
-		if(!chanId){
-            _that.failed(channel, 'id not found on the page/frame');
-        } else {
+		if (chanId) {
 			callback(chanId);
+		} else if (channelPageUrl && !isSkipPageUrl) {
+			needle.request('GET', channelPageUrl, null, {compressed: true, follow_max: 5}, (err, resp) => {
+				if (err || resp.statusCode !== 200){
+					_that.failed(channel, 'error in getting page for channel');
+					return;
+				}
+				_that.getChannelId(channel, callback, _that, resp.body, true);
+			});
+		} else {
+            _that.failed(channel, 'id not found on the page/frame');
 		}
 	}
 }
@@ -1070,6 +1085,7 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playListName: 'TV-List-VK+Voron',
 	playlistUrl: [
 		'http://urlcut.ru/t.m3u',
+		'http://slovenske.tvradio.top/onlinetv.html',
 		//'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8'
 	],
 	generateCountPer24h: 24,
