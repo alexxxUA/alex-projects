@@ -122,6 +122,11 @@ function Channel(params){
 
     //RegExps array for search channel id or url
     this.cRegExps = [
+		// Search in .m3u playlist with URL contains "ygk.info" - voron source
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
+		},
 		// Search in .m3u playlist with URL contains "kyivstar"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
@@ -515,7 +520,11 @@ Channel.prototype = {
 		this.validList = ''
 	},
 	storeValidList: function (respString){
-		this.validList += respString;
+		const list = respString
+			.replace(/#EXTGRP[^$]+?\n/gm, '')
+			.replace(/\s+group-title=".+"\s+/gm, '');
+
+		this.validList += list;
 	},
     getValidPlaylistPart: function (url, isGenInProgress, callback) {
 		const that = this,
@@ -1084,9 +1093,9 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-VK+Voron',
 	playlistUrl: [
+		'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
 		'http://urlcut.ru/t.m3u',
-		'http://slovenske.tvradio.top/onlinetv.html',
-		//'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8'
+		'http://slovenske.tvradio.top/onlinetv.html'
 	],
 	generateCountPer24h: 24,
 	backUpGen: BackUpGen_SOURCE
