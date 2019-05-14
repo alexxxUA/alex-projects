@@ -207,7 +207,14 @@ function Channel(params){
 **/
 Channel.prototype = {
 	playlistGeneratorInstances: [],
-	cache: {},
+	cache: {
+		'/constant/sk': `
+			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
+			#EXTINF:-1, Markíza\nhttp://213.151.233.20:8000/dna-5106-tv-pc/hls/4001v102.m3u8
+			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-360.m3u8
+			#EXTINF:-1, Jednotka\nhttp://gocache3.antik.sk/live/test_stv1_800/playlist.m3u8
+		`
+	},
 	// Cache lifeTime = 5 minutes
 	cacheLifeTime: 1000 * 60 * 5,
 	// Dynamic offset start time
@@ -1100,7 +1107,8 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: [
 		'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
 		'http://urlcut.ru/t.m3u',
-		'http://slovenske.tvradio.top/onlinetv.html'
+		'http://slovenske.tvradio.top/onlinetv.html',
+		'/constant/sk'
 	],
 	generateCountPer24h: 24,
 	backUpGen: BackUpGen_SOURCE
