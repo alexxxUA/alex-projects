@@ -34,7 +34,7 @@ var channelList = [
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', pName: 'Детский мир', flags: ''},
 	{dName: 'Мультимания', sName: '', flags: ''},
-	{dName: 'Nick Jr.', sName: 'Nick jr', pName: 'Nick Jr', flags: 'req'},
+	{dName: 'Nick Jr.', sName: 'Nick jr|Nick Jr\\.', pName: 'Nick Jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', pName: 'Nickelodeon HD', flags: 'hd req'},
 	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал', flags: 'req'},
