@@ -125,32 +125,32 @@ function Channel(params){
 		// Search in .m3u playlist with URL contains "ipnet.ua" - http://tv.ipnet.ua/
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ipnet\\.ua.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ipnet\\.ua.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "ygk.info" - voron source
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "play/"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "kyivstar"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kyivstar.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kyivstar.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "streams"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streams.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streams.*))', 'img');
 		},
 		// Search in .m3u playlist
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 		},
 		// search in JSON
 		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
