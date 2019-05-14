@@ -49,7 +49,7 @@ var channelList = [
 	{dName: 'СТС', sName: '', flags: ''},
 	{dName: 'ТНТ', sName: '', flags: 'req'},
 	{dName: 'Парк развлечений', sName: '', flags: ''},
-	{dName: 'English Club TV', sName: 'English Club TV|English Club', pName: 'English Club TV', flags: 'hd'},
+	{dName: 'English Club TV', sName: 'English Club TV|English Club|English club HD|English club TV HD', pName: 'English Club TV'},
 	
 	//Познавательные
 	{dName: 'Viasat History', sName: '', pName: 'Viasat History', flags: 'req'},

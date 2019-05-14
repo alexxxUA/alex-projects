@@ -122,6 +122,11 @@ function Channel(params){
 
     //RegExps array for search channel id or url
     this.cRegExps = [
+		// Search in .m3u playlist with URL contains "ipnet.ua" - http://tv.ipnet.ua/
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ipnet\\.ua.*))', 'img');
+		},
 		// Search in .m3u playlist with URL contains "ygk.info" - voron source
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
