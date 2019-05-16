@@ -137,10 +137,15 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?213\\.174\\.8\\.7.*))', 'img');
 		},
-		// Search in .m3u playlist with URL contains "streams"
+		// Search in .m3u playlist with URL contains "stream"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streams.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?stream.*))', 'img');
+		},
+		// Search in .m3u playlist with URL contains "212.115.255.204"
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?212\\.115\\.255\\.204.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "play/"
 		channel => {
