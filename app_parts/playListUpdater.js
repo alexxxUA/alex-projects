@@ -147,6 +147,8 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?212\\.115\\.255\\.204.*))', 'img');
 		},
+		// search in JSON
+		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
 		// Search in .m3u playlist with URL contains "play/"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
@@ -162,8 +164,6 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 		},
-		// search in JSON
-		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
         new RegExp('(?:acestream\:\/\/(.+)?(?:"|\'))', 'img'),
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
@@ -218,11 +218,11 @@ function Channel(params){
 Channel.prototype = {
 	playlistGeneratorInstances: [],
 	cache: {
+		// http://slovenske.tvradio.top/onlinetv.html
 		'/constant/sk': `
 			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
 			#EXTINF:-1, Markíza\nhttp://213.151.233.20:8000/dna-5106-tv-pc/hls/4001v102.m3u8
 			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-360.m3u8
-			#EXTINF:-1, Jednotka\nhttp://gocache3.antik.sk/live/test_stv1_800/playlist.m3u8
 		`
 	},
 	// Cache lifeTime = 5 minutes
@@ -1117,11 +1117,11 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: [
 		'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
 		'http://urlcut.ru/t.m3u',
-		'http://slovenske.tvradio.top/onlinetv.html',
+		'http://91.92.66.82/trash/ttv-list/as.json',
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'/constant/sk'
 	],
-	generateCountPer24h: 24,
-	backUpGen: BackUpGen_SOURCE
+	generateCountPer24h: 24
 }));
 
 const MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
