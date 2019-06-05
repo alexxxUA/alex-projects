@@ -4,6 +4,7 @@ const gulp = require('gulp'),
 	compass = require('gulp-compass'),
 	imagemin = require('gulp-imagemin'),
 	pngquant = require('imagemin-pngquant'),
+	mozjpeg = require('imagemin-mozjpeg'),
 	minifyCss = require('gulp-minify-css'),
 	sourcemaps = require('gulp-sourcemaps'),
 	concat = require('gulp-concat'),
@@ -89,12 +90,15 @@ gulp.task('compass', function() {
 gulp.task('img-min', function(){
 	return gulp.src(P.imgMin.src)
 		.pipe(plumber(plumberErrorHandler))
-        .pipe(imagemin({
-			optimizationLevel: 7,
-            progressive: true,
-            svgoPlugins: [{removeViewBox: false}],
-            use: [pngquant()]
-        }))
+        .pipe(imagemin([
+			imagemin.gifsicle({interlaced: true}),
+			imagemin.optipng({optimizationLevel: 7}),
+			imagemin.svgo({
+				plugins: [{removeViewBox: false}]
+			}),
+			pngquant(),
+			mozjpeg({progressive: true, quality: 85})
+		]))
         .pipe(gulp.dest(P.imgMin.dest))
         .pipe(webp())
         .pipe(gulp.dest(P.imgMin.dest));
