@@ -1,0 +1,50 @@
+html,
+body{
+	min-height: 100%;
+	height: 100%;
+	background: #122133;
+	color: #FFF;
+	margin: 0;
+}
+
+.app {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+
+	& &__container {
+		display: block;
+	}
+
+	[inline-template] &__container {
+		display: none;
+	}
+
+	&__loader {
+		display: none;
+		
+
+		[inline-template] & {
+			height: 70vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+}
+
+.main-title {
+	margin-top: 10px;
+	text-align: center;
+}
+
+.favorite {
+    display: flex;
+    flex-wrap: wrap;
+	max-width: 350px;
+	margin: 0 auto 10px;
+
+	&__item {
+		font-size: 12px;
+	}
+}

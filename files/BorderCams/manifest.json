@@ -1,0 +1,20 @@
+{
+  "short_name": "Border Cams",
+  "name": "Камери на кордоні",
+  "start_url": "/BorderCams/index.html",
+  "display": "standalone",
+  "background_color": "#122133",
+  "theme_color": "#122133",
+  "icons": [
+    {
+      "src": "/BorderCams/img/dest/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/BorderCams/img/dest/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

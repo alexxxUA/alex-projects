@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+	<title>Камери на кордоні</title>
+	<link rel="manifest" href="manifest.json">
+	<link rel="shortcut icon" type="image/x-icon" href="img/dest/favicon.ico">
+	<script>
+		var sourceLoader = {
+			isDev: location.search.split('dev=')[1] == 'true' ? true : false,
+			devCss: [
+				'css/reset.css',
+				'css/bootstrap_3.2.0.min.css',
+				'css/base.css'
+			],
+			devJs: [
+				'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+				'js/app.js'
+			],
+			prodCss: ['css/base_min.css'],
+			prodJs: [
+				'https://cdn.jsdelivr.net/npm/vue',
+				'js/app_min.js'
+			],
+			loadCss: function(){
+				var cssArray = this.isDev ? this.devCss : this.prodCss;
+
+				for(var i=0; i<cssArray.length; i++)
+					document.write('<link rel="stylesheet" href="'+ cssArray[i] +'">');
+			},
+			loadJs: function(){
+				var jsArray = this.isDev ? this.devJs : this.prodJs;
+
+				for(var i=0; i<jsArray.length;  i++)
+					document.write('<script src="'+ jsArray[i] +'"><\/script>');
+			}
+		}
+		//Load css files
+		sourceLoader.loadCss();
+	</script>
+</head>
+<body>
+	<header></header>
+	<main id="app" class="app">
+		<h1 class="main-title">Камери на кордоні</h1>
+		<border-cams inline-template>
+			<div>
+				<div class="app__loader">
+					<div class="lds-pacman">
+						<div><div></div><div></div><div></div></div><div><div></div><div></div></div>
+					</div>
+				</div>
+
+				<div class="app__container">
+					<div v-if="favoriteItems.length" class="btn-group-vertical favorite">
+						<button v-for="item in favoriteItems"
+							v-bind:class="['btn btn-default favorite__item', { 'active' : item.src === streamSrc }]"
+							@click="streamSrc = item.src"
+						>
+							{{ item.name }}
+						</button>
+					</div>
+					<iframe v-if="streamSrc" :src="streamSrc.replace('&proto=hls', '')" width="100%" height="400px" frameborder="0"></iframe>
+				</div>
+			</div>
+		</border-cams>
+	</main>
+	<footer></footer>
+	<div class="script-section">
+		<script>
+			//Load js files
+			sourceLoader.loadJs();
+		</script>
+	</div>
+</body>
+</html>

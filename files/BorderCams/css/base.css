@@ -1,0 +1,202 @@
+/* line 1, ../scss/_loader.scss */
+.lds-pacman {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+  transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+}
+
+@keyframes lds-pacman-1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  50% {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+  }
+  100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+@-webkit-keyframes lds-pacman-1 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  50% {
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+  }
+  100% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+}
+@keyframes lds-pacman-2 {
+  0% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+  50% {
+    -webkit-transform: rotate(225deg);
+    transform: rotate(225deg);
+  }
+  100% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+}
+@-webkit-keyframes lds-pacman-2 {
+  0% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+  50% {
+    -webkit-transform: rotate(225deg);
+    transform: rotate(225deg);
+  }
+  100% {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+  }
+}
+@keyframes lds-pacman-3 {
+  0% {
+    -webkit-transform: translate(190px, 0);
+    transform: translate(190px, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translate(70px, 0);
+    transform: translate(70px, 0);
+    opacity: 1;
+  }
+}
+@-webkit-keyframes lds-pacman-3 {
+  0% {
+    -webkit-transform: translate(190px, 0);
+    transform: translate(190px, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translate(70px, 0);
+    transform: translate(70px, 0);
+    opacity: 1;
+  }
+}
+/* line 113, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(2) div {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: 120px;
+  height: 60px;
+  border-radius: 120px 120px 0 0;
+  background: #337ab7;
+  -webkit-animation: lds-pacman-1 1s linear infinite;
+  animation: lds-pacman-1 1s linear infinite;
+  -webkit-transform-origin: 60px 60px;
+  transform-origin: 60px 60px;
+}
+
+/* line 127, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(2) div:nth-child(2) {
+  -webkit-animation: lds-pacman-2 1s linear infinite;
+  animation: lds-pacman-2 1s linear infinite;
+}
+
+/* line 132, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(1) div {
+  position: absolute;
+  top: 92px;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffe520;
+  -webkit-animation: lds-pacman-3 1s linear infinite;
+  animation: lds-pacman-3 1s linear infinite;
+}
+
+/* line 144, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(1) div:nth-child(1) {
+  -webkit-animation-delay: -0.67s;
+  animation-delay: -0.67s;
+}
+
+/* line 149, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(1) div:nth-child(2) {
+  -webkit-animation-delay: -0.33s;
+  animation-delay: -0.33s;
+}
+
+/* line 154, ../scss/_loader.scss */
+.lds-pacman > div:nth-child(1) div:nth-child(3) {
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+/* line 1, ../scss/_global.scss */
+html,
+body {
+  min-height: 100%;
+  height: 100%;
+  background: #122133;
+  color: #FFF;
+  margin: 0;
+}
+
+/* line 10, ../scss/_global.scss */
+.app {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+/* line 15, ../scss/_global.scss */
+.app .app__container {
+  display: block;
+}
+/* line 19, ../scss/_global.scss */
+[inline-template] .app__container {
+  display: none;
+}
+/* line 23, ../scss/_global.scss */
+.app__loader {
+  display: none;
+}
+/* line 27, ../scss/_global.scss */
+[inline-template] .app__loader {
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* line 36, ../scss/_global.scss */
+.main-title {
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* line 41, ../scss/_global.scss */
+.favorite {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 350px;
+  margin: 0 auto 10px;
+}
+/* line 47, ../scss/_global.scss */
+.favorite__item {
+  font-size: 12px;
+}
+
+/*# sourceMappingURL=base.css.map */
