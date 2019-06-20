@@ -1,3 +1,5 @@
+$mobileWidth: 600px;
+
 html,
 body{
 	min-height: 100%;
@@ -36,15 +38,19 @@ body{
 .main-title {
 	margin-top: 10px;
 	text-align: center;
+
+	@media (min-width: $mobileWidth) {
+		width: 100%;
+	}
 }
 
 .favorite {
 	display: flex;
 	flex-wrap: wrap;
 	max-width: 350px;
-	margin: o auto;
+	margin: 0 auto 15px;
 
-	@media (max-width: 450px) {
+	@media (max-width: $mobileWidth) {
 		position: fixed;
 		bottom: 0;
 		left: 50%;

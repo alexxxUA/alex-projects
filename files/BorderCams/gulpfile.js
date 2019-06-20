@@ -1,7 +1,8 @@
 const gulp = require('gulp'),
 	browserSync = require('browser-sync').create(),
 	watch = require('gulp-watch'),
-	compass = require('gulp-compass'),
+	postcss = require('gulp-postcss'),
+	sass = require('gulp-sass'),
 	imagemin = require('gulp-imagemin'),
 	pngquant = require('imagemin-pngquant'),
 	minifyCss = require('gulp-minify-css'),
@@ -14,12 +15,7 @@ const gulp = require('gulp'),
 
 //Post css plugins
 const processors = [
-		require('postcss-import')(),
-		require('postcss-simple-vars'),
-		require('postcss-nested'),
-		require('pixrem')(), // add fallbacks for rem units
-		require('autoprefixer')({browsers: 'last 2 versions, ie 9, ios 6, android 4'}),
-		require('cssnext')()
+		require('autoprefixer')({browsers: 'last 2 versions, ie 9, ios 6, android 4'})
 	];
 
 //Paths
@@ -55,34 +51,14 @@ const P = {
 const plumberErrorHandler = { errorHandler: notify.onError("Error: <%= error.message %>") };
 
 //Post css task
-gulp.task('pcss', function(){
+gulp.task('sass', function(){
 	return gulp.src(P.scss.src)
-		.pipe(plugins.sourcemaps.init())
-        .pipe(plugins.postcss(processors))
-		.pipe(plugins.sourcemaps.write('.'))
-        .pipe(gulp.dest(P.scss.dest));
-});
-
-//Compass task
-gulp.task('compass', function() {
-	gulp.src(P.scss.src)
 		.pipe(plumber(plumberErrorHandler))
-		.pipe(compass({
-			css: 'css',
-			sass: 'scss',
-			javascript: 'js',
-			image: 'img',
-			style: 'expanded', //nested, expanded, compact, or compressed
-			bundleExec: true,
-			relative: true,
-			sourcemap: true,
-			comments: true
-		}))
-		.pipe(gulp.dest(P.scss.dest))
-		.on('error', function(error) {
-			console.log(error);
-			this.emit('end');
-		});
+		.pipe(sourcemaps.init())
+		.pipe(sass().on('error', sass.logError))
+        .pipe(postcss(processors))
+		.pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(P.scss.dest));
 });
 
 //Image min
@@ -125,9 +101,9 @@ gulp.task('watch', function () {
         }
     });
 
-	gulp.watch(P.scss.src, ['compass']);
-	gulp.watch(P.cssMin.src, ['css-min']);
-	gulp.watch(P.jsMin.src, ['js-min']);
+	gulp.watch(P.scss.src, gulp.series('sass'));
+	gulp.watch(P.cssMin.src, gulp.series('css-min'));
+	gulp.watch(P.jsMin.src, gulp.series('js-min'));
 	
 	gulp.watch(P.liveReload, function(e){
 		gulp.src(e.path)
@@ -140,7 +116,7 @@ gulp.task('watch', function () {
 });
 
 //Default task with postCss
-gulp.task('default', gulp.series('compass', 'watch'));
+gulp.task('default', gulp.series('sass', 'watch'));
 
 //Min files
 gulp.task('min', gulp.series('img-min', 'css-min', 'js-min'));
