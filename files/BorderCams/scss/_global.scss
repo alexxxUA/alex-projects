@@ -39,10 +39,17 @@ body{
 }
 
 .favorite {
-    display: flex;
-    flex-wrap: wrap;
+	display: flex;
+	flex-wrap: wrap;
 	max-width: 350px;
-	margin: 0 auto 10px;
+	margin: o auto;
+
+	@media (max-width: 450px) {
+		position: fixed;
+		bottom: 0;
+		left: 50%;
+		transform: translateX(-50%);
+	}
 
 	&__item {
 		font-size: 12px;
