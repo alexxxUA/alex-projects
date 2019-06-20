@@ -66,12 +66,12 @@ const typesByMode = new Map([
  * Mapping of resource types to fetch/cache strategy functions.
  */
 const routesByType = new Map([
-  [types.font, fetchOfflineFirst],
+  [types.font, fetchOnlineFirst],
   [types.iframe, fetchOnlineFirst],
-  [types.image, fetchOfflineFirst],
+  [types.image, fetchOnlineFirst],
   [types.page, fetchOnlineFirst],
-  [types.script, fetchOfflineFirst],
-  [types.stylesheet, fetchOfflineFirst],
+  [types.script, fetchOnlineFirst],
+  [types.stylesheet, fetchOnlineFirst],
   [undefined, fetchOnlineFirst]
 ]);
 
