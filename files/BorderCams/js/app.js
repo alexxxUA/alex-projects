@@ -104,12 +104,23 @@ class BorderCams extends ProxyParser {
             if(countries[el.value]) {
                 countries[el.value].checkpoints.push({
                     name: el.text,
-                    src: el.dataset.link
+                    src: this.updateStreamSrc(el.dataset.link)
                 })
             }
         });
 
         return countries;
+    }
+
+    updateStreamSrc(src) {
+        const srcObj = new URL(src);
+
+        // Set autoplay
+        if(!srcObj.searchParams.get('autoplay')) {
+            srcObj.searchParams.set('autoplay', true);
+        }
+
+        return srcObj.href;
     }
 
     error(msg) {
