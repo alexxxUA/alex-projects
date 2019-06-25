@@ -45,7 +45,7 @@
 	<main id="app" class="app">
 		<h1 class="main-title">Камери на кордоні</h1>
 		<border-cams inline-template>
-			<div>
+			<div class="app__wrap">
 				<div class="app__loader">
 					<div class="lds-pacman">
 						<div><div></div><div></div><div></div></div><div><div></div><div></div></div>
@@ -61,13 +61,15 @@
 							{{ item.name }}
 						</button>
 					</div>
-					<iframe v-if="streamSrc"
-						width="400" height="500"
-						frameborder="0"
-						referrerpolicy="no-referrer"
-						:src="`javascript:window.location.replace('${streamSrc}')`"
-						:key="streamSrc"
-					></iframe>
+					<div class="app__stream-wrap">
+						<iframe v-if="streamSrc"
+							class="app__stream"
+							frameborder="0"
+							referrerpolicy="no-referrer"
+							:src="`javascript:window.location.replace('${streamSrc}')`"
+							:key="streamSrc"
+						></iframe>
+					</div>
 				</div>
 			</div>
 		</border-cams>

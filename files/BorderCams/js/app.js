@@ -1,3 +1,18 @@
+class ServiceWorker {
+    constructor() {
+        this.swUrl = '/sw.js';
+        this.init();
+    }
+
+    init() {
+        if(navigator.serviceWorker && !navigator.serviceWorker.controller) {
+            return navigator.serviceWorker.register(this.swUrl).then(function() {
+                console.info('Service worker registered');
+            })
+        }
+    }
+}
+
 class ProxyParser {
     constructor() {
         this.proxyHref = '/proxy?url=';
@@ -39,6 +54,10 @@ class BorderCams extends ProxyParser {
     }
 
     init() {
+        if (window.orientation !== undefined) {
+            document.body.classList.add('mobile');
+        }
+
         this.renderApp();
     }
 
@@ -53,10 +72,18 @@ class BorderCams extends ProxyParser {
         Vue.component('border-cams', {
             data () {
                 const favoriteCountry = data[_this.favoriteCountry];
+                let favoriteItems = [];;
+
+                if (favoriteCountry) {
+                    favoriteItems = favoriteCountry.checkpoints
+                        .filter(({name}) => !name.includes('вантаж'))
+                        .sort(_this.alphabetSort.bind(_this, 'name'));
+                }
+
                 return {
                     data,
-                    favoriteItems: favoriteCountry ? favoriteCountry.checkpoints : [],
-                    streamSrc: favoriteCountry ? favoriteCountry.checkpoints[0].src : null
+                    favoriteItems,
+                    streamSrc: favoriteItems.length ? favoriteItems[0].src : null
                 }
             },
             mounted() {
@@ -75,6 +102,12 @@ class BorderCams extends ProxyParser {
         });
 
         console.log(data);
+    }
+
+    alphabetSort(prop, a, b) {
+        if(a[prop] < b[prop]) { return 1; }
+        if(a[prop] > b[prop]) { return -1; }
+        return 0;
     }
 
     getData() {
@@ -128,4 +161,8 @@ class BorderCams extends ProxyParser {
     }
 }
 
+// Register Service Worker
+const sw = new ServiceWorker();
+
+// Init App
 const borderCams = new BorderCams();

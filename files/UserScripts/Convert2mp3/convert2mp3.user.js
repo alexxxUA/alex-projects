@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         1.0
+// @version         1.1
 // @name            YouTube -> download MP3 or MP4 from YouTube. convert2mp3.net
 // @namespace       http://avasin.ml
 // @author			A.Vasin
@@ -23,8 +23,8 @@
 class Convert2mp3 {
     constructor() {
         this.btnHolderSel = '#meta-contents #subscribe-button';
-        this.downloadBtnClass = 'convert-2mp3-btn';
-        this.serviceBaseUrl = 'http://convert2mp3.net/addon_call.php';
+        this.downloadBtnClass = 'js-ytube-download';
+        this.serviceBaseUrl = 'https://www.saveclipbro.com/convert?';
         this.initInterval = 400;
         this.btnSize = '10px';
         this.btnPadding = '10px 5px';
@@ -32,11 +32,13 @@ class Convert2mp3 {
         this.langProps = {
             en: {
                 'download.mp3': 'DOWNLOAD MP3',
-                'download.mp4': 'DOWNLOAD MP4'
+                'download.mp4': 'DOWNLOAD MP4',
+                'download': 'DOWNLOAD'
             },
             ru: {
                 'download.mp3': 'СКАЧАТЬ MP3',
-                'download.mp4': 'СКАЧАТЬ MP4'
+                'download.mp4': 'СКАЧАТЬ MP4',
+                'download': 'СКАЧАТЬ'
             }
         }
         this.currentProps = this.langProps[this.language] || this.langProps.en;
@@ -44,8 +46,8 @@ class Convert2mp3 {
         this.init();
     }
 
-    getMp3Html(link) {
-        const downloadUrl = this.getDownloadUrl({format: 'mp3', url: link});
+    getBtnHtml(link) {
+        const downloadUrl = this.getDownloadUrl({url: link});
 
         return `
             <a
@@ -64,32 +66,7 @@ class Convert2mp3 {
                     flex-grow: 1;
                 "
             >
-                ${this.getLangProp('download.mp3')}
-            </a>
-        `;
-    }
-
-    getMp4Html(link) {
-        const downloadUrl = this.getDownloadUrl({format: 'mp4', url: link});
-
-        return `
-            <a
-                href="${downloadUrl}"
-                target="_blank"
-                class="${this.downloadBtnClass}"
-                style="
-                    border: 2px solid #ff9800;
-                    padding: ${this.btnPadding};
-                    font-size: ${this.btnSize};
-                    font-weight: 500;
-                    text-align: center;
-                    margin: 5px 4px 0;
-                    color: #ff9800;
-                    text-decoration: none;
-                    flex-grow: 1;
-                "
-            >
-                ${this.getLangProp('download.mp4')}
+                ${this.getLangProp('download')}
             </a>
         `;
     }
@@ -115,10 +92,8 @@ class Convert2mp3 {
         return this.currentProps[id];
     }
     
-    getDownloadUrl(params = {}) {
-        const paramString = Object.keys(params).map(param => `${param}=${encodeURIComponent(params[param])}`).join('&');
-
-        return `${this.serviceBaseUrl}?${paramString}`;
+    getDownloadUrl({url} = {}) {
+        return `${this.serviceBaseUrl}main_search[linkToDownload]=${encodeURIComponent(url)}`;
     }
 
     getNodeFromString(string) {
@@ -130,14 +105,12 @@ class Convert2mp3 {
 
     appendBtns(appendToEl) {
         const url = document.location.href;
-        const mp3Html = this.getMp3Html(url);
-        const mp4Html = this.getMp4Html(url);
+        const btnHtml = this.getBtnHtml(url);
         const downloadWrapper = this.getNodeFromString(`
             <div style="
                 display: flex;
             ">
-                ${mp3Html}
-                ${mp4Html}
+                ${btnHtml}
             </div>
         `);
 

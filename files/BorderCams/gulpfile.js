@@ -105,14 +105,14 @@ gulp.task('watch', function () {
 	gulp.watch(P.cssMin.src, gulp.series('css-min'));
 	gulp.watch(P.jsMin.src, gulp.series('js-min'));
 	
-	gulp.watch(P.liveReload, function(e){
+	/* gulp.watch(P.liveReload, function(e){
 		gulp.src(e.path)
 			.pipe(plumber(plumberErrorHandler))
 			.pipe(browserSync.stream())
 			.pipe(notify(
 				e.path.replace(__dirname, '').replace(/\\/g, '/') + ' changed/reloaded'
 			));
-	});
+	}); */
 });
 
 //Default task with postCss
