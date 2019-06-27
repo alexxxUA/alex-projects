@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         1.1
+// @version         1.2
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://avasin.ml
 // @author			A.Vasin
@@ -253,7 +253,7 @@ class YouTubeSaver {
     downloadFile(url, btn) {
         const errhandler = () => btn.innerText = 'Failed';
         this.downloadFrame.onerror = errhandler;
-        this.downloadFrame.onload = () => { if(this.downloadFrame.innerHTML) errhandler()};
+        this.downloadFrame.onload = () => { if(!this.downloadFrame.innerHTML) errhandler()};
         this.downloadFrame.src = url;
     }
 
