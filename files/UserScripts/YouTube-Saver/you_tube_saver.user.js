@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         1.2
+// @version         1.0
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://avasin.ml
 // @author			A.Vasin
@@ -9,7 +9,7 @@
 // @compatible      opera
 // @compatible      safari
 // @icon            https://avasin.ml/UserScripts/YouTube-Saver/logo.png
-// @match           http*://www.youtube.com/*
+// @include         http*://www.youtube.com/*
 // @include      	http*://*.youtube.com/*
 // @include      	http*://youtube.com/*
 // @include      	http*://*.youtu.be/*
