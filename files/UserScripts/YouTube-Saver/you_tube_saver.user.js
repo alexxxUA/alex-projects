@@ -241,7 +241,13 @@ class YouTubeSaver {
 
     downloadFile(url, btn) {
         this.downloadFrame.onerror = this.downloadFailed.bind(this, btn);
-        this.downloadFrame.onload = () => { if(!this.downloadFrame.innerHTML) this.downloadFailed(btn)};
+        this.downloadFrame.onload = () => {
+            if(!this.downloadFrame.innerHTML) {
+                this.downloadFailed(btn);
+                this.downloadFrame.onload = null;
+                this.downloadFrame.onerror = null;
+            }
+        };
         this.downloadFrame.src = url;
     }
 
@@ -258,7 +264,6 @@ class YouTubeSaver {
                 if(status === 'finished') {
                     _this.downloadFile(dlMusic, btn);
                     setTimeout(_this.toggleLoader.bind(_this, btn, false), 500);
-                    ;
                 } else {
                     setTimeout(_this.onAudioDownload.bind(_this, btn, e), _this.checkInterval);
                 }
