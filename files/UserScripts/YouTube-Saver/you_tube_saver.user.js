@@ -52,6 +52,23 @@ class YouTubeSaver {
     }
 
     getVideoUrls() {
+
+        fetch(window.location.href).then(resp => resp.text()).then(res => {
+            // console.log(res);
+            var parser = new DOMParser();
+            
+            var dom = parser.parseFromString(res, "text/html");
+            var script = dom.querySelectorAll('script');
+            
+            script.forEach(el => {
+                if(el.innerText.match(/ytplayer\.config\s*=/i)) {
+                    eval(el.innerText);
+                    console.log(ytplayer.config);
+                }
+            })
+            
+            });
+            
         return ytplayer.config.args.adaptive_fmts
             .split(',')
             .map(item => item
