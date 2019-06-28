@@ -14,6 +14,7 @@
 // @include      	http*://youtube.com/*
 // @include      	http*://*.youtu.be/*
 // @include      	http*://youtu.be/*
+// @grant           GM_download
 // @run-at       	document-idle
 // @copyright   	2019-02-11 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
@@ -48,6 +49,24 @@ class YouTubeSaver {
         this.currentProps = this.langProps[this.language] || this.langProps.en;
 
         this.init();
+    }
+
+    getVideoUrls() {
+        return ytplayer.config.args.adaptive_fmts
+            .split(',')
+            .map(item => item
+                .split('&')
+                .reduce((prev, curr) => (curr = curr.split('='),
+                Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
+                ), {})
+            )
+            .reduce((prev, curr) => Object.assign(prev, {
+                [curr.quality_label || curr.type]: curr
+            }), {});
+    }
+
+    testDownload() {
+        GM_download("https://r4---sn-nf5o-cune.googlevideo.com/videoplayback?expire=1561749377&ei=IBMWXduQMoj51wLcgZtA&ip=195.12.152.88&id=o-AFF6xZzDK3_wOUMqc4P5ONNWI5E65-ZQuKJmmQ60Sgmo&itag=140&source=youtube&requiressl=yes&mm=31%2C29&mn=sn-nf5o-cune%2Csn-2gb7sn7s&ms=au%2Crdu&mv=m&pcm2cms=yes&pl=19&initcwndbps=1045000&mime=audio%2Fmp4&gir=yes&clen=21054817&dur=1325.627&lmt=1534545037774971&mt=1561727637&fvip=6&keepalive=yes&c=WEB&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=ALgxI2wwRQIgFc1e7n1uY0vCC1YaadcGKfdOsIMbEd468R0uDMclVW8CIQDzybMuqpR_Vsld_IcO0OT5ygFofThEnfzsQCnsXujTAg%3D%3D&lsparams=mm%2Cmn%2Cms%2Cmv%2Cpcm2cms%2Cpl%2Cinitcwndbps&lsig=AHylml4wRQIgVl7VTXFG3rRFzcdF0RQYu_H2YjOB6YxSSQCcK8tSBUYCIQD2qq8S76CFVT6q3d3DrYUGarL2wu2am-QhBBA554leCg%3D%3D", 'Test.mp3');
     }
 
     getAudioBtnHtml(link) {
