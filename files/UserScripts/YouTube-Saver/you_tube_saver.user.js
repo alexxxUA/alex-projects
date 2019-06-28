@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         1.1
+// @version         3.0
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://avasin.ml
 // @author			A.Vasin
