@@ -1,7 +1,7 @@
 // ==UserScript==
 // @version         3.0
 // @name            YouTube -> download MP3 or Video from YouTube.
-// @namespace       https://avasin.ml
+// @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
 // @description     Simple YouTube MP3 & MP4 download buttons. Simple and fast.
 // @compatible      chrome
