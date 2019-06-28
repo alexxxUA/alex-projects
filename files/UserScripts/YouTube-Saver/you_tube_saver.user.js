@@ -49,28 +49,30 @@ class YouTubeSaver {
         }
         this.currentProps = this.langProps[this.language] || this.langProps.en;
         this.domParser = new DOMParser();
+        this.parsingInProgress = false;
 
         this.init();
     }
 
-    async getVideoUrls(url) {
-        const config = await this.getConfig(url);
-
-        if(config) {
-            return config.args.adaptive_fmts
-                .split(',')
-                .map(item => item
-                    .split('&')
-                    .reduce((prev, curr) => (curr = curr.split('='),
-                    Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
-                    ), {})
-                )
-                .reduce((prev, curr) => Object.assign(prev, {
-                    [curr.quality_label || curr.type]: curr
-                }), {});
-        } else {
-            return false;
-        }
+    getVideoUrls(url) {
+        return this.getConfig(url)
+            .then(config => {
+                if(config) {
+                    return config.args.adaptive_fmts
+                        .split(',')
+                        .map(item => item
+                            .split('&')
+                            .reduce((prev, curr) => (curr = curr.split('='),
+                            Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
+                            ), {})
+                        )
+                        .reduce((prev, curr) => Object.assign(prev, {
+                            [curr.quality_label || curr.type]: curr
+                        }), {});
+                } else {
+                    return false;
+                }
+            })
     }
 
     getConfig(url) {
@@ -81,16 +83,11 @@ class YouTubeSaver {
             .then(res => {
                 const dom = _this.domParser.parseFromString(res, "text/html");
                 const scripts = dom.querySelectorAll('script');
-                const confEl = [...scripts].find(el => el.innerText.match(this.configregExp));
+                const confEl = [...scripts].find(el => el.innerHTML.match(this.configregExp));
 
-                try {
-                    eval(confEl.innerText);
-                } catch (error) {
-                    console.error('Config not found');
-                    var ytplayer = {}
-                }
+                eval(confEl.innerHTML);
 
-                return ytplayer.config;
+                return ytplayer && ytplayer.config;
             });
     }
 
@@ -142,6 +139,7 @@ class YouTubeSaver {
                 href="${href}"
                 target="_blank"
                 class="${classNames}"
+                style="color: ${color}; border-color: ${color}"
             >
                 ${this.getLangProp(propId)}
             </a>
@@ -161,7 +159,8 @@ class YouTubeSaver {
             
             // Append download buttons in case download mp3 button not available
             // && placeholder exist on page
-            if(!downloadBtn && appendToEl) {
+            if(!downloadBtn && appendToEl && !this.parsingInProgress) {
+                this.parsingInProgress = true;
                 this.appendBtns(appendToEl);
             }
         }, this.initInterval);
@@ -184,15 +183,9 @@ class YouTubeSaver {
                 font-weight: 500;
                 text-align: center;
                 margin: 5px 4px 0;
-                color: #3f51b5;
                 text-decoration: none;
                 flex-grow: 1;
                 text-transform: uppercase;
-            }
-
-            .${this.downloadAudioClass} {
-                border-color: #ff5722;
-                color: #ff5722;
             }
             .loading {
                 pointer-events: none;
@@ -280,26 +273,35 @@ class YouTubeSaver {
         return (match && match[7].length==11) ? match[7] : false;
     }
 
-    appendBtns(appendToEl) {
+    findUrlByType(conf, type) {
+        const key = Object.keys(conf).find(item => item.includes(type));
+
+        return key && conf[key] && conf[key].url;
+    }
+
+    async appendBtns(appendToEl) {
         const url = document.location.href;
-        const videoUrls = this.getVideoUrls(url);
-debugger;
+        const videoUrls = await this.getVideoUrls(url);
+        const audioUrl = this.findUrlByType(videoUrls, 'audio/mp4');
+        const videoUrl = this.findUrlByType(videoUrls, '720p');
+
         console.log(videoUrls);
         
-        const audioBtnHtml = this.getAudioBtnHtml(url);
-        const genBtnHtml = this.getGenBtnHtml(url);
+        const audioBtnHtml = this.getBtn({href: audioUrl, color: '#ff5722', propId: 'download.mp3', classNames: `${this.downloadBtnClass} ${this.downloadAudioClass}`});
+        const videoBtnHtml = this.getBtn({href: videoUrl, color: '#3f51b5', propId: 'download.video', classNames: `${this.downloadBtnClass}`});
         const downloadWrapper = this.getNodeFromString(`
             <div style="
                 display: flex;
             ">
                 ${audioBtnHtml}
-                ${genBtnHtml}
+                ${videoBtnHtml}
             </div>
         `);
 
         //append buttons to the page
         appendToEl.append(downloadWrapper);
         this.bindEvents(appendToEl);
+        this.parsingInProgress = false;
     }
 
     downloadFile(url, btn) {
