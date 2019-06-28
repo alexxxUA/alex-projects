@@ -26,6 +26,7 @@ class YouTubeSaver {
         this.btnHolderSel = '#meta-contents #subscribe-button';
         this.downloadBtnClass = 'js-ytube-download';
         this.downloadAudioClass = 'js-mp3-download';
+        this.configregExp = /ytplayer\.config\s*=/i;
         this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
         this.baseServiceUrl = 'https://www.saveclipbro.com/convert?';
         this.initInterval = 400;
@@ -47,39 +48,50 @@ class YouTubeSaver {
             }
         }
         this.currentProps = this.langProps[this.language] || this.langProps.en;
+        this.domParser = new DOMParser();
 
         this.init();
     }
 
-    getVideoUrls() {
+    async getVideoUrls(url) {
+        const config = await this.getConfig(url);
 
-        fetch(window.location.href).then(resp => resp.text()).then(res => {
-            // console.log(res);
-            var parser = new DOMParser();
-            
-            var dom = parser.parseFromString(res, "text/html");
-            var script = dom.querySelectorAll('script');
-            
-            script.forEach(el => {
-                if(el.innerText.match(/ytplayer\.config\s*=/i)) {
-                    eval(el.innerText);
-                    console.log(ytplayer.config);
+        if(config) {
+            return config.args.adaptive_fmts
+                .split(',')
+                .map(item => item
+                    .split('&')
+                    .reduce((prev, curr) => (curr = curr.split('='),
+                    Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
+                    ), {})
+                )
+                .reduce((prev, curr) => Object.assign(prev, {
+                    [curr.quality_label || curr.type]: curr
+                }), {});
+        } else {
+            return false;
+        }
+    }
+
+    getConfig(url) {
+        const _this = this;
+
+        return fetch(url)
+            .then(resp => resp.text())
+            .then(res => {
+                const dom = _this.domParser.parseFromString(res, "text/html");
+                const scripts = dom.querySelectorAll('script');
+                const confEl = [...scripts].find(el => el.innerText.match(this.configregExp));
+
+                try {
+                    eval(confEl.innerText);
+                } catch (error) {
+                    console.error('Config not found');
+                    var ytplayer = {}
                 }
-            })
-            
+
+                return ytplayer.config;
             });
-            
-        return ytplayer.config.args.adaptive_fmts
-            .split(',')
-            .map(item => item
-                .split('&')
-                .reduce((prev, curr) => (curr = curr.split('='),
-                Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
-                ), {})
-            )
-            .reduce((prev, curr) => Object.assign(prev, {
-                [curr.quality_label || curr.type]: curr
-            }), {});
     }
 
     testDownload() {
@@ -119,8 +131,24 @@ class YouTubeSaver {
         `;
     }
 
+    getBtn({
+        href,
+        classNames = this.downloadBtnClass,
+        color = '#3f51b5',
+        propId = 'download'
+    }) {
+        return `
+            <a
+                href="${href}"
+                target="_blank"
+                class="${classNames}"
+            >
+                ${this.getLangProp(propId)}
+            </a>
+        `;
+    }
+
     init() {
-        this.addDownloadIframe();
         this.addStyles();
 
         this.initDownloadBtn();
@@ -220,11 +248,6 @@ class YouTubeSaver {
         document.body.append(style);
     }
 
-    addDownloadIframe() {
-        this.downloadFrame = document.createElement('iframe');
-        document.body.append(this.downloadFrame);
-    }
-
     getLangProp(id) {
         return this.currentProps[id];
     }
@@ -259,6 +282,10 @@ class YouTubeSaver {
 
     appendBtns(appendToEl) {
         const url = document.location.href;
+        const videoUrls = this.getVideoUrls(url);
+debugger;
+        console.log(videoUrls);
+        
         const audioBtnHtml = this.getAudioBtnHtml(url);
         const genBtnHtml = this.getGenBtnHtml(url);
         const downloadWrapper = this.getNodeFromString(`
