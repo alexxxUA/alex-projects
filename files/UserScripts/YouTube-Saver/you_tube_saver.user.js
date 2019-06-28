@@ -26,15 +26,15 @@ class YouTubeSaver {
         this.btnHolderSel = '#meta-contents #subscribe-button';
         this.downloadBtnClass = 'js-ytube-download';
         this.downloadAudioClass = 'js-mp3-download';
-        this.configregExp = /ytplayer\.config\s*=/i;
-        this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
+        this.configRegExp = /ytplayer\.config\s*=/i;
         this.baseServiceUrl = 'https://www.saveclipbro.com/convert?';
         this.initInterval = 400;
         this.checkInterval = 1000;
         this.btnSize = '10px';
         this.btnPadding = '10px 5px';
+        this.defBtnColor = '#ff5722';
+        this.audioConf = {format: 'audio/mp4', ext: 'mp3'};
         this.language = (navigator.language || navigator.userLanguage).split('-')[0];
-        this.loaderHtml = '<div class="loader"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>';
         this.langProps = {
             en: {
                 'download.mp3': 'Download MP3',
@@ -54,101 +54,8 @@ class YouTubeSaver {
         this.init();
     }
 
-    getVideoUrls(url) {
-        return this.getConfig(url)
-            .then(config => {
-                if(config) {
-                    return config.args.adaptive_fmts
-                        .split(',')
-                        .map(item => item
-                            .split('&')
-                            .reduce((prev, curr) => (curr = curr.split('='),
-                            Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
-                            ), {})
-                        )
-                        .reduce((prev, curr) => Object.assign(prev, {
-                            [curr.quality_label || curr.type]: curr
-                        }), {});
-                } else {
-                    return false;
-                }
-            })
-    }
-
-    getConfig(url) {
-        const _this = this;
-
-        return fetch(url)
-            .then(resp => resp.text())
-            .then(res => {
-                const dom = _this.domParser.parseFromString(res, "text/html");
-                const scripts = dom.querySelectorAll('script');
-                const confEl = [...scripts].find(el => el.innerHTML.match(this.configregExp));
-
-                eval(confEl.innerHTML);
-
-                return ytplayer && ytplayer.config;
-            });
-    }
-
-    testDownload() {
-        GM_download("https://r4---sn-nf5o-cune.googlevideo.com/videoplayback?expire=1561749377&ei=IBMWXduQMoj51wLcgZtA&ip=195.12.152.88&id=o-AFF6xZzDK3_wOUMqc4P5ONNWI5E65-ZQuKJmmQ60Sgmo&itag=140&source=youtube&requiressl=yes&mm=31%2C29&mn=sn-nf5o-cune%2Csn-2gb7sn7s&ms=au%2Crdu&mv=m&pcm2cms=yes&pl=19&initcwndbps=1045000&mime=audio%2Fmp4&gir=yes&clen=21054817&dur=1325.627&lmt=1534545037774971&mt=1561727637&fvip=6&keepalive=yes&c=WEB&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&sig=ALgxI2wwRQIgFc1e7n1uY0vCC1YaadcGKfdOsIMbEd468R0uDMclVW8CIQDzybMuqpR_Vsld_IcO0OT5ygFofThEnfzsQCnsXujTAg%3D%3D&lsparams=mm%2Cmn%2Cms%2Cmv%2Cpcm2cms%2Cpl%2Cinitcwndbps&lsig=AHylml4wRQIgVl7VTXFG3rRFzcdF0RQYu_H2YjOB6YxSSQCcK8tSBUYCIQD2qq8S76CFVT6q3d3DrYUGarL2wu2am-QhBBA554leCg%3D%3D", 'Test.mp3');
-    }
-
-    getAudioBtnHtml(link) {
-        const downloadUrl = this.getAudioDownloadUrl({url: link});
-
-        if(!downloadUrl) {
-            return '';
-        }
-
-        return `
-            <a
-                href="${downloadUrl}"
-                target="_blank"
-                class="${this.downloadBtnClass} ${this.downloadAudioClass}"
-            >
-                ${this.loaderHtml}
-                ${this.getLangProp('download.mp3')}
-            </a>
-        `;
-    }
-
-    getGenBtnHtml(link) {
-        const downloadUrl = this.getBaseDownloadUrl({url: link});
-
-        return `
-            <a
-                href="${downloadUrl}"
-                target="_blank"
-                class="${this.downloadBtnClass}"
-            >
-                ${this.getLangProp('download')}
-            </a>
-        `;
-    }
-
-    getBtn({
-        href,
-        classNames = this.downloadBtnClass,
-        color = '#3f51b5',
-        propId = 'download'
-    }) {
-        return `
-            <a
-                href="${href}"
-                target="_blank"
-                class="${classNames}"
-                style="color: ${color}; border-color: ${color}"
-            >
-                ${this.getLangProp(propId)}
-            </a>
-        `;
-    }
-
     init() {
         this.addStyles();
-
         this.initDownloadBtn();
     }
     
@@ -159,17 +66,18 @@ class YouTubeSaver {
             
             // Append download buttons in case download mp3 button not available
             // && placeholder exist on page
-            if(!downloadBtn && appendToEl && !this.parsingInProgress) {
-                this.parsingInProgress = true;
+            if(!downloadBtn && appendToEl) {
                 this.appendBtns(appendToEl);
             }
         }, this.initInterval);
     }
 
     bindEvents(ctx) {
-        const audioBtn = ctx.querySelector(`.${this.downloadAudioClass}`);
+        const btns = ctx.querySelectorAll('[data-format]');
 
-        audioBtn && audioBtn.addEventListener('click', this.onAudioDownload.bind(this, audioBtn));
+        if(btns && btns.length) {
+            btns.forEach(btn => btn.addEventListener('click', this.onDownload.bind(this, btn)))
+        }
     }
 
     addStyles() {
@@ -177,7 +85,7 @@ class YouTubeSaver {
         const css = `
             .${this.downloadBtnClass} {
                 position: relative;
-                border: 2px solid #3f51b5;
+                border: 2px solid ${this.defBtnColor};
                 padding: ${this.btnPadding};
                 font-size: ${this.btnSize};
                 font-weight: 500;
@@ -202,10 +110,11 @@ class YouTubeSaver {
                 width: 100%;
                 height: 100%;
                 text-align: center;
-                font-size: 10px;
+                font-size: 0;
+                background: #FFF;
             }
             .loader>div {
-                background-color: #ff5722;
+                background-color: ${this.defBtnColor};
                 height: 100%;
                 width: 6px;
                 margin: 0 1px;
@@ -241,22 +150,99 @@ class YouTubeSaver {
         document.body.append(style);
     }
 
+    appendBtns(appendToEl) {
+        const audioBtnHtml = this.getAudioBtnHtml();
+        const genBtnHtml = this.getGenBtnHtml(document.location.href);
+        const downloadWrapper = this.getNodeFromString(`
+            <div style="
+                display: flex;
+            ">
+                ${audioBtnHtml}
+                ${genBtnHtml}
+            </div>
+        `);
+
+        //append buttons to the page
+        appendToEl.append(downloadWrapper);
+        this.bindEvents(appendToEl);
+    }
+
     getLangProp(id) {
         return this.currentProps[id];
     }
 
-    getAudioDownloadUrl({url} = {}) {
-        const id = this.getVideoId(url);
+    getVideoData(url) {
+        return this.fetchConfig(url)
+            .then(config => {
+                if(config) {
+                    const mediaObj = config.args.adaptive_fmts.split(',')
+                        .map(item => item
+                            .split('&')
+                            .reduce((prev, curr) => (curr = curr.split('='),
+                            Object.assign(prev, {[curr[0]]: decodeURIComponent(curr[1])})
+                            ), {})
+                        )
+                        .reduce((prev, curr) => Object.assign(prev, {
+                            [curr.quality_label || curr.type]: curr
+                        }), {});
 
-        if(!id) {
-            console.warn('Video ID not found/parsed.');
-            return id;
-        }
-
-        return `${this.audioServiceBaseUrl}${id}`;
+                    return {
+                        mediaObj,
+                        title: config.args.title
+                    }
+                } else {
+                    return {};
+                }
+            })
     }
-    
-    getBaseDownloadUrl({url} = {}) {
+
+    getBtn({
+        href = '#',
+        classNames = this.downloadBtnClass,
+        color = this.defBtnColor,
+        propId = 'download',
+        format,
+        ext
+    }) {
+        return `
+            <a
+                ${ href ? `href="${href}"` : ''}
+                ${ format ? `data-format="${format}"` : ''}
+                ${ ext ? `data-ext="${ext}"` : ''}
+                target="_blank"
+                class="${classNames}"
+                style="color: ${color}; border-color: ${color}"
+            >
+                ${this.getLangProp(propId)}
+                <div class="loader">
+                    <div class="rect1" style="background-color: ${color}"></div>
+                    <div class="rect2" style="background-color: ${color}"></div>
+                    <div class="rect3" style="background-color: ${color}"></div>
+                    <div class="rect4" style="background-color: ${color}"></div>
+                    <div class="rect5" style="background-color: ${color}"></div>
+                </div>
+            </a>
+        `;
+    }
+
+    getAudioBtnHtml() {
+        return this.getBtn({
+            ...this.audioConf,
+            propId: 'download.mp3',
+            classNames: `${this.downloadBtnClass} ${this.downloadAudioClass}`
+        });
+    }
+
+    getGenBtnHtml(link) {
+        return this.getBtn({
+            href: this.getGenDownloadUrl({url: link}),
+            propId: 'download',
+            classNames: `${this.downloadBtnClass}`,
+            color: '#3f51b5'
+        });
+    }
+
+    getGenDownloadUrl({url} = {}) {
         return `${this.baseServiceUrl}main_search[linkToDownload]=${encodeURIComponent(url)}`;
     }
 
@@ -267,73 +253,57 @@ class YouTubeSaver {
         return div.firstChild;
     }
 
-    getVideoId(url) {
-        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-        var match = url.match(regExp);
-        return (match && match[7].length==11) ? match[7] : false;
+    fetchConfig(url) {
+        const _this = this;
+
+        return fetch(url)
+            .then(resp => resp.text())
+            .then(res => {
+                const dom = _this.domParser.parseFromString(res, "text/html");
+                const scripts = dom.querySelectorAll('script');
+                const confEl = [...scripts].find(el => el.innerText.match(this.configRegExp));
+
+                if(confEl) {
+                    eval(confEl.innerText);
+                }
+
+                return ytplayer && ytplayer.config;
+            });
     }
 
-    findUrlByType(conf, type) {
+    findUrlByType(conf = {}, type) {
         const key = Object.keys(conf).find(item => item.includes(type));
 
         return key && conf[key] && conf[key].url;
     }
 
-    async appendBtns(appendToEl) {
-        const url = document.location.href;
-        const videoUrls = await this.getVideoUrls(url);
-        const audioUrl = this.findUrlByType(videoUrls, 'audio/mp4');
-        const videoUrl = this.findUrlByType(videoUrls, '720p');
-
-        console.log(videoUrls);
-        
-        const audioBtnHtml = this.getBtn({href: audioUrl, color: '#ff5722', propId: 'download.mp3', classNames: `${this.downloadBtnClass} ${this.downloadAudioClass}`});
-        const videoBtnHtml = this.getBtn({href: videoUrl, color: '#3f51b5', propId: 'download.video', classNames: `${this.downloadBtnClass}`});
-        const downloadWrapper = this.getNodeFromString(`
-            <div style="
-                display: flex;
-            ">
-                ${audioBtnHtml}
-                ${videoBtnHtml}
-            </div>
-        `);
-
-        //append buttons to the page
-        appendToEl.append(downloadWrapper);
-        this.bindEvents(appendToEl);
-        this.parsingInProgress = false;
-    }
-
-    downloadFile(url, btn) {
-        this.downloadFrame.onerror = this.downloadFailed.bind(this, btn);
-        this.downloadFrame.onload = () => {
-            if(!this.downloadFrame.innerHTML) {
-                this.downloadFailed(btn);
-                this.downloadFrame.onload = null;
-                this.downloadFrame.onerror = null;
-            }
-        };
-        this.downloadFrame.src = url;
-    }
-
-    onAudioDownload(btn, e) {
+    onDownload(btn, e) {
         e.preventDefault();
         const _this = this;
-        const url = btn.href;
+        const url = document.location.href;
 
+        // Show loader
         this.toggleLoader(btn);
 
-        fetch(url)
-            .then(resp => resp.json())
-            .then(({dlMusic, status}) => {
-                if(status === 'finished') {
-                    _this.downloadFile(dlMusic, btn);
-                    setTimeout(_this.toggleLoader.bind(_this, btn, false), 500);
+        // Fetch URLs data
+        return this.getVideoData(url)
+            .then(({mediaObj, title}) => {
+                const { format, ext } = btn.dataset;
+                const audioUrl = _this.findUrlByType(mediaObj, format);
+
+                if(audioUrl) {
+                    // Start downloading
+                    GM_download(audioUrl, `${title}.${ext}`);
+                    // Hide loader
+                    setTimeout(_this.toggleLoader.bind(_this, btn, false), 1000);
                 } else {
-                    setTimeout(_this.onAudioDownload.bind(_this, btn, e), _this.checkInterval);
+                    throw new Error('Audio URL not found');
                 }
             })
-            .catch(_this.downloadFailed.bind(_this, btn));
+            .catch(msg => {
+                console.error(msg);
+                _this.downloadFailed.call(_this, btn);
+            });
     }
 
     downloadFailed(btn) {
@@ -353,6 +323,10 @@ class YouTubeSaver {
             if(msg) {
                 btn.innerText = msg;
             }
+        }
+
+        if(!isActivate) {
+            delete unsafeWindow.ytplayer;
         }
     }
 }
