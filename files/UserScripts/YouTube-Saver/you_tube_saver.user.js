@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         1.0
+// @version         1.1
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://avasin.ml
 // @author			A.Vasin
@@ -28,6 +28,7 @@ class YouTubeSaver {
         this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
         this.baseServiceUrl = 'https://www.saveclipbro.com/convert?';
         this.initInterval = 400;
+        this.checkInterval = 1000;
         this.btnSize = '10px';
         this.btnPadding = '10px 5px';
         this.language = (navigator.language || navigator.userLanguage).split('-')[0];
@@ -251,9 +252,8 @@ class YouTubeSaver {
     }
 
     downloadFile(url, btn) {
-        const errhandler = () => btn.innerText = 'Failed';
-        this.downloadFrame.onerror = errhandler;
-        this.downloadFrame.onload = () => { if(!this.downloadFrame.innerHTML) errhandler()};
+        this.downloadFrame.onerror = this.downloadFailed.bind(this, btn);
+        this.downloadFrame.onload = () => { if(!this.downloadFrame.innerHTML) this.downloadFailed(btn)};
         this.downloadFrame.src = url;
     }
 
@@ -272,10 +272,20 @@ class YouTubeSaver {
                     setTimeout(_this.toggleLoader.bind(_this, btn, false), 500);
                     ;
                 } else {
-                    _this.onAudioDownload(btn, e);
+                    setTimeout(_this.onAudioDownload.bind(_this, btn, e), _this.checkInterval);
                 }
             })
-            .catch(() => _this.toggleLoader(btn, false, 'Failed'))
+            .catch(_this.downloadFailed.bind(_this, btn));
+    }
+
+    downloadFailed(btn) {
+        const alternativeBtn = btn.nextElementSibling;
+        this.toggleLoader(btn, false);
+
+        // Try alternative download BTN
+        if (alternativeBtn) {
+            alternativeBtn.click();
+        }
     }
 
     toggleLoader(btn, isActivate = true, msg) {
