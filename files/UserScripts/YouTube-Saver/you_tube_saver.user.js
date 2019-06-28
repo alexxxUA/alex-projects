@@ -15,6 +15,7 @@
 // @include      	http*://*.youtu.be/*
 // @include      	http*://youtu.be/*
 // @grant           GM_download
+// @grant           GM_addStyle
 // @run-at       	document-idle
 // @copyright   	2019-02-11 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
@@ -81,8 +82,7 @@ class YouTubeSaver {
     }
 
     addStyles() {
-        const style = document.createElement('style');
-        const css = `
+        GM_addStyle(`
             .${this.downloadBtnClass} {
                 position: relative;
                 border: 2px solid ${this.defBtnColor};
@@ -144,10 +144,7 @@ class YouTubeSaver {
                 }
             }
 
-        `;
-
-        style.appendChild(document.createTextNode(css));
-        document.body.append(style);
+        `);
     }
 
     appendBtns(appendToEl) {
@@ -264,10 +261,10 @@ class YouTubeSaver {
                 const confEl = [...scripts].find(el => el.innerText.match(this.configRegExp));
 
                 if(confEl) {
-                    eval(confEl.innerText);
+                    eval(`${confEl.innerText}; _this.ytplayer = ytplayer;`);
                 }
 
-                return ytplayer && ytplayer.config;
+                return _this.ytplayer && _this.ytplayer.config;
             });
     }
 
@@ -293,16 +290,20 @@ class YouTubeSaver {
 
                 if(audioUrl) {
                     // Start downloading
-                    GM_download(audioUrl, `${title}.${ext}`);
-                    // Hide loader
-                    setTimeout(_this.toggleLoader.bind(_this, btn, false), 1000);
+                    console.log(audioUrl);
+                    GM_download({
+                        url: audioUrl,
+                        name: `${title}.${ext}`,
+                        onerror: _this.downloadFailed.bind(_this, btn),
+                        onload: _this.toggleLoader.bind(_this, btn, false)
+                    });
                 } else {
                     throw new Error('Audio URL not found');
                 }
             })
             .catch(msg => {
                 console.error(msg);
-                _this.downloadFailed.call(_this, btn);
+                _this.downloadFailed(btn);
             });
     }
 
@@ -326,7 +327,7 @@ class YouTubeSaver {
         }
 
         if(!isActivate) {
-            delete unsafeWindow.ytplayer;
+            delete this.ytplayer;
         }
     }
 }
