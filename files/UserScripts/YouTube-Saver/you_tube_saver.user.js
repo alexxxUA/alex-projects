@@ -295,7 +295,7 @@ class YouTubeSaver {
                         url: audioUrl,
                         name: `${title}.${ext}`,
                         onerror: _this.downloadFailed.bind(_this, btn),
-                        onload: _this.toggleLoader.bind(_this, btn, false)
+                        onload: () => _this.toggleLoader(btn, false)
                     });
                 } else {
                     throw new Error('Audio URL not found');
