@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.0
+// @version         3.1
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -25,13 +25,21 @@ class YouTubeSaver {
         this.btnHolderSel = '#meta-contents #subscribe-button';
         this.downloadBtnClass = 'js-ytube-download';
         this.downloadAudioClass = 'js-mp3-download';
+        this.language = (navigator.language || navigator.userLanguage).split('-')[0];
+        this.defaultLang = 'en';
+        this.baseServiceSupportedLangs = ['en', 'ru', 'sk', 'it', 'es', 'fr', 'de', 'nl', 'pt', 'tr', 'no', 'kr', 'jp', 'pl', 'cn', 'hu', 'in', 'ro', 'gr', 'cz', 'bg', 'rs', 'sa', 'id'];
+        this.baseServiceLang = this.baseServiceSupportedLangs.includes(this.language) ? this.language : this.defaultLang;
+        this.baseServiceUrl = `https://www.flvto.biz/convert?service=youtube&url=`;
+        this.formatMap = {
+            mp3: '1',
+            mp4: '8',
+            mp4HD: '7'
+        };
         this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
-        this.baseServiceUrl = 'https://www.saveclipbro.com/convert?';
         this.initInterval = 400;
         this.checkInterval = 1000;
         this.btnSize = '10px';
         this.btnPadding = '10px 5px';
-        this.language = (navigator.language || navigator.userLanguage).split('-')[0];
         this.loaderHtml = '<div class="loader"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>';
         this.langProps = {
             en: {
@@ -45,7 +53,7 @@ class YouTubeSaver {
                 'download': 'Скачать'
             }
         }
-        this.currentProps = this.langProps[this.language] || this.langProps.en;
+        this.currentProps = this.langProps[this.language] || this.langProps[this.defaultLang];
 
         this.init();
     }
@@ -69,8 +77,8 @@ class YouTubeSaver {
         `;
     }
 
-    getGenBtnHtml(link) {
-        const downloadUrl = this.getBaseDownloadUrl({url: link});
+    getVideoBtnHtml(link) {
+        const downloadUrl = this.getBaseDownloadUrl({url: link, format: this.formatMap.mp4});
 
         return `
             <a
@@ -78,7 +86,7 @@ class YouTubeSaver {
                 target="_blank"
                 class="${this.downloadBtnClass}"
             >
-                ${this.getLangProp('download')}
+                ${this.getLangProp('download.video')}
             </a>
         `;
     }
@@ -204,8 +212,8 @@ class YouTubeSaver {
         return `${this.audioServiceBaseUrl}${id}`;
     }
     
-    getBaseDownloadUrl({url} = {}) {
-        return `${this.baseServiceUrl}main_search[linkToDownload]=${encodeURIComponent(url)}`;
+    getBaseDownloadUrl({url, format = this.formatMap.mp3} = {}) {
+        return `${this.baseServiceUrl}${encodeURIComponent(url)}&format=${format}`;
     }
 
     getNodeFromString(string) {
@@ -224,13 +232,13 @@ class YouTubeSaver {
     appendBtns(appendToEl) {
         const url = document.location.href;
         const audioBtnHtml = this.getAudioBtnHtml(url);
-        const genBtnHtml = this.getGenBtnHtml(url);
+        const videoBtnHtml = this.getVideoBtnHtml(url);
         const downloadWrapper = this.getNodeFromString(`
             <div style="
                 display: flex;
             ">
                 ${audioBtnHtml}
-                ${genBtnHtml}
+                ${videoBtnHtml}
             </div>
         `);
 
@@ -272,13 +280,10 @@ class YouTubeSaver {
     }
 
     downloadFailed(btn) {
-        const alternativeBtn = btn.nextElementSibling;
+        const alternativeUrl = this.getBaseDownloadUrl({url: window.location.href});
         this.toggleLoader(btn, false);
 
-        // Try alternative download BTN
-        if (alternativeBtn) {
-            alternativeBtn.click();
-        }
+        window.open(alternativeUrl, '_blank');
     }
 
     toggleLoader(btn, isActivate = true, msg) {
