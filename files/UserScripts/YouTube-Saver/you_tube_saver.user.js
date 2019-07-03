@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.1
+// @version         3.2
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -14,6 +14,8 @@
 // @include      	http*://youtube.com/*
 // @include      	http*://*.youtu.be/*
 // @include      	http*://youtu.be/*
+// @grant           GM_addStyle
+// @grant           GM_download
 // @run-at       	document-idle
 // @copyright   	2019-02-11 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
@@ -29,7 +31,7 @@ class YouTubeSaver {
         this.defaultLang = 'en';
         this.baseServiceSupportedLangs = ['en', 'ru', 'sk', 'it', 'es', 'fr', 'de', 'nl', 'pt', 'tr', 'no', 'kr', 'jp', 'pl', 'cn', 'hu', 'in', 'ro', 'gr', 'cz', 'bg', 'rs', 'sa', 'id'];
         this.baseServiceLang = this.baseServiceSupportedLangs.includes(this.language) ? this.language : this.defaultLang;
-        this.baseServiceUrl = `https://www.flvto.biz/convert?service=youtube&url=`;
+        this.baseServiceUrl = `https://www.flvto.biz/${this.baseServiceLang}/convert?service=youtube&url=`;
         this.formatMap = {
             mp3: '1',
             mp4: '8',
@@ -92,9 +94,7 @@ class YouTubeSaver {
     }
 
     init() {
-        this.addDownloadIframe();
         this.addStyles();
-
         this.initDownloadBtn();
     }
     
@@ -118,8 +118,7 @@ class YouTubeSaver {
     }
 
     addStyles() {
-        const style = document.createElement('style');
-        const css = `
+        GM_addStyle(`
             .${this.downloadBtnClass} {
                 position: relative;
                 border: 2px solid #3f51b5;
@@ -186,15 +185,7 @@ class YouTubeSaver {
                 }
             }
 
-        `;
-
-        style.appendChild(document.createTextNode(css));
-        document.body.append(style);
-    }
-
-    addDownloadIframe() {
-        this.downloadFrame = document.createElement('iframe');
-        document.body.append(this.downloadFrame);
+        `);
     }
 
     getLangProp(id) {
@@ -229,6 +220,10 @@ class YouTubeSaver {
         return (match && match[7].length==11) ? match[7] : false;
     }
 
+    getVideoTitle() {
+        return (document.querySelector('.ytp-title-link') || document.title).innerText;
+    }
+
     appendBtns(appendToEl) {
         const url = document.location.href;
         const audioBtnHtml = this.getAudioBtnHtml(url);
@@ -248,15 +243,12 @@ class YouTubeSaver {
     }
 
     downloadFile(url, btn) {
-        this.downloadFrame.onerror = this.downloadFailed.bind(this, btn);
-        this.downloadFrame.onload = () => {
-            if(!this.downloadFrame.innerHTML) {
-                this.downloadFailed(btn);
-                this.downloadFrame.onload = null;
-                this.downloadFrame.onerror = null;
-            }
-        };
-        this.downloadFrame.src = url;
+        GM_download({
+            url,
+            name: `${this.getVideoTitle()}.mp3`,
+            onerror: () => this.downloadFailed(btn),
+            onload: () => this.toggleLoader(btn, false)
+        });
     }
 
     onAudioDownload(btn, e) {
@@ -271,7 +263,6 @@ class YouTubeSaver {
             .then(({dlMusic, status}) => {
                 if(status === 'finished') {
                     _this.downloadFile(dlMusic, btn);
-                    setTimeout(_this.toggleLoader.bind(_this, btn, false), 500);
                 } else {
                     setTimeout(_this.onAudioDownload.bind(_this, btn, e), _this.checkInterval);
                 }
