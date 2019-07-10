@@ -1,6 +1,6 @@
 // ==UserScript==
 // @version         1.0
-// @name            YouTube -> download MP3 or Video from YouTube.
+// @name            YouTube -> download MP3 (with Album cover) or Video from YouTube.
 // @author			A.Vasin
 // @description     Simple YouTube MP3 & MP4 download buttons. Simple and fast.
 // @compatible      chrome
