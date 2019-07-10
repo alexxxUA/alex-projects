@@ -1,14 +1,13 @@
 // ==UserScript==
-// @version         3.3
+// @version         1.0
 // @name            YouTube -> download MP3 or Video from YouTube.
-// @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
 // @description     Simple YouTube MP3 & MP4 download buttons. Simple and fast.
 // @compatible      chrome
 // @compatible      firefox
 // @compatible      opera
 // @compatible      safari
-// @icon            https://avasin.ml/UserScripts/YouTube-Saver/logo.png
+// @icon            https://avasin.ml/UserScripts/YouTube-Saver-ID3/logo.png
 // @include         http*://www.youtube.com/*
 // @include      	http*://*.youtube.com/*
 // @include      	http*://youtube.com/*
@@ -16,6 +15,8 @@
 // @include      	http*://youtu.be/*
 // @grant           GM_addStyle
 // @grant           GM_download
+// @grant           GM_xmlhttpRequest
+// @require         https://cdn.jsdelivr.net/npm/browser-id3-writer@4.1.0/dist/browser-id3-writer.min.js
 // @run-at       	document-idle
 // @copyright   	2019-02-11 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
@@ -38,6 +39,7 @@ class YouTubeSaver {
             mp4HD: '7'
         };
         this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
+        this.thumbnailFormat = 'hqdefault';
         this.initInterval = 400;
         this.checkInterval = 1000;
         this.btnSize = '10px';
@@ -96,8 +98,10 @@ class YouTubeSaver {
     init() {
         this.addStyles();
         this.initDownloadBtn();
+
+        this.downloadLink = document.createElement('a');
     }
-    
+
     initDownloadBtn() {
         setInterval(() => {
             const appendToEl = document.querySelector(this.btnHolderSel);
@@ -202,7 +206,7 @@ class YouTubeSaver {
 
         return `${this.audioServiceBaseUrl}${id}`;
     }
-    
+
     getBaseDownloadUrl({url, format = this.formatMap.mp3} = {}) {
         return `${this.baseServiceUrl}${encodeURIComponent(url)}&format=${format}`;
     }
@@ -224,6 +228,10 @@ class YouTubeSaver {
         return (document.querySelector('.ytp-title-link') || document.title).innerText;
     }
 
+    getVideoCover(url){
+        return `https://img.youtube.com/vi/${this.getVideoId(url)}/${this.thumbnailFormat}.jpg`;
+    }
+
     appendBtns(appendToEl) {
         const url = document.location.href;
         const audioBtnHtml = this.getAudioBtnHtml(url);
@@ -242,12 +250,75 @@ class YouTubeSaver {
         this.bindEvents(appendToEl);
     }
 
-    downloadFile(url, btn) {
+    downloadFile({name, btn, url}) {
         GM_download({
             url,
-            name: `${this.getVideoTitle()}.mp3`,
-            onerror: () => this.downloadFailed(btn),
+            name,
+            onerror: (err) => {
+                this.downloadFailed(btn);
+                console.error(err);
+            },
             onload: () => this.toggleLoader(btn, false)
+        });
+    }
+
+    downloadBlob({name, btn, writer}) {
+        this.downloadLink.href = writer.getURL();
+        this.downloadLink.download = name;
+
+        // Download file
+        this.downloadLink.click();
+
+        // Hide loader
+        this.toggleLoader(btn, false);
+
+        // Clean up memory from ArrayBuffer
+        setTimeout(() => writer.revokeURL(), 15000);
+
+    }
+
+    downloadAudio(url, btn) {
+        const _this = this;
+        const coverUrl = this.getVideoCover(document.location.href);
+        const title = _this.getVideoTitle();
+        const downloadName = `${title}.mp3`;
+
+        Promise
+            .all([this.getArrayBuffer(url), this.getArrayBuffer(coverUrl)])
+            .then(([audioBuffer, coverBuffer]) => {
+                const writer = new ID3Writer(audioBuffer);
+
+                // Write ID3 tags
+                writer
+                    .setFrame('TIT2', title)    // Song title
+                    .setFrame('TALB', url)      // Album title - used in order to display Album thumbnail (APIC) on mobile devices
+                    .setFrame('APIC', {         // Album cover image
+                        type: 3,
+                        data: coverBuffer,
+                        description: title
+                    });
+
+                // Save tags
+                writer.addTag();
+
+                // Download arrayBuffer with updated ID3 tags
+                _this.downloadBlob({name: downloadName, btn, writer});
+            })
+            .catch((err) => {
+                this.downloadFile({name: downloadName, btn, url})
+                console.error(err);
+            });
+    }
+
+    getArrayBuffer(url) {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url,
+                responseType: 'arraybuffer',
+                onload: ({ response }) => resolve(response),
+                onerror: reject
+            })
         });
     }
 
@@ -260,10 +331,10 @@ class YouTubeSaver {
 
         fetch(url)
             .then(resp => resp.json())
-            .then(({dlMusic, status}) => {
+            .then(({dlMusic, status, error}) => {
                 switch (status) {
                     case 'finished':
-                        _this.downloadFile(dlMusic, btn);
+                        _this.downloadAudio(dlMusic, btn);
                         break;
                     case 'error':
                         throw new Error(error);
