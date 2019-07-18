@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.3
+// @version         3.4
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -53,6 +53,16 @@ class YouTubeSaver {
                 'download.mp3': 'Скачать MP3',
                 'download.video': 'Скачать ВИДЕО',
                 'download': 'Скачать'
+            },
+            sk: {
+                'download.mp3': 'Stiahnuť MP3',
+                'download.video': 'Stiahnuť VIDEO',
+                'download': 'Stiahnuť'
+            },
+            ua: {
+                'download.mp3': 'Скачати MP3',
+                'download.video': 'Скачати VIDEO',
+                'download': 'Скачати'
             }
         }
         this.currentProps = this.langProps[this.language] || this.langProps[this.defaultLang];

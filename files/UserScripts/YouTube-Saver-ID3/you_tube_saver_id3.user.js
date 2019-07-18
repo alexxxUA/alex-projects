@@ -55,6 +55,16 @@ class YouTubeSaver {
                 'download.mp3': 'Скачать MP3',
                 'download.video': 'Скачать ВИДЕО',
                 'download': 'Скачать'
+            },
+            sk: {
+                'download.mp3': 'Stiahnuť MP3',
+                'download.video': 'Stiahnuť VIDEO',
+                'download': 'Stiahnuť'
+            },
+            ua: {
+                'download.mp3': 'Скачати MP3',
+                'download.video': 'Скачати VIDEO',
+                'download': 'Скачати'
             }
         }
         this.currentProps = this.langProps[this.language] || this.langProps[this.defaultLang];
