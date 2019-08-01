@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.4
+// @version         3.5
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -106,6 +106,7 @@ class YouTubeSaver {
     init() {
         this.addStyles();
         this.initDownloadBtn();
+        this.addDownloadIframe();
     }
     
     initDownloadBtn() {
@@ -125,6 +126,11 @@ class YouTubeSaver {
         const audioBtn = ctx.querySelector(`.${this.downloadAudioClass}`);
 
         audioBtn && audioBtn.addEventListener('click', this.onAudioDownload.bind(this, audioBtn));
+    }
+
+    addDownloadIframe() {
+        this.downloadFrame = document.createElement('iframe');
+        document.body.append(this.downloadFrame);
     }
 
     addStyles() {
@@ -253,12 +259,17 @@ class YouTubeSaver {
     }
 
     downloadFile(url, btn) {
-        GM_download({
-            url,
-            name: `${this.getVideoTitle()}.mp3`,
-            onerror: () => this.downloadFailed(btn),
-            onload: () => this.toggleLoader(btn, false)
-        });
+        this.downloadFrame.onerror = this.downloadFailed.bind(this, btn);
+        /*
+            TODO: Update handling error case
+            this.downloadFrame.onload = () => {
+            if(!this.downloadFrame.innerHTML) {
+                this.downloadFailed(btn);
+                this.downloadFrame.onload = null;
+                this.downloadFrame.onerror = null;
+            }
+        }; */
+        this.downloadFrame.src = url;
     }
 
     onAudioDownload(btn, e) {
@@ -274,6 +285,7 @@ class YouTubeSaver {
                 switch (status) {
                     case 'finished':
                         _this.downloadFile(dlMusic, btn);
+                        setTimeout(_this.toggleLoader.bind(_this, btn, false), 500);
                         break;
                     case 'error':
                         throw new Error(error);
