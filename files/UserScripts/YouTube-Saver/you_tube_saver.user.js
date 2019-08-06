@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.5
+// @version         3.6
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -71,15 +71,17 @@ class YouTubeSaver {
     }
 
     getAudioBtnHtml(link) {
-        const downloadUrl = this.getAudioDownloadUrl({url: link});
+        const apiDownloadUrl = this.getAudioDownloadUrl({url: link});
+        const downloadUrl = this.getBaseDownloadUrl({url: link, format: this.formatMap.mp3});
 
-        if(!downloadUrl) {
+        if(!apiDownloadUrl) {
             return '';
         }
 
         return `
             <a
                 href="${downloadUrl}"
+                data-href="${apiDownloadUrl}"
                 target="_blank"
                 class="${this.downloadBtnClass} ${this.downloadAudioClass}"
             >
@@ -255,7 +257,9 @@ class YouTubeSaver {
 
         //append buttons to the page
         appendToEl.append(downloadWrapper);
-        this.bindEvents(appendToEl);
+
+        // TODO: uncomment events for audio button
+        // this.bindEvents(appendToEl);
     }
 
     downloadFile(url, btn) {
