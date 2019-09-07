@@ -132,30 +132,20 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
 		},
-		// Search in .m3u playlist with URL contains "kv-3ln" - voron source
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kv-3ln.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains "lb1" - voron source
+		// Search in .m3u playlist with URL contains "lb1"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?lb1.*))', 'img');
 		},
-		// Search in .m3u playlist with URL contains "213.174.8.7"
+		// Search in .m3u playlist with URL contains "streamer.sktv.peers.tv"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?213\\.174\\.8\\.7.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streamer\\.sktv\\.peers\\.tv.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "stream"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?stream.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains "95.216.187.219"
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?95\\.216\\.187\\.219.*))', 'img');
 		},
 		// search in JSON
 		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
@@ -163,11 +153,6 @@ function Channel(params){
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains "kyivstar"
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kyivstar.*))', 'img');
 		},
 		// Search in .m3u playlist
 		channel => {
