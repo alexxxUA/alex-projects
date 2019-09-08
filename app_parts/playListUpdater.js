@@ -137,10 +137,10 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?lb1.*))', 'img');
 		},
-		// Search in .m3u playlist with URL contains "188.128.15.118"
+		// Search in .m3u playlist with URL contains ":8080/play"
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?188\\.128\\.15\\.118.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?\\:8080\\/play.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "streamer.sktv.peers.tv"
 		channel => {
