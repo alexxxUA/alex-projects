@@ -1,7 +1,12 @@
-var fs = require('fs'),
+const fs = require('fs'),
 	path = require('path'),
 	cf = require('./../config/config.js'),
 	fileTypeIcon = require('./fileTypeIcon.js');
+
+// TODO: Move to databse
+const hiddenPaths = [
+	'/UpdateChanList/LastValidPlaylist'
+];
 
 function readFolder(req, res){
 	var p =  decodeURI(path.join(filesP, req.path)),
@@ -61,6 +66,13 @@ function readFolder(req, res){
 		files.forEach(function(file, i){
 			var stat = fs.statSync(path.join(p, file)),
 				normalizedPath = path.join(req.path, file).replace(/\\/g, '/');
+
+			// TODO: Empty folder case
+			// If user is guest
+			// and folder/file is hidden -> skip it
+			if(!res.user.isLogged && hiddenPaths.includes(normalizedPath)) {
+				return;
+			}
 
 			if(stat.isDirectory()){
 				dom.dirs.push({
