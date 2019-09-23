@@ -4,6 +4,7 @@ const fs = require('fs'),
 	fileTypeIcon = require('./fileTypeIcon.js');
 
 // TODO: Move to databse
+// TODO: Hide child files directories
 const hiddenPaths = [
 	'/UpdateChanList/LastValidPlaylist'
 ];
