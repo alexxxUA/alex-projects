@@ -18,7 +18,7 @@ var channelList = [
 	{dName: 'Україна', sName: 'Україна|ТРК Украина|Украина', pName: 'Украина', flags: 'req'},
 	{dName: 'UA: Перший', sName: 'UA\\: Перший', pName: 'UA:Перший', flags: 'req'},
 	{dName: 'Мега', sName: '', pName: 'ТК Мега', flags: 'req'},
-	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV|НЛО', pName: 'НЛО-ТВ', flags: ''},
+	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV|НЛО|NLO TV1', pName: 'НЛО-ТВ', flags: ''},
 	{dName: 'ОЦЕ', sName: 'QTV|OTSE|ОЦЕ', pName: 'ОЦЕ', flags: 'req'},
 	{dName: 'К1', sName: 'К1|K1', flags: 'req'},
 	{dName: 'Пятница', sName: '', flags: ''},
@@ -38,7 +38,8 @@ var channelList = [
 	{dName: 'Nick Jr.', sName: 'Nick jr|Nick Jr\\.', pName: 'Nick Jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', pName: 'Nickelodeon HD', flags: 'hd req'},
-	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал', flags: 'req'},
+	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал|Disney', flags: 'req'},
+	{dName: 'Disney EN', sName: 'Disney XD', pName: 'Disney Channel', flags: 'req'},
 	{dName: 'Cartoon Network', sName: '', pName: 'Cartoon Network', flags: 'req'},
 	{dName: '2X2', sName: '', pName: 'Канал 2x2', flags: 'req'},
 
@@ -67,7 +68,7 @@ var channelList = [
 	{dName: 'DTX', sName: '', flags: ''},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', pName: 'National Geographic HD', flags: 'hd req'},
-	{dName: 'History Channel', sName: 'History Channel|History', pName: 'History HD', flags: 'req'},
+	{dName: 'History Channel', sName: 'History Channel|History|History Russia', pName: 'History HD', flags: 'req'},
 	{dName: 'History Channel', sName: 'History Channel|History', pName: 'History HD', flags: 'hd req'},
 	{dName: 'TLC', sName: '', flags: ''},
 	{dName: 'TLC', sName: '', pName: 'TLC HD', flags: 'hd'},
@@ -89,7 +90,7 @@ var channelList = [
 	{dName: 'Охотник и рыболов', sName: '', pName: 'Охотник и рыболов HD', flags: 'hd'},
 
 	// Кухня
-	{dName: 'Еда HD', sName: 'Еда ТВ|Еда|Еда HD', flags: ''},
+	{dName: 'Еда HD', sName: 'Еда ТВ|Еда|Еда HD|ЕДА Премиум', flags: ''},
 	{dName: 'Кухня ТВ', sName: '', pName: 'Кухня ТВ', flags: 'req'},
 	{dName: 'Food Network', sName: 'Food Network|Food Netwоrk', pName: 'Food Network', flags: ''},
 	{dName: 'Food Network', sName: 'Food Netwоrk', pName: 'Food Network HD', flags: 'hd'},
@@ -121,21 +122,21 @@ var channelList = [
 	{dName: 'Amedia Premium', sName: '', pName: 'Amedia Premium HD', flags: 'hd req'},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: ''},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: 'hd'},
-	{dName: 'Enter Film', sName: 'Enter Film|Enter-фильм', flags: ''},
+	{dName: 'Enter Film', sName: 'Enter Film|Enter-фильм|Enter-фільм', flags: ''},
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: ''},
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: 'hd'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
 
 	// Новостные
-	{dName: '112 Украина', sName: '', pName: '112 Україна', flags: 'hd'},
+	{dName: '112 Украина', sName: '112 Украина HD|112 Україна HD|112 Україна', pName: '112 Україна', flags: ''},
 	{dName: '5 канал (Украина)', sName: '5 канал \\(Украина\\)|5 канал', pName: '5 канал', flags: ''},
-	{dName: '24 Украина', sName: '', flags: ''},
-	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо', flags: ''},
+	{dName: '24 Украина', sName: '24 Канал', flags: ''},
+	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV', flags: ''},
 
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', pName: 'MTV Hits', flags: ''},
 	{dName: 'MTV Dance', sName: '', pName: 'MTV Dance', flags: ''},
-	{dName: 'Music Box UA', sName: '', pName: 'Music Box UA', flags: ''},
+	{dName: 'Music Box UA', sName: '', pName: 'Music Box UA|Music Box UA HD', flags: ''},
 	{dName: 'М1', sName: 'М1|M1', flags: 'req'},
 	{dName: 'М2', sName: 'М2|M2', flags: ''},
 	{dName: 'O-TV', sName: '', flags: 'req'},
