@@ -120,7 +120,20 @@ function Channel(params){
         }
     };
 
-    //RegExps array for search channel id or url
+	//--- RegExps array for search channel id or url
+
+	// Search in .m3u playlist with URL contains "ygk.info" - voron source
+	this.voronRegExp = channel => {
+		var isHd = this.getHdForRegexp(channel);
+		return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
+	};
+
+	// Search in .m3u playlist
+	this.m3uRegExp = channel => {
+		var isHd = this.getHdForRegexp(channel);
+		return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+	};
+
     this.cRegExps = [
 		// Search in .m3u playlist with URL contains "ipnet.ua" - http://tv.ipnet.ua/
 		channel => {
@@ -131,6 +144,12 @@ function Channel(params){
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
+		},
+		this.voronRegExp,
+		// Search in .m3u playlist with URL contains "kv-3ln" - voron source
+		channel => {
+			var isHd = this.getHdForRegexp(channel);
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kv-3ln.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "lb1"
 		channel => {
@@ -154,11 +173,7 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
 		},
-		// Search in .m3u playlist
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
-		},
+		this.m3uRegExp,
         new RegExp('(?:acestream\:\/\/(.+)?(?:"|\'))', 'img'),
         new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
         new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
@@ -204,6 +219,10 @@ function Channel(params){
 		if (params.hasOwnProperty(param))
 			this[param] = params[param];
 	}
+	if(this.instanceInit) {
+		this.instanceInit();
+	}
+
     this.init();
 }
 
@@ -1119,6 +1138,24 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	generateCountPer24h: 24
 }));
 
+const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-List-E',
+	playlistUrl: [
+		'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
+		'http://bf1808d1d378.aikonkz.ru/playlists/uplist/1ee49997d73253165f73745be3c83628/playlist.m3u8',
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
+		'/constant/sk'
+	],
+	generateCountPer24h: 24,
+	instanceInit() {
+		this.cRegExps = [
+			this.voronRegExp,
+			this.m3uRegExp
+		]
+	}
+}));
+
 const MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json',
 	channelsArray: [channels1, channelListSk],
@@ -1219,8 +1256,9 @@ module.exports = {
 	init: function(){
 		if(cf.playlistEnabled){
 			MainPlaylistFromM3u.start(function () {
-				BackUpGen_SOURCE.start(function () {
-					MainPlaylist_SOURCE_JSON.start(function(){
+				EdemList.start(function () {
+					BackUpGen_SOURCE.start(function () {
+						MainPlaylist_SOURCE_JSON.start(function(){
 							MainPlaylistHomepage_tuchka.start(function () {
 								if(cf.playListChannelChecker){
 									ChannelChangeTracker_tucka.start();
@@ -1229,6 +1267,7 @@ module.exports = {
 						});
 					});
 				});
+			});
 		} else if (cf.playListChannelChecker) {
             ChannelChangeTracker_tucka.start();
         }

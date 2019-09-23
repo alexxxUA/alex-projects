@@ -31,7 +31,7 @@ class YouTubeSaver {
         this.defaultLang = 'en';
         this.baseServiceSupportedLangs = ['en', 'ru', 'sk', 'it', 'es', 'fr', 'de', 'nl', 'pt', 'tr', 'no', 'kr', 'jp', 'pl', 'cn', 'hu', 'in', 'ro', 'gr', 'cz', 'bg', 'rs', 'sa', 'id'];
         this.baseServiceLang = this.baseServiceSupportedLangs.includes(this.language) ? this.language : this.defaultLang;
-        this.baseServiceUrl = `https://www.flvto.biz/${this.baseServiceLang}/convert?service=youtube&url=`;
+        this.baseServiceUrl = `https://www.flvto.biz/${this.baseServiceLang}/convert?service=youtube&url=`; //https://y2mate.com/ru/youtube/sWgiVmcjt8c
         this.formatMap = {
             mp3: '1',
             mp4: '8',
