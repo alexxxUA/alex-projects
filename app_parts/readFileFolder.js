@@ -3,12 +3,6 @@ const fs = require('fs'),
 	cf = require('./../config/config.js'),
 	fileTypeIcon = require('./fileTypeIcon.js');
 
-// TODO: Move to databse
-// TODO: Hide child files directories
-const hiddenPaths = [
-	'/UpdateChanList/LastValidPlaylist'
-];
-
 function readFolder(req, res){
 	var p =  decodeURI(path.join(filesP, req.path)),
 		isReload = req.query.reload == 'true' ? true : false,
@@ -68,10 +62,10 @@ function readFolder(req, res){
 			var stat = fs.statSync(path.join(p, file)),
 				normalizedPath = path.join(req.path, file).replace(/\\/g, '/');
 
-			// TODO: Empty folder case
+			// TODO: Empty folder case.
 			// If user is guest
 			// and folder/file is hidden -> skip it
-			if(!res.user.isLogged && hiddenPaths.includes(normalizedPath)) {
+			if(!res.user.accessEdit && cf.hiddenPaths.includes(normalizedPath)) {
 				return;
 			}
 

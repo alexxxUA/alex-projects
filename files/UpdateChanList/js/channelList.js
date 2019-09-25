@@ -37,6 +37,7 @@ var channelList = [
 	{dName: 'Мультимания', sName: '', flags: ''},
 	{dName: 'Nick Jr.', sName: 'Nick jr|Nick Jr\\.', pName: 'Nick Jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
+	{dName: 'Nickelodeon EN', sName: '', pName: 'Nickelodeon', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', pName: 'Nickelodeon HD', flags: 'hd req'},
 	{dName: 'Disney Channel', sName: 'Disney Chanel|Канал Disney|Disney канал|Disney', flags: 'req'},
 	{dName: 'Disney EN', sName: 'Disney XD', pName: 'Disney Channel', flags: 'req'},
@@ -54,6 +55,7 @@ var channelList = [
 	{dName: 'English Club TV', sName: 'English Club TV|English Club|English club HD|English club TV HD', pName: 'English Club TV'},
 	
 	//Познавательные
+	{dName: 'Viasat Nature', sName: '', flags: 'req'},
 	{dName: 'Viasat History', sName: '', pName: 'Viasat History', flags: 'req'},
 	{dName: 'Viasat Nature-History', sName: 'Viasat Nature-History|Viasat Nature/History', pName: 'Viasat Nature/History HD', flags: 'hd req'},
 	{dName: 'Viasat Explore', sName: 'Viasat Explore|Viasat Explorer', pName: 'Viasat Explore', flags: 'req'},
@@ -66,7 +68,7 @@ var channelList = [
 	{dName: 'Discovery Channel', sName: 'Discovery Channel|Discovеry Channеl', pName: 'Discovery Channel HD', flags: 'hd'},
 	{dName: 'Discovery Showcase HD', sName: 'Discovery HD Showcase|Discovery Showcase HD', pName: 'Discovery HD Showcase', flags: 'req'},
 	{dName: 'DTX', sName: '', flags: ''},
-	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', flags: 'req'},
+	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic|nat geographic', flags: 'req'},
 	{dName: 'National Geographic', sName: 'National Geographic Channel|National Geographic|Nationаl Geogrаphic', pName: 'National Geographic HD', flags: 'hd req'},
 	{dName: 'History Channel', sName: 'History Channel|History|History Russia', pName: 'History HD', flags: 'req'},
 	{dName: 'History Channel', sName: 'History Channel|History', pName: 'History HD', flags: 'hd req'},
@@ -81,9 +83,12 @@ var channelList = [
 	{dName: 'Техно 24', sName: 'Техно 24|24 Техно', flags: ''},
 	{dName: 'Travel Channel', sName: '', pName: 'Travel Channel', flags: ''},
 	{dName: 'Travel Channel HD', sName: 'Travel Channel HD|Travel Channel H'},
+	{dName: 'FAST&FUN BOX', sName: '', pName: 'FAST&amp;FUN BOX HD', flags: 'hd'},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ|Драйв', pName:'Драйв ТВ', flags: ''},
 	{dName: 'Первый автомобильный', sName: 'Первый автомобильный|Первый автомобильный \\(укр\\)|Первый автомобильный \\(?Украина\\)?', flags: ''},
 	{dName: 'Extreme Sports', sName: '', pName: 'Extreme Sports', flags: ''},
+	{dName: 'Viasat Sport', sName: '', flags: ''},
+	{dName: 'Eurosport 1', sName: '', flags: 'hd'},
 
 	//Охота и рыбалка
 	{dName: 'Охота и рыбалка', sName: '', flags: ''},
@@ -112,13 +117,14 @@ var channelList = [
 	{dName: 'ViP Megahit', sName: '', pName: 'ViP Megahit|ViP Megahit HD', pName: 'VIP Megahit', flags: 'req'},
 	{dName: 'ViP Premiere', sName: '', pName: 'ViP Premiere|ViP Premiere HD', pName: 'VIP Premiere', flags: 'req'},
 	{dName: 'Кинокомедия', sName: '', pName: 'КИНОКОМЕДИЯ', flags: 'req'},
+	{dName: 'Комедийное', sName: '', flags: 'hd'},
 	{dName: 'Кинохит', sName: '', pName: 'КИНОХИТ', flags: 'req'},
 	{dName: 'Остросюжетное', sName: '', pName: 'Остросюжетное HD', flags: 'hd'},
 	{dName: 'КиноПремиум', sName: '', flags: 'hd req'},
 	{dName: 'Дом кино Премиум', sName: '', pName: 'Дом Кино Премиум HD', flags: 'hd req'},
 	{dName: 'Кинопоказ HD1', sName: 'Кинопоказ 1 HD|Кинопоказ HD1|Кинопоказ HD-1', pName: 'Кинопоказ HD-1', flags: ''},
 	{dName: 'Кинопоказ HD2', sName: 'Кинопоказ 2 HD|Кинопоказ HD2|Кинопоказ HD-2', pName: 'Кинопоказ HD-2', flags: ''},
-	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)|Sony Set', flags: 'req'},
+	{dName: 'SET', sName: 'SET HD|SET HD \\(SONY\\)|Sony Set|Sony Entertainment Television', flags: 'req'},
 	{dName: 'Amedia Premium', sName: '', pName: 'Amedia Premium HD', flags: 'hd req'},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: ''},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: 'hd'},
@@ -126,6 +132,7 @@ var channelList = [
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: ''},
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: 'hd'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
+	{dName: 'Filmbox Arthouse', sName: '', flags: ''},
 
 	// Новостные
 	{dName: '112 Украина', sName: '112 Украина HD|112 Україна HD|112 Україна', pName: '112 Україна', flags: ''},
@@ -136,7 +143,7 @@ var channelList = [
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', pName: 'MTV Hits', flags: ''},
 	{dName: 'MTV Dance', sName: '', pName: 'MTV Dance', flags: ''},
-	{dName: 'Music Box UA', sName: '', pName: 'Music Box UA|Music Box UA HD', flags: ''},
+	{dName: 'Music Box UA', sName: 'Music Box UA|Music Box UA HD', flags: ''},
 	{dName: 'М1', sName: 'М1|M1', flags: 'req'},
 	{dName: 'М2', sName: 'М2|M2', flags: ''},
 	{dName: 'O-TV', sName: '', flags: 'req'},

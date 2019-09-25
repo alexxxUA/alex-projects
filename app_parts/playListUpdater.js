@@ -235,7 +235,6 @@ Channel.prototype = {
 		// http://slovenske.tvradio.top/onlinetv.html
 		'/constant/sk': `
 			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
-			#EXTINF:-1, Markíza\nhttp://213.151.233.20:8000/dna-5106-tv-pc/hls/4001v102.m3u8
 			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-360.m3u8
 		`
 	},

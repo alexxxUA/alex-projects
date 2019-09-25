@@ -10,7 +10,10 @@ var config = {
 	playlistEnabled: true,
 	playListChannelChecker: false,
     isConsoleLogPlaylist: false,
-	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server'
+	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server',
+	hiddenPaths: [
+		'/UpdateChanList/LastValidPlaylist'
+	]
 }
 
 module.exports = config;
