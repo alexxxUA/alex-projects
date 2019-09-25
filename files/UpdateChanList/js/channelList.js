@@ -15,7 +15,7 @@ var channelList = [
 	{dName: '2+2', sName: '2\\+2', pName: '2+2 (кино)', flags: 'req'},
 	{dName: 'ТЕТ', sName: '', flags: 'req'},
 	{dName: 'Сонце', sName: '', flags: 'req'},
-	{dName: 'Україна', sName: 'Україна|ТРК Украина|Украина', pName: 'Украина', flags: 'req'},
+	{dName: 'Україна', sName: 'Україна|ТРК Украина|Украина', pName: 'Україна', flags: 'req'},
 	{dName: 'UA: Перший', sName: 'UA\\: Перший', pName: 'UA:Перший', flags: 'req'},
 	{dName: 'Мега', sName: '', pName: 'ТК Мега', flags: 'req'},
 	{dName: 'НЛО ТВ', sName: 'НЛО ТВ|НЛО TV|НЛО|NLO TV1', pName: 'НЛО-ТВ', flags: ''},
@@ -128,7 +128,7 @@ var channelList = [
 	{dName: 'Amedia Premium', sName: '', pName: 'Amedia Premium HD', flags: 'hd req'},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: ''},
 	{dName: 'Amedia Hit', sName: '', pName: 'AMEDIA HIT', flags: 'hd'},
-	{dName: 'Enter Film', sName: 'Enter Film|Enter-фильм|Enter-фільм', flags: ''},
+	{dName: 'Enter Film', sName: 'Enter Film|Enter-фильм|Enter-фільм', pName: 'Enter-фільм', flags: ''},
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: ''},
 	{dName: 'Кино ТВ', sName: '', pName: 'Кино ТВ', flags: 'hd'},
 	{dName: 'Кинопоказ', sName: '', flags: ''},
@@ -138,7 +138,7 @@ var channelList = [
 	{dName: '112 Украина', sName: '112 Украина HD|112 Україна HD|112 Україна', pName: '112 Україна', flags: ''},
 	{dName: '5 канал (Украина)', sName: '5 канал \\(Украина\\)|5 канал', pName: '5 канал', flags: ''},
 	{dName: '24 Украина', sName: '24 Канал', flags: ''},
-	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV', flags: ''},
+	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV', pName: 'Eспресо TV', flags: ''},
 
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', pName: 'MTV Hits', flags: ''},
