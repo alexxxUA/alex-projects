@@ -1142,7 +1142,7 @@ const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playListName: 'TV-List-E',
 	playlistUrl: [
 		'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
-		'http://bf1808d1d378.aikonkz.ru/playlists/uplist/1ee49997d73253165f73745be3c83628/playlist.m3u8',
+		'http://bf1808d1d378.aikonkz.ru/playlists/uplist/92b702c1ad801722c02723d0fc095aa7/playlist.m3u8',
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'/constant/sk'
 	],
