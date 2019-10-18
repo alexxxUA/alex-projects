@@ -131,7 +131,7 @@ function Channel(params){
 	// Search in .m3u playlist
 	this.m3uRegExp = channel => {
 		var isHd = this.getHdForRegexp(channel);
-		return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+		return new RegExp('(?:EXTINF\:[^,]+,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
 	};
 
     this.cRegExps = [
@@ -1155,6 +1155,17 @@ const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	}
 }));
 
+const SharaTv = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-Shara',
+	playlistUrl: [
+		'https://list.satfor.pro/tv-m3u8/alexxxUA-O7j5CcVgL',
+		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
+		'/constant/sk'
+	],
+	generateCountPer24h: 24
+}));
+
 const MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json',
 	channelsArray: [channels1, channelListSk],
@@ -1256,12 +1267,14 @@ module.exports = {
 		if(cf.playlistEnabled){
 			MainPlaylistFromM3u.start(function () {
 				EdemList.start(function () {
-					BackUpGen_SOURCE.start(function () {
-						MainPlaylist_SOURCE_JSON.start(function(){
-							MainPlaylistHomepage_tuchka.start(function () {
-								if(cf.playListChannelChecker){
-									ChannelChangeTracker_tucka.start();
-								}
+					SharaTv.start(function () {
+						BackUpGen_SOURCE.start(function () {
+							MainPlaylist_SOURCE_JSON.start(function(){
+								MainPlaylistHomepage_tuchka.start(function () {
+									if(cf.playListChannelChecker){
+										ChannelChangeTracker_tucka.start();
+									}
+								});
 							});
 						});
 					});
