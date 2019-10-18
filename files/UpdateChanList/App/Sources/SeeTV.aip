@@ -38,8 +38,8 @@
     <ROW Property="ARPNOMODIFY" MultiBuildValue="DefaultBuild:1"/>
     <ROW Property="ARPNOREPAIR" Value="1"/>
     <ROW Property="ARPPRODUCTICON" Value="TVinstall_1.exe" Type="8"/>
-    <ROW Property="ARPURLINFOABOUT" Value="https://avasin.ml/UpdateChanList/App/SeeTV.exe"/>
-    <ROW Property="ARPURLUPDATEINFO" Value="https://avasin.ml/UpdateChanList/App/SeeTV.exe"/>
+    <ROW Property="ARPURLINFOABOUT" Value="https://avasin.herokuapp.com/UpdateChanList/App/SeeTV.exe"/>
+    <ROW Property="ARPURLUPDATEINFO" Value="https://avasin.herokuapp.com/UpdateChanList/App/SeeTV.exe"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Alex corp."/>
     <ROW Property="ProductCode" Value="1033:{739D6800-0D52-4A1C-9B11-0CD5791BC56A} " Type="16"/>

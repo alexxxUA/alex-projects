@@ -8,7 +8,7 @@
 // @compatible      firefox
 // @compatible      opera
 // @compatible      safari
-// @icon            https://avasin.ml/UserScripts/YouTube-Saver/logo.png
+// @icon            https://avasin.herokuapp.com/UserScripts/YouTube-Saver/logo.png
 // @include         http*://www.youtube.com/*
 // @include      	http*://*.youtube.com/*
 // @include      	http*://youtube.com/*
@@ -19,7 +19,7 @@
 // @run-at       	document-idle
 // @copyright   	2019-02-11 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
-// @updateURL		https://avasin.ml/UserScripts/YouTube-Saver/you_tube_saver.user.js
+// @updateURL		https://avasin.herokuapp.com/UserScripts/YouTube-Saver/you_tube_saver.user.js
 // ==/UserScript==
 
 class YouTubeSaver {

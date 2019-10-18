@@ -88,7 +88,7 @@ const fallbacks = new Map([
  */
 const hosts = [
   'localhost',
-  'avasin.ml'
+  'avasin.herokuapp.com'
 ];
 
 /**

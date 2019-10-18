@@ -70,7 +70,7 @@ function Channel(params){
 	 * Relative URL for icons in m3u format playlist. In attribute tvg-logo="..."
 	 * @Value relative URL where icons located
 	 */
-	this.logoRelativeUrl = 'http://avasin.ml/UpdateChanList/App/Sources/Channel_icons/';
+	this.logoRelativeUrl = 'http://avasin.herokuapp.com/UpdateChanList/App/Sources/Channel_icons/';
 	/**
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
