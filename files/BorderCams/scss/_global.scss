@@ -9,6 +9,10 @@ body{
 	margin: 0;
 }
 
+.nowrap {
+	white-space: nowrap;
+}
+
 .app {
 	display: flex;
 	flex-wrap: wrap;
@@ -45,6 +49,7 @@ body{
 		position: relative;
 		padding-top: 80%;
 		width: 100%;
+		border-bottom: 100px solid transparent;
 	}
 
 	&__stream {
@@ -54,6 +59,14 @@ body{
 		top: 0px;
 		left: 0px;
 
+		&-data {
+			position: absolute;
+
+			th, td {
+				text-align: center;
+			}
+		}
+
 		.mobile & {
 			@media (orientation: landscape) {
 				position: fixed;
@@ -62,6 +75,14 @@ body{
 				height: 100vh;
 			}
 		}
+	}
+
+	&__error {
+		position: fixed;
+		top: 40%;
+		line-height: 1.5;
+		left: 10px;
+		right: 10px;
 	}
 }
 

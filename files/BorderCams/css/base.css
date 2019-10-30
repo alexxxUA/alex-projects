@@ -127,6 +127,9 @@ body {
   color: #FFF;
   margin: 0; }
 
+.nowrap {
+  white-space: nowrap; }
+
 .app {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -161,19 +164,30 @@ body {
   .app__stream-wrap {
     position: relative;
     padding-top: 80%;
-    width: 100%; }
+    width: 100%;
+    border-bottom: 100px solid transparent; }
   .app__stream {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0px;
     left: 0px; }
+    .app__stream-data {
+      position: absolute; }
+      .app__stream-data th, .app__stream-data td {
+        text-align: center; }
     @media (orientation: landscape) {
       .mobile .app__stream {
         position: fixed;
         z-index: 999;
         width: 100vw;
         height: 100vh; } }
+  .app__error {
+    position: fixed;
+    top: 40%;
+    line-height: 1.5;
+    left: 10px;
+    right: 10px; }
 
 .main-title {
   margin-top: 10px;

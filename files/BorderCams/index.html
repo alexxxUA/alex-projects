@@ -15,12 +15,12 @@
 				'css/base.css'
 			],
 			devJs: [
-				'https://cdn.jsdelivr.net/npm/vue/dist/vue.js',
+				'https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js',
 				'js/app.js'
 			],
 			prodCss: ['css/base_min.css'],
 			prodJs: [
-				'https://cdn.jsdelivr.net/npm/vue',
+				'https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.min.js',
 				'js/app_min.js'
 			],
 			loadCss: function(){
@@ -54,23 +54,49 @@
 				</div>
 
 				<div class="app__container">
-					<div v-if="favoriteItems.length" class="btn-group-vertical favorite">
-						<button v-for="item in favoriteItems"
-							v-bind:class="['btn btn-default favorite__item', { 'active' : item.src === streamSrc }]"
-							@click="streamSrc = item.src"
-						>
-							{{ item.name }}
-						</button>
-					</div>
-					<div class="app__stream-wrap">
-						<iframe v-if="streamSrc"
-							class="app__stream"
-							frameborder="0"
-							referrerpolicy="no-referrer"
-							:src="`javascript:window.location.replace('${streamSrc}')`"
-							:key="streamSrc"
-						></iframe>
-					</div>
+					<template v-if="err">
+						<h3 class="app__error text-center">{{ err }}</h3>
+					</template>
+					<template v-else>
+						<div v-if="favoriteItems.length" class="btn-group-vertical favorite">
+							<button v-for="item in favoriteItems"
+								v-bind:class="['btn btn-default favorite__item', { 'active' : item.src === streamSrc }]"
+								@click="streamSrc = item.src"
+							>
+								{{ item.name }}
+							</button>
+						</div>
+						<div class="app__stream-wrap">
+							<iframe v-if="streamSrc"
+								class="app__stream"
+								frameborder="0"
+								referrerpolicy="no-referrer"
+								:src="`javascript:window.location.replace('${streamSrc}')`"
+								:key="streamSrc"
+							></iframe>
+							<table v-if="activeCamData" class="table table-bordered table-condensed app__stream-data">
+								<thead>
+									<tr>
+										<th>Час очікування <span class="nowrap">UA → EU</span></th>
+										<th>Час очікування <span class="nowrap">EU → UA</span></th>
+										<th>Актуалізація даних</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td>{{ translate(activeCamData.waitTimeToEU) }}</td>
+										<td>{{ translate(activeCamData.waitTimeToUA) }}</td>
+										<td>{{ activeCamData.updatedTime }}</td>
+									</tr>
+									<tr>
+										<td colspan="3">
+											<small>* Дані представлені в таблиці є орієнтовними.</small>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</template>
 				</div>
 			</div>
 		</border-cams>
