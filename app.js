@@ -1,8 +1,6 @@
 var	express	= require('express'),
 	app	= express(),
 	path = require('path'),
-	open = require('open'),
-	ip = require('ip'),
 	mongoose = require("mongoose");
 
 //Set globals
@@ -45,5 +43,4 @@ app.listen(cf.port, function(err){
 	if(err) throw error;
 
 	console.log(`Server started on port: http://${cf.ip}:${cf.port}`);
-	//open('http://'+ cf.ip +':'+ cf.port);
 });
