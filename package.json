@@ -27,7 +27,7 @@
   "dependencies": {
     "cheerio": "^0.19.0",
     "emailjs": "^1.0.4",
-    "express": "3.0.x",
+    "express": "3.11.x",
     "fb-signed-parser": "0.0.3",
     "fbgraphapi": "^0.5.0",
     "ip": "^0.3.2",
