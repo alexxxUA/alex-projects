@@ -159,6 +159,10 @@ body {
       -webkit-box-pack: center;
           -ms-flex-pack: center;
               justify-content: center; }
+  .app__enable-flash {
+    display: none; }
+    .desktop .app__enable-flash {
+      display: block; }
   .app__wrap {
     width: 100%; }
   .app__stream-wrap {

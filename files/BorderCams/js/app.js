@@ -69,10 +69,9 @@ class BorderCams extends ProxyParser {
     }
 
     init() {
-        if (window.orientation !== undefined) {
-            document.body.classList.add('mobile');
-        }
+        const isMobile = window.orientation !== undefined;
 
+        document.body.classList.add(isMobile ? 'mobile' : 'desktop');
         this.renderApp();
     }
 

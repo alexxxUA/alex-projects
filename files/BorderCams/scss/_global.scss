@@ -41,6 +41,14 @@ body{
 		}
 	}
 
+	&__enable-flash {
+		display: none;
+
+		.desktop & {
+			display: block;
+		}
+	}
+
 	&__wrap {
 		width: 100%;
 	}
