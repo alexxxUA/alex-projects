@@ -39,7 +39,7 @@ function Channel(params){
 	};
 	this.tempRestartCount = 0;
 	this.isPlaylistFailed = false;
-	this.backUpGen = undefined;
+	this.backUpGen = null;
 	this.channelCounter = 0;
 	this.availableFlags = [{
 			string: 'hd',
@@ -232,7 +232,6 @@ function Channel(params){
 Channel.prototype = {
 	playlistGeneratorInstances: [],
 	cache: {
-		// http://slovenske.tvradio.top/onlinetv.html
 		'/constant/sk': `
 			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
 			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-360.m3u8
@@ -267,14 +266,14 @@ Channel.prototype = {
         playlists[0].func.call(playlists[0].that, true);
 	},
     cLog: function(msg){
-        if(this.isLog) console.log(msg);
+        if(this.isLog) console.log(`${this.playListName} - ${msg}`);
     },
 	logInfo: function(msg){
-		this.cLog('INFO: '+ msg);
+		this.cLog(`*INFO* : ${msg}`);
 		prependFile(this.logPath, '[INFO - '+ this.getFormatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
 	logErr: function(msg){
-		this.cLog('ERROR: '+ msg);
+		this.cLog(`*ERROR* : ${msg}`);
 		prependFile(this.logPath, '[ERROR - '+ this.getFormatedDate(new Date, true) +'] '+ msg +'\n\n');
 	},
     logStartGeneration: function(){
@@ -299,8 +298,12 @@ Channel.prototype = {
 		this.initChannelsObject();
 	},
     start: function(callback){
+		// Save callback to property
+		if(typeof callback == 'function') {
+			this.callback = callback;
+		}
+
         if(this.isGenOnStart){
-			if(typeof callback == 'function') this.callback = callback;
 			this.genValidPlaylist(true);
         }
         else if (callback){
@@ -503,10 +506,20 @@ Channel.prototype = {
 		this.prepareData(isForce);
         this.logStartGeneration();
 
-		//Gen playlist
-		this.getValidPlaylist(function(){
-			that.getList();
-		});
+		//Gen playlist function
+		const genPlaylist = () => {
+			this.getValidPlaylist(() => this.getList());
+		};
+
+		//Save playlist page for backup generator
+		// -> than do main logic
+		if(this.backUpGen){
+			this.backUpGen.getValidPlaylist(genPlaylist);
+		} else {
+			// If no backup Generator defined
+			// -> proceed to main logic
+			genPlaylist();
+		}
 	},
 	getPlaylistParts: function (playlistUrl, isGenInProgress, callback) {
 		if (callback) {
@@ -519,11 +532,6 @@ Channel.prototype = {
 
 		// reset valid list
 		that.resetValidList();
-
-		//Save playlist page for backup
-		if(that.backUpGen){
-			that.backUpGen.getValidPlaylist.call(that.backUpGen);
-		}
 
 		that.getPlaylistParts(that.playlistUrl, isGenInProgress, function(urls) {
 			const urlsCount = urls.length;
@@ -626,7 +634,7 @@ Channel.prototype = {
 		return flagsObj;
 	},
 	getChannelPageUrl: function(channel, _that, isSkipLog){
-		var _that = _that || this,
+		var that = _that || this,
 			isHd = this.getHdForRegexp(channel),
 			regExpArray = [
 				new RegExp('(?:<a.*?href="((?:[^"]+)?(?:'+ channel.sName +')'+ isHd +'(?:\\.(?:html|php))?)?")', 'im'),
@@ -648,8 +656,8 @@ Channel.prototype = {
 			if(isSkipLog) {
 				return false;
 			} else {
-			_that.failed(channel, 'not found on the playlist page');
-		}
+				that.failed(channel, 'not found on the playlist page');
+			}
 		}
 		//If chanPageUrl with relative path -> add domain value for it
 		else if(!this.isStringUrl(chanPageUrl)){
@@ -659,14 +667,13 @@ Channel.prototype = {
 		return chanPageUrl;
 	},
     getChannelId: function(channel, callback, _that){
-		var _that = _that || this,
-			that = this;
+		var that = _that || this;
 
-		that.getPlayerUrl(channel, function(url){
-			that.getIdFromFrame(url, channel, function(chanId){
+		this.getPlayerUrl(channel, url => {
+			this.getIdFromFrame(url, channel, function(chanId){
 				callback(chanId);
-			}, _that);
-		}, _that);
+			}, that);
+		}, that);
 	},
 	getIdFromFrame: function(cUrl, channel, callback, _that, isSkipUrlUpdate){
 		var that = this,
@@ -834,8 +841,7 @@ Channel.prototype = {
         return new Date().dst();
     },
 	isAbleToRestartChan: function(channel){
-		return typeof this.backUpGen != 'undefined'
-				&& channel.failedCount < this.maxRestartCountPerChannel;
+		return this.backUpGen && channel.failedCount < this.maxRestartCountPerChannel;
 	},
 	storeChannelItem: function(channel, ID){
 		this.channelCounter++
@@ -925,42 +931,9 @@ Channel.prototype = {
 }
 
 /**
- * Main config for "Torrent stream" source
+ * Main config for "Tuchka" player page
 **/
-var TorStreamMainConfig = {
-    playlistDomain: 'http://torrentstream.tv',
-    initParams: function(){
-        this.playlistUrl = this.playlistDomain +'/browse-vse-kanali-tv-videos-1-date.html';
-    },
-	getPlayerUrl: function(channel, callback, _that){
-		var _that = _that || this,
-			that = this,
-			channelPageUrl = that.getChannelPageUrl(channel, _that);
-
-		if(!channelPageUrl){
-			return;
-		}
-
-		needle.request('GET', channelPageUrl, null, {}, function(err, resp) {
-			if (err || resp.statusCode !== 200){
-				_that.failed(channel, 'error in getting page for channel');
-				return;
-			}
-			var $ = that.getDom(resp.body),
-				channelUrl = $('#Lnk').attr('href');
-
-            if(channelUrl)
-                callback(channelUrl);
-            else
-                _that.failed(channel, 'players src not found in frame on page');
-		});
-	}
-};
-
-/**
- * Main config for "Tuchka" source
-**/
-var TuckaMainConfig = {
+var TuchkaPlayerPageConfig = {
     playlistUrl: 'http://tuchkatv.ru/player.html',
 	playerUrlPath: '/iframe.php?site=873&channel=',
 	storeValidList: function(resp){
@@ -988,9 +961,9 @@ var TuckaMainConfig = {
 }
 
 /**
- * Main config for "Tuchka" source from homepage
+ * Main config for parsing channels from pages - "Tuchka"
 **/
-var TuchkaHomepageConfig = {
+var HomepageParserConfig = {
     scheduleGenDelay: 15,
     forceGenDelay: 7,
 	maxRestartCount: 2,
@@ -1047,7 +1020,7 @@ var TuchkaHomepageConfig = {
 }
 
 /**
- * Main config for generating from source ttv.json
+ * Main config for generating from source
 **/
 var SOURCE_CONFIG = {
 	generateCountPer24h: 48,
@@ -1056,25 +1029,26 @@ var SOURCE_CONFIG = {
 	minReqDelay: 0,
     playlistUrl: [
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
-		'http://91.92.66.82/trash/ttv-list/as.json'
+		'http://91.92.66.82/trash/ttv-list/as.json',
+		'/constant/sk'
 	],
 	getChannelId: function(channel, callback, _that, source = this.validList, isSkipPageUrl){
-		var _that = _that || this,
-			chanId = _that.getIdFromSourceString(source, channel),
-			channelPageUrl = _that.getChannelPageUrl(channel, _that, true);
+		var that = _that || this,
+			chanId = this.getIdFromSourceString(source, channel),
+			channelPageUrl = this.getChannelPageUrl(channel, that, true);
 
 		if (chanId) {
 			callback(chanId);
 		} else if (channelPageUrl && !isSkipPageUrl) {
 			needle.request('GET', channelPageUrl, null, {compressed: true, follow_max: 5}, (err, resp) => {
 				if (err || resp.statusCode !== 200){
-					_that.failed(channel, 'error in getting page for channel');
+					that.failed(channel, 'error in getting page for channel');
 					return;
 				}
-				_that.getChannelId(channel, callback, _that, resp.body, true);
+				that.getChannelId(channel, callback, that, resp.body, true);
 			});
 		} else {
-            _that.failed(channel, 'id not found on the page/frame');
+            that.failed(channel, 'id not found on the page/frame');
 		}
 	}
 }
@@ -1119,9 +1093,15 @@ const JSON_CONFIG = {
     INIT Generator instances
 */
 
-const BackUpGen_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const TorrentAC_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
 	playListName: 'TV-List-AS'
+}));
+
+const MainPlaylist_ACELIVE = new Channel(Object.assign({}, JSON_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-acelive',
+	backUpGen: TorrentAC_SOURCE
 }));
 
 const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
@@ -1135,6 +1115,13 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 		'/constant/sk'
 	],
 	generateCountPer24h: 24
+}));
+
+const MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, HomepageParserConfig, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-List-tuchka',
+	generateCountPer24h: 24,
+	backUpGen: TorrentAC_SOURCE
 }));
 
 const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
@@ -1166,60 +1153,24 @@ const SharaTv = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	generateCountPer24h: 24
 }));
 
-const MainPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	playlistUrl: 'http://91.92.66.82/trash/ttv-list/ttv.json',
-	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-List-TTV',
-	generateTime: '8:00',
-	generateCountPer24h: 1,
-	maxRestartCount: 1
-}));
-
-const MainPlaylist_SOURCE_JSON = new Channel(Object.assign({}, JSON_CONFIG, {
-	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-acelive'
-}));
-
-const SecondaryPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const PlusPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels2],
     playListName: 'TV-plus',
 	translitEnabled: true
 }));
 
-const MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
-	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-List-tuchka',
-	generateCountPer24h: 24,
-	backUpGen: BackUpGen_SOURCE
-}));
-
-const MainPlaylist_torStream = new Channel(Object.assign({}, TorStreamMainConfig, {
-	channelsArray: [channels1],
-    playListName: 'TV-List-torrent-stream'
-}));
-
-const MainPlaylistHomepage_torStreamRu = new Channel(Object.assign({}, TuchkaHomepageConfig, {
-	forceGenDelay: 4,
-	isCheckIdForUrl: true,
-	channelsArray: [channels1],
-	playListName: 'TV-List-torrent-stream',
-	playlistDomain: 'http://www.torrent-stream.ru',
-	linksSel: '.menu-iconmenu li:not(.first):not(.last):not(.jsn-icon-mail):not(.jsn-icon-mountain) a',
-	playlistPartSel: '#jsn-mainbody'
-}));
-
-const SecondaryPlaylist_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const PlusPlaylist_tuchka = new Channel(Object.assign({}, HomepageParserConfig, {
 	channelsArray: [channels2],
     generateTime: '6:30',
-	playListName: 'TV-List-tuchka-plus'
+	playListName: 'TV-plus-tuchka'
 }));
 
-const MainPlaylist_tucka = new Channel(Object.assign({}, TuckaMainConfig, {
+const MainPlaylist_PlayerPageTuchka = new Channel(Object.assign({}, TuchkaPlayerPageConfig, {
 	channelsArray: [channels1],
     playListName: 'TV-List-tuchka-player'
 }));
 
-const ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageConfig, {
+const ChannelChangeTracker_tuchka = new Channel(Object.assign({}, HomepageParserConfig, {
     channelsArray: [{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)'}],
 	firstChannelId: false,
 	generateCountPer24h: 48,
@@ -1262,26 +1213,69 @@ const ChannelChangeTracker_tucka = new Channel(Object.assign({}, TuchkaHomepageC
 	}
 }));
 
+/**
+ * Class which run playlist generation
+ */
+class Playlists {
+	constructor(playlists = [], callback) {
+		this.playlists = playlists;
+		this.callback = callback;
+
+		this.init();
+	}
+
+	init () {
+		if(this.playlists.length) {
+			this.startPlaylists();
+		} else {
+			this.runCallback();
+			console.info('No playlists defined for generation.');
+		}
+	}
+
+	startPlaylists() {
+		const playlists = this.playlists,
+            playlistsLength = playlists.length;
+
+        for(let i=0; i < playlistsLength ; i++){
+			const instance = playlists[i],
+				nextInstance = playlists[i+1];
+
+			if(nextInstance){
+				instance.callback = () => nextInstance.start();
+			} else {
+				this.runCallback();
+			}
+        }
+
+		// Start first playlist -> others will be generated in a chain
+        playlists[0].start();
+	}
+
+	runCallback() {
+		if(typeof this.callback === 'function') {
+			this.callback();
+		}
+	}
+};
+
 module.exports = {
 	init: function(){
+		const channelChecker = () => {
+			if (cf.playListChannelChecker) {
+				ChannelChangeTracker_tuchka.start();
+			}
+		}
+
 		if(cf.playlistEnabled){
-			MainPlaylistFromM3u.start(function () {
-				EdemList.start(function () {
-					SharaTv.start(function () {
-						BackUpGen_SOURCE.start(function () {
-							MainPlaylist_SOURCE_JSON.start(function(){
-								MainPlaylistHomepage_tuchka.start(function () {
-									if(cf.playListChannelChecker){
-										ChannelChangeTracker_tucka.start();
-									}
-								});
-							});
-						});
-					});
-				});
-			});
-		} else if (cf.playListChannelChecker) {
-            ChannelChangeTracker_tucka.start();
+			const playlists = new Playlists([
+				MainPlaylistFromM3u,
+				TorrentAC_SOURCE,
+				MainPlaylist_ACELIVE,
+				MainPlaylistHomepage_tuchka
+			], channelChecker);
+		} else {
+            channelChecker();
         }
 	},
 	forceGeneratePlaylists: function(res){
