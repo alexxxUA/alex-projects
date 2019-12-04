@@ -135,11 +135,6 @@ function Channel(params){
 	};
 
     this.cRegExps = [
-		// Search in .m3u playlist with URL contains "ipnet.ua" - http://tv.ipnet.ua/
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ipnet\\.ua.*))', 'img');
-		},
 		// Search in .m3u playlist with URL contains "ygk.info" - voron source
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
@@ -156,10 +151,10 @@ function Channel(params){
 			var isHd = this.getHdForRegexp(channel);
 			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?lb1.*))', 'img');
 		},
-		// Search in .m3u playlist with URL contains ":8080/play"
+		// Search in .m3u playlist with URL contains 217.23.4.124
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?\\:8080\\/play.*))', 'img');
+			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?217\\.23\\.4\\.124.*))', 'img');
 		},
 		// Search in .m3u playlist with URL contains "streamer.sktv.peers.tv"
 		channel => {
@@ -929,6 +924,11 @@ Channel.prototype = {
 		}
 	}
 }
+
+
+/**
+ * CONFIGS
+ */
 
 /**
  * Main config for "Tuchka" player page

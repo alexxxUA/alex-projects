@@ -112,7 +112,13 @@ class BorderCams extends ProxyParser {
 
                     if(this.streamSrc) {
                         data = this.favoriteItems.find(item => item.src === this.streamSrc);
-                        Object.assign(data, this.textData[data.slug]);
+                        const textData = this.textData[data.slug];
+
+                        if(textData && Object.keys(textData).length) {
+                            Object.assign(data, textData, {
+                                textData: true
+                            });
+                        }
                     }
 
                     return data;

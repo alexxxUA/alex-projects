@@ -66,16 +66,19 @@
 								{{ item.name }}
 							</button>
 						</div>
-						<h6 class="app__enable-flash text-center">Якщо відео не відображається. <a href="https://get.adobe.com/flashplayer">Активуйте Flash</a></h6>
+						<h6 class="app__enable-flash text-center">
+							Якщо відео не відображається. <a href="https://get.adobe.com/flashplayer">Активуйте Flash</a>
+						</h6>
 						<div class="app__stream-wrap">
 							<iframe v-if="streamSrc"
 								class="app__stream"
+								scrolling="no"
 								frameborder="0"
 								referrerpolicy="no-referrer"
 								:src="`javascript:window.location.replace('${streamSrc}')`"
 								:key="streamSrc"
 							></iframe>
-							<table v-if="activeCamData" class="table table-bordered table-condensed app__stream-data">
+							<table v-if="activeCamData && activeCamData.textData" class="table table-bordered table-condensed app__stream-data">
 								<thead>
 									<tr>
 										<th>Час очікування <span class="nowrap">UA → EU</span></th>
