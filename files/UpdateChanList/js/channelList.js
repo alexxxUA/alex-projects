@@ -29,12 +29,12 @@ var channelList = [
 
 	//Мультики
 	{dName: 'ПлюсПлюс', sName: 'Плюс Плюс', flags: ''},
-	{dName: 'Niki Junior', sName: '', flags: ''},
+	{dName: 'Niki Junior', sName: 'Niki Junior|Niki Junior HD', flags: ''},
 	{dName: 'Пиксель ТВ', sName: 'Пиксель', pName: 'Пиксель', flags: ''},
 	{dName: 'Малятко ТВ', sName: '', flags: ''},
 	{dName: 'Карусель', sName: '', flags: ''},
 	{dName: 'Детский', sName: 'Детский мир', pName: 'Детский мир', flags: ''},
-	{dName: 'Мультимания', sName: '', flags: ''},
+	{dName: 'Мультимания', sName: 'Мультимания|Мульт', flags: ''},
 	{dName: 'Nick Jr.', sName: 'Nick jr|Nick Jr\\.', pName: 'Nick Jr', flags: 'req'},
 	{dName: 'Nickelodeon', sName: '', flags: 'req'},
 	{dName: 'Nickelodeon EN', sName: '', pName: 'Nickelodeon', flags: 'req'},
@@ -86,7 +86,7 @@ var channelList = [
 	{dName: 'FAST&FUN BOX', sName: '', flags: 'hd'},
 	{dName: 'Драйв ТВ', sName: 'Драйв ТВ|Драйв', pName:'Драйв ТВ', flags: ''},
 	{dName: 'Первый автомобильный', sName: 'Первый автомобильный|Первый автомобильный \\(укр\\)|Первый автомобильный \\(?Украина\\)?', flags: ''},
-	{dName: 'Extreme Sports', sName: '', pName: 'Extreme Sports', flags: ''},
+	{dName: 'Extreme Sports', sName: 'Extreme Sports|Extreme Sport', pName: 'Extreme Sports', flags: ''},
 	{dName: 'Viasat Sport', sName: '', flags: ''},
 	{dName: 'Eurosport 1', sName: '', flags: 'hd'},
 
@@ -138,7 +138,7 @@ var channelList = [
 	{dName: '112 Украина', sName: '112 Украина HD|112 Україна HD|112 Україна', pName: '112 Україна', flags: ''},
 	{dName: '5 канал (Украина)', sName: '5 канал \\(Украина\\)|5 канал', pName: '5 канал', flags: ''},
 	{dName: '24 Украина', sName: '24 Канал', pName: '24 Канал', flags: ''},
-	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV', pName: 'Eспресо TV', flags: ''},
+	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV|Эспресо ТВ HD', pName: 'Eспресо TV', flags: ''},
 
 	//Музыка
 	{dName: 'MTV Hits', sName: 'MTV Hits|MTV Hits UK', pName: 'MTV Hits', flags: ''},

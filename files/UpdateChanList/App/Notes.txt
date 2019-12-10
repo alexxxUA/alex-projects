@@ -4,6 +4,8 @@
 3) http://api.torrent-tv.ru/ttv.xmltv.xml.gz
 4) http://programtv.ru/xmltv.xml.gz
 
+5) https://ipstream.one/epg.xml.gz
+
 Логотипы:
 http://logo.fight-show.ru/logos/logo.zip
 

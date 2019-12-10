@@ -13,7 +13,8 @@ var config = {
 	playlistOutputPath: '/UpdateChanList/LastValidPlaylist/server',
 	hiddenPaths: [
 		'/UpdateChanList/LastValidPlaylist'
-	]
+	],
+	IpStreamUrl: process.env.IP_STREAM_URL
 }
 
 module.exports = config;

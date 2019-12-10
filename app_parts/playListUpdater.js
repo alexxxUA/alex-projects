@@ -531,26 +531,34 @@ Channel.prototype = {
 		that.getPlaylistParts(that.playlistUrl, isGenInProgress, function(urls) {
 			const urlsCount = urls.length;
 			let urlsIndex = 0;
+			const loopFunction = () => {
+				urlsIndex++
+				//Call callback in case all parts collected
+				if(callback && urlsIndex === urlsCount) {
+					setTimeout(function(){
+						that.cLog('All playlist\'s parts are downloaded. Starting generation.');
+						callback();
+					}, that.minReqDelay);
+				}
+			}
 
             for(var i = 0; i < urlsCount; i++){
-                var pageUrl = urls[i];
-
-                (function(j, url){
-                    setTimeout(function(){
-                        that.getValidPlaylistPart(url, isGenInProgress, function(resp, isFromCache) {
-							urlsIndex++
-                            that.storeValidList(resp);
-                            that.cLog(`Page: ${(j+1)};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
-                            //Call callback in case all parts collected
-                            if(callback && urlsIndex === urlsCount) {
-                                setTimeout(function(){
-                                    that.cLog('All playlist\'s parts are downloaded. Starting generation.');
-                                    callback();
-                                }, that.minReqDelay);
-                            }
-                        });
-                    }, j * that.minReqDelay);
-                })(i, pageUrl);
+				var pageUrl = urls[i];
+				
+				(function(j, url){
+					if(url) {
+						setTimeout(function(){
+							that.getValidPlaylistPart(url, isGenInProgress, function(resp, isFromCache) {
+								that.storeValidList(resp);
+								that.cLog(`Page: ${(j+1)};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
+								loopFunction();
+							});
+						}, j * that.minReqDelay);
+					} else {
+						that.logErr(`Page with index: ${(j+1)} NOT FOUND!`);
+						loopFunction();
+					}
+				})(i, pageUrl);
             }
         });
 	},
@@ -1142,11 +1150,11 @@ const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	}
 }));
 
-const SharaTv = new Channel(Object.assign({}, SOURCE_CONFIG, {
+const IpStream = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-Shara',
+	playListName: 'TV-Ipstream',
 	playlistUrl: [
-		'https://list.satfor.pro/tv-m3u8/alexxxUA-O7j5CcVgL',
+		cf.IpStreamUrl,
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'/constant/sk'
 	],
@@ -1269,6 +1277,7 @@ module.exports = {
 
 		if(cf.playlistEnabled){
 			const playlists = new Playlists([
+				IpStream,
 				MainPlaylistFromM3u,
 				TorrentAC_SOURCE,
 				MainPlaylist_ACELIVE,
