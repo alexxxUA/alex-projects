@@ -57,9 +57,10 @@ class BorderCams extends ProxyParser {
         this.slugMap = {
             VN: 'нємецьке|німецьке|nemecké|nemecke',
             UBLA: 'убля|ubľa|ubla',
-            SLME: 'селменце|slemence'
+            SLME: 'селменце|slemence',
+            ZAH: 'захонь'
         };
-        this.favoriteCountry = 'slovakia';
+        this.favoriteCountries = ['VN', 'UBLA', 'SLME', 'ZAH'];
 
         this.translateMap = {
             'звичайний': 'priebežne|priebezne'
@@ -91,14 +92,13 @@ class BorderCams extends ProxyParser {
                 };
 
                 if(camsData) {
-                    const favoriteCountry = camsData[_this.favoriteCountry];
-                    if (favoriteCountry) {
-                        data.favoriteItems = favoriteCountry.checkpoints
-                            .filter(({name}) => !name.includes('вантаж'))
-                            .sort(_this.alphabetSort.bind(_this, 'name'));
+                    data.camsData = camsData;
+                    data.favoriteItems = _this.getCamsDataBySlug(camsData, _this.favoriteCountries);
+
+                    // Activate first camera
+                    if (data.favoriteItems.length) {
                         data.streamSrc = data.favoriteItems[0].src;
                     }
-                    data.camsData = camsData;
                 } else {
                     data.err = 'Камери тимчасово недоступні 🤕, cпробуйте пізніше.'
                 }
@@ -165,6 +165,29 @@ class BorderCams extends ProxyParser {
         const camsDataPromise = this.doPageFetch(this.camsUrl).then(this.parseCamsData.bind(this));
         const textDataPromise = this.doPageFetch(this.textBorderDataUrl).then(this.parseTextBorderData.bind(this));
         return Promise.all([camsDataPromise, textDataPromise]);
+    }
+
+    getCamsDataBySlug(camGroups, slugArr) {
+        const camsList = [];
+
+        slugArr.forEach(slug => {
+            let cam;
+            const camGroupsKeys = Object.keys(camGroups);
+            for(let i = 0; i < camGroupsKeys.length; i++) {
+                const camCheckpoints = camGroups[camGroupsKeys[i]].checkpoints;
+                for(let j = 0; j < camCheckpoints.length; j++) {
+                    const currentCam = camCheckpoints[j];
+                    if(currentCam.slug === slug) {
+                        camsList.push(currentCam);
+                        cam = currentCam;
+                        break;
+                    }
+                }
+                if(cam) break;
+            }
+        });
+
+        return camsList;
     }
 
     parseCamsData(dom) {
