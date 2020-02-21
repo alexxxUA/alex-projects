@@ -1,5 +1,5 @@
 // ==UserScript==
-// @version         3.7
+// @version         3.8
 // @name            YouTube -> download MP3 or Video from YouTube.
 // @namespace       https://greasyfork.org/ru/scripts/386967-youtube-download-mp3-or-video-from-youtube
 // @author			A.Vasin
@@ -17,7 +17,7 @@
 // @grant           GM_addStyle
 // @grant           GM_download
 // @run-at       	document-idle
-// @copyright   	2019-02-11 // a.vasin
+// @copyright   	2020-02-21 // a.vasin
 // @license         https://creativecommons.org/licenses/by-sa/4.0
 // @updateURL		https://avasin.herokuapp.com/UserScripts/YouTube-Saver/you_tube_saver.user.js
 // ==/UserScript==
@@ -31,13 +31,13 @@ class YouTubeSaver {
         this.defaultLang = 'en';
         this.baseServiceSupportedLangs = ['en', 'ru', 'sk', 'it', 'es', 'fr', 'de', 'nl', 'pt', 'tr', 'no', 'kr', 'jp', 'pl', 'cn', 'hu', 'in', 'ro', 'gr', 'cz', 'bg', 'rs', 'sa', 'id'];
         this.baseServiceLang = this.baseServiceSupportedLangs.includes(this.language) ? this.language : this.defaultLang;
-        this.baseServiceUrl = `https://www.flvto.biz/${this.baseServiceLang}/convert?service=youtube&url=`; //https://y2mate.com/ru/youtube/sWgiVmcjt8c
+        this.baseServiceUrl = `https://dirpy.com/studio?url=`; //https://y2mate.com/ru/youtube/sWgiVmcjt8c
         this.formatMap = {
             mp3: '1',
             mp4: '8',
             mp4HD: '7'
         };
-        this.audioServiceBaseUrl = 'https://svr2.flvto.tv/downloader/state?id=';
+        this.audioServiceBaseUrl = 'https://www.y2mate.com/youtube-mp3/';
         this.initInterval = 400;
         this.checkInterval = 1000;
         this.btnSize = '10px';
@@ -71,17 +71,11 @@ class YouTubeSaver {
     }
 
     getAudioBtnHtml(link) {
-        const apiDownloadUrl = this.getAudioDownloadUrl({url: link});
-        const downloadUrl = this.getBaseDownloadUrl({url: link, format: this.formatMap.mp3});
-
-        if(!apiDownloadUrl) {
-            return '';
-        }
+        const downloadUrl = this.getAudioDownloadUrl({url: link});
 
         return `
             <a
                 href="${downloadUrl}"
-                data-href="${apiDownloadUrl}"
                 target="_blank"
                 class="${this.downloadBtnClass} ${this.downloadAudioClass}"
             >
@@ -92,7 +86,7 @@ class YouTubeSaver {
     }
 
     getVideoBtnHtml(link) {
-        const downloadUrl = this.getBaseDownloadUrl({url: link, format: this.formatMap.mp4});
+        const downloadUrl = this.getMateDownloadUrl(link);
 
         return `
             <a
@@ -221,6 +215,12 @@ class YouTubeSaver {
         return `${this.audioServiceBaseUrl}${id}`;
     }
     
+    getMateDownloadUrl(link) {
+        const urlArray = link.split('.com');
+
+        return `${urlArray[0]}pp.com${urlArray[1]}`;
+    }
+
     getBaseDownloadUrl({url, format = this.formatMap.mp3} = {}) {
         return `${this.baseServiceUrl}${encodeURIComponent(url)}&format=${format}`;
     }
@@ -233,8 +233,8 @@ class YouTubeSaver {
     }
 
     getVideoId(url) {
-        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
-        var match = url.match(regExp);
+        const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*/;
+        const match = url.match(regExp);
         return (match && match[7].length==11) ? match[7] : false;
     }
 
