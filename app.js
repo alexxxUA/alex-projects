@@ -1,14 +1,16 @@
-var	express	= require('express'),
-	app	= express(),
-	path = require('path'),
-	mongoose = require("mongoose");
+const express = require('express');
+const app	= express();
+const http = require('http').createServer(app);
+const path = require('path');
+const mongoose = require("mongoose");
 
 //Set globals
 global.filesP = path.join(__dirname, 'files'); 
 
-var cf = require('./config/config.js'),
-	routes = require('./app_parts/routes.js'),
-	playlist = require('./app_parts/playListUpdater.js');
+const cf = require('./config/config.js');
+const routes = require('./app_parts/routes.js');
+const playlist = require('./app_parts/playListUpdater.js');
+const io = require('./app_parts/io.js');
 
 // Connect to DB
 mongoose.connect(`mongodb://${cf.mongoUrl}`, {
@@ -36,10 +38,13 @@ app.use(express.static(path.join(__dirname, 'static'), {maxAge: cf.oneDay}));
 routes.init(app);
 
 //Init playlist updater
-playlist.init();
+playlist.init(http);
+
+// Init IO events
+io.init();
 
 //listen server
-app.listen(cf.port, function(err){
+http.listen(cf.port, function(err){
 	if(err) throw error;
 
 	console.log(`Server started on port: http://${cf.ip}:${cf.port}`);

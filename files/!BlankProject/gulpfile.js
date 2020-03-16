@@ -1,7 +1,5 @@
 const gulp = require('gulp'),
 	browserSync = require('browser-sync').create(),
-	watch = require('gulp-watch'),
-	compass = require('gulp-compass'),
 	imagemin = require('gulp-imagemin'),
 	pngquant = require('imagemin-pngquant'),
 	mozjpeg = require('imagemin-mozjpeg'),
@@ -58,32 +56,10 @@ const plumberErrorHandler = { errorHandler: notify.onError("Error: <%= error.mes
 //Post css task
 gulp.task('pcss', function(){
 	return gulp.src(P.scss.src)
-		.pipe(plugins.sourcemaps.init())
-        .pipe(plugins.postcss(processors))
-		.pipe(plugins.sourcemaps.write('.'))
+		.pipe(sourcemaps.init())
+        .pipe(postcss(processors))
+		.pipe(sourcemaps.write('.'))
         .pipe(gulp.dest(P.scss.dest));
-});
-
-//Compass task
-gulp.task('compass', function() {
-	gulp.src(P.scss.src)
-		.pipe(plumber(plumberErrorHandler))
-		.pipe(compass({
-			css: 'css',
-			sass: 'scss',
-			javascript: 'js',
-			image: 'img',
-			style: 'expanded', //nested, expanded, compact, or compressed
-			bundleExec: true,
-			relative: true,
-			sourcemap: true,
-			comments: true
-		}))
-		.pipe(gulp.dest(P.scss.dest))
-		.on('error', function(error) {
-			console.log(error);
-			this.emit('end');
-		});
 });
 
 //Image min
@@ -129,7 +105,7 @@ gulp.task('watch', function () {
         }
     });
 
-	gulp.watch(P.scss.src, ['compass']);
+	gulp.watch(P.scss.src, ['pcss']);
 	gulp.watch(P.cssMin.src, ['css-min']);
 	gulp.watch(P.jsMin.src, ['js-min']);
 	
@@ -144,7 +120,7 @@ gulp.task('watch', function () {
 });
 
 //Default task with postCss
-gulp.task('default', gulp.series('compass', 'watch'));
+gulp.task('default', gulp.series('pcss', 'watch'));
 
 //Min files
 gulp.task('min', gulp.series('img-min', 'css-min', 'js-min'));

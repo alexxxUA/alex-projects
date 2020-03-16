@@ -1,5 +1,3 @@
-var ip = require('ip');
-
 var config = {
 	isLocal: true,
 	FBappId: '998511046825943',

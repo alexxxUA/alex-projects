@@ -19,6 +19,12 @@ var auth = {
 				res.user = user._doc;
 				res.user.isLogged = true;
 				res.user.accessEdit = that.getEditAccessVal(req, user);
+			} else if (cf.isLocal) {
+				res.user = {
+					name: 'Developer',
+					isLogged: true,
+					accessEdit: true
+				};
 			}
 			else{
 				res.user = {

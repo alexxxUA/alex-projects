@@ -418,7 +418,9 @@ to { color: #92F099; }
 	z-index: 2;
 }
 .user-logged .login-container {
-	top: 5px;
+    top: 5px;
+    display: flex;
+    align-items: center;
 }
 .user-img {
 	border-radius: 50%;

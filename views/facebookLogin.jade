@@ -14,5 +14,8 @@
 	-if(user.isLogged)
 		div.user-info
 			a(href="/admin")
-				img.user-img(src="#{user.avatar}", title="#{user.name}")
+				-if(user.avatar)
+					img.user-img(src="#{user.avatar}", title="#{user.name}")
+				-else
+					span=user.name
 			span.user-name.hidden=user.name

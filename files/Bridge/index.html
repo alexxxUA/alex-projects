@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+	<title>Bridje</title>
+	<script>
+		var sourceLoader = {
+			isDev: location.search.split('dev=')[1] == 'true' ? true : false,
+			devCss: [
+				'css/reset.css',
+				'css/bootstrap_3.2.0.min.css',
+				'css/base.css'
+			],
+			devJs: [
+				'js/socket.io.dev.js',
+				'https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.js',
+				'js/vue-socketio.js',
+				'js/app.js'
+			],
+			prodCss: ['css/base_min.css'],
+			prodJs: [
+				'js/socket.io.js',
+				'https://cdn.jsdelivr.net/npm/vue@2.6.9/dist/vue.min.js',
+				'js/vue-socketio.js',
+				'js/app_min.js'
+			],
+			loadCss: function(){
+				var cssArray = this.isDev ? this.devCss : this.prodCss;
+
+				for(var i=0; i<cssArray.length; i++)
+					document.write('<link rel="stylesheet" href="'+ cssArray[i] +'">');
+			},
+			loadJs: function(){
+				var jsArray = this.isDev ? this.devJs : this.prodJs;
+
+				for(var i=0; i<jsArray.length;  i++)
+					document.write('<script src="'+ jsArray[i] +'"><\/script>');
+			}
+		}
+		//Load css files
+		sourceLoader.loadCss();
+	</script>
+</head>
+<body>
+	<header></header>
+	<main id="app" class="app">
+		<h1>Bridje</h1>
+		<bridje inline-template>
+			Game field here
+		</bridje>
+	</main>
+	<script class="script-section">
+		//Load js files
+		sourceLoader.loadJs();
+	</script>
+</body>
+</html>
