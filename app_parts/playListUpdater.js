@@ -278,7 +278,10 @@ Channel.prototype = {
             genTimeString = this.getGenTime().string;
 
         this.logInfo('Generation started and will take ~ '+ genTimeString +'. End time ~ '+ approxEndDateString +'.');
-    },
+	},
+	writeFileCallback: function(err) {
+		if(err) console.console.error(err);
+	},
 	init: function() {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.playlistExt}`);
@@ -860,7 +863,7 @@ Channel.prototype = {
 	savePlaylist: function(playlist, isProxyList){
 		var playListPath = isProxyList ? this.proxyPlaylistPath : this.playlistPath;
 
-		fs.writeFile(playListPath, playlist);
+		fs.writeFile(playListPath, playlist, this.writeFileCallback);
 	},
 	failed: function(channel, errMsg){
 		var that = this;
