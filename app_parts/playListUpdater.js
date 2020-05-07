@@ -118,69 +118,44 @@ function Channel(params){
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Host': '1ttv.net',
         }
-    };
+	};
+	
+	// Additional channel attributes to be found / included into playlist output
+	this.channelDataAttrs = [
+		'catchup', 'catchup-days', 'timeshift', 'tvg-id'
+	];
 
 	//--- RegExps array for search channel id or url
 
 	// Search in .m3u playlist with URL contains "ygk.info" - voron source
 	this.voronRegExp = channel => {
 		var isHd = this.getHdForRegexp(channel);
-		return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
+		return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(?<id>.*?ygk\.info.*))', 'img');
 	};
 
 	// Search in .m3u playlist
 	this.m3uRegExp = channel => {
 		var isHd = this.getHdForRegexp(channel);
-		return new RegExp('(?:EXTINF\:[^,]+,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*))', 'img');
+		return new RegExp('(?:EXTINF\:[^,]+,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(?<id>.*))', 'img');
 	};
 
     this.cRegExps = [
-		// Search in .m3u playlist with URL contains "ygk.info" - voron source
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?ygk\.info.*))', 'img');
-		},
 		this.voronRegExp,
-		// Search in .m3u playlist with URL contains "kv-3ln" - voron source
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?kv-3ln.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains "lb1"
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?lb1.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains 217.23.4.124
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?217\\.23\\.4\\.124.*))', 'img');
-		},
-		// Search in .m3u playlist with URL contains "streamer.sktv.peers.tv"
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?streamer\\.sktv\\.peers\\.tv.*))', 'img');
-		},
 		// search in JSON
-		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(.+?)?")`, 'img'),
-		// Search in .m3u playlist with URL contains "play/"
-		channel => {
-			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:EXTINF\:-?\\d,\\s*(?:' + channel.sName + ')\\s*' + isHd + '\\s*\\n+(.*?play/.*))', 'img');
-		},
+		channel => new RegExp(`(?:"${this.getBaseChannelRegExp(channel)}","url":"(?<id>.+?)?")`, 'img'),
 		this.m3uRegExp,
-        new RegExp('(?:acestream\:\/\/(.+)?(?:"|\'))', 'img'),
-        new RegExp('(?:this\.loadPlayer\\((?:"|\'))(.+)?(?:"|\')', 'img'),
-        new RegExp('(?:this\.loadTorrent\\((?:"|\'))(.+)?(?:"|\')', 'img'),
-        new RegExp('(?:data-stream_url=(?:"|\'))(.+)?(?:"|\')', 'img'),
-		new RegExp('(?:player\\.php\\?[^=]*=)([^\'"<]+)', 'img'),
+        new RegExp('(?:acestream\:\/\/(?<id>.+)?(?:"|\'))', 'img'),
+        new RegExp('(?:this\.loadPlayer\\((?:"|\'))(?<id>.+)?(?:"|\')', 'img'),
+        new RegExp('(?:this\.loadTorrent\\((?:"|\'))(?<id>.+)?(?:"|\')', 'img'),
+        new RegExp('(?:data-stream_url=(?:"|\'))(?<id>.+)?(?:"|\')', 'img'),
+		new RegExp('(?:player\\.php\\?[^=]*=)(?<id>[^\'"<]+)', 'img'),
         //Search for id in jsonp response from "this.torApiUrl"
-		new RegExp('(?:id":")(.+)?(?:",)', 'img'),
+		new RegExp('(?:id":")(?<id>.+)?(?:",)', 'img'),
 		// JW player
-		new RegExp('(?:file\:\\s*?(?:"|\')(.+)?(?:"|\'))', 'img'),
+		new RegExp('(?:file\:\\s*?(?:"|\')(?<id>.+)?(?:"|\'))', 'img'),
 		channel => {
 			var isHd = this.getHdForRegexp(channel);
-			return new RegExp('(?:<location>)(.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
+			return new RegExp('(?:<location>)(?<id>.*?)(?:</location>\\s*\\n*\\s*<title>\\s*(?:.*' + channel.sName + ')\\s*' + isHd + '\\s*</title>)', 'img');
 		}
     ];
 
@@ -676,9 +651,7 @@ Channel.prototype = {
 		var that = _that || this;
 
 		this.getPlayerUrl(channel, url => {
-			this.getIdFromFrame(url, channel, function(chanId){
-				callback(chanId);
-			}, that);
+			this.getIdFromFrame(url, channel, chanData => callback(chanData), that);
 		}, that);
 	},
 	getIdFromFrame: function(cUrl, channel, callback, _that, isSkipUrlUpdate){
@@ -698,54 +671,83 @@ Channel.prototype = {
         }
         that.setCookie(updChanUrl, channel, getIdReq);
 	},
-	getRegExpMatchArray: function(regExp, string){
-		var output = [],
+	getRegExpMatchData: function(regExp, string){
+		let output = [],
 			matches;
 
 		while (matches = regExp.exec(string)) {
-			output.push(matches[1]);
+			output.push({
+				groups: matches.groups || {},
+				match: matches[0]
+			});
 		}
-		return output;
+
+		return output.length ? output : null;
 	},
     getIdFromFrameRespCallback: function(err, resp, channel, callback, _that){
+		var _that = _that || this;
         if (err || resp.statusCode !== 200){
             _that.failed(channel, 'channel`s page/frame not available');
             return;
         }
+        
+		const chanData = this.getDataFromSourceString(resp.body, channel);
 
-        var _that = _that || this,
-            chanId = this.getIdFromSourceString(resp.body, channel);
-
-        if(!chanId){
+        if(!chanData.id){
             _that.failed(channel, 'id not found on the page/frame');
         }
         else{
             //If channel id is URL && check for URL enabled -> make request and get real id value
-            if(this.isStringUrl(chanId) && this.isCheckIdForUrl){
-                var chanIdUrl = this.torApiUrl + chanId;
+            if(this.isStringUrl(chanData.id) && this.isCheckIdForUrl){
+                const chanIdUrl = this.torApiUrl + chanData.id;
 
                 this.getIdFromFrame(chanIdUrl, channel, callback, _that, true);
             }
             else {
-                callback(chanId);
+                callback(chanData);
             }
         }
 	},
-	getIdFromSourceString: function(source, channel){
-		var i = 0,
-			chanId;
+	getDataFromSourceString: function(source, channel){
+		let i = 0,
+			data = {};
 
-		while(!chanId && i < this.cRegExps.length){
+		while(!data.id && i < this.cRegExps.length){
 			var regExp = typeof this.cRegExps[i] === 'function' ? this.cRegExps[i].call(this, channel) : this.cRegExps[i];
 
-            chanId = this.getRegExpMatchArray(regExp, source);
-            chanId = chanId.length ? chanId[0] : false;
+			const chanData = this.getRegExpMatchData(regExp, source);
+
+			if (chanData) {
+				let firstMatch = chanData[0];
+				data = {
+					// channel ID
+					...firstMatch.groups,
+					// get additional channel data
+					...this.getAdditionalChannelData(firstMatch.match)
+				}
+			}
+
             i++;
         }
         //Check if ID string contains numbers. If not -> failed.
-		chanId = /[0-9]+/.test(chanId) ? chanId : false;
+		data.id = /[0-9]+/.test(data.id || '') ? data.id : false;
 
-		return chanId;
+		return data;
+	},
+	getAdditionalChannelData: function (chanMatch) {
+		return this.channelDataAttrs.reduce((data, attr) => {
+			let regExp = new RegExp(`${attr}="(?<${this.toCamelCase(attr)}>.*?)"`, 'igm')
+			let match = regExp.exec(chanMatch);
+
+			if (match && match.groups) {
+				data = {
+					...data,
+					...match.groups
+				}
+			}
+
+			return data;
+		}, {});
 	},
 	printReport: function(){
 		if(this.isPlaylistFailed)
@@ -761,9 +763,7 @@ Channel.prototype = {
 
 			(function(channel, j){
 				setTimeout(function(){
-					that.getChannelId(channel, function(ID){
-						that.storeChannelItem(channel, ID)
-					});
+					that.getChannelId(channel, chanData => that.storeChannelItem(channel, chanData));
 				}, j * that.genDelay);
 			})(curChannel, i);
 		}
@@ -786,6 +786,9 @@ Channel.prototype = {
 		const isAceliveId = !!cId.match(/\.|-|_/);
 
 		return isAceliveId ? `${this.proxyListPrefix}url=${this.aceliveGetter}${cId}` : `${this.proxyListPrefix}id=${cId}`
+	},
+	toCamelCase: function (str) {
+		return str.replace(/\W(\w)/g, $1 => $1.toUpperCase()).replace(/\W/g, '');
 	},
 	formFullChannList: function(playListExt){
 		var channels = '';
@@ -813,26 +816,39 @@ Channel.prototype = {
 		}
 	},
 	formChannItem: function(channel, playListExt) {
-		var cName = this.getFullChannelName(channel),
-			cId = channel.id;
+		const cName = this.getFullChannelName(channel);
+		const { id, isM3uOnly } = channel;
 
 		switch (playListExt) {
 			case 'xspf':
-				if (channel.isM3uOnly) {
+				if (isM3uOnly) {
 					return '';
 				} else {
 					return '\n\t\t<track>' +
 							'\n\t\t\t<title>' + cName + '</title>' +
-							'\n\t\t\t<location>' + cId + '</location>' +
+							'\n\t\t\t<location>' + id + '</location>' +
 							'\n\t\t</track>';
 				}
 			case 'm3u':
-				var tvgName = channel.pName || cName,
-					cUrl = this.isStringUrl(cId) ? cId : this.getProxyUrl(cId);
+				const attrStr = this.formM3uAttrs(channel);
+				const tvgName = ` tvg-name="${channel.pName || cName}"`;
+				const tvgLogo = ` tvg-logo="${this.getLogoUrl(cName)}"`;
+				const cUrl = this.isStringUrl(id) ? id : this.getProxyUrl(id);
 
-				return '\n#EXTINF:-1 tvg-name="'+ tvgName +'" tvg-logo="'+ this.getLogoUrl(cName) +'",'+ cName +
+				return '\n#EXTINF:-1 '+ attrStr + tvgName + tvgLogo +','+ cName +
 						'\n'+ cUrl
 		}
+	},
+
+	formM3uAttrs: function(channel) {
+		return this.channelDataAttrs.reduce((attrStr, attr) => {
+			const val = channel[this.toCamelCase(attr)];
+
+			if (val) {
+				attrStr += ` ${attr}="${val}"`;
+			}
+			return attrStr;
+		}, '');
 	},
 	sendPlaylistGenFailedEmail: function(){
 		var sbj = this.emailSubj +' ['+ this.getFormatedDate(new Date, true) +']',
@@ -849,10 +865,14 @@ Channel.prototype = {
 	isAbleToRestartChan: function(channel){
 		return this.backUpGen && channel.failedCount < this.maxRestartCountPerChannel;
 	},
-	storeChannelItem: function(channel, ID){
+	storeChannelItem: function(channel, channelData){
 		this.channelCounter++
 
-		channel.id = ID.replace('\n', '');
+		// Assign founded data to the channel
+		Object.assign(channel, channelData);
+
+		// clean-up ID
+		channel.id = channelData.id.replace('\n', '');
 
 		this.report.updatedList.push(channel);
 
@@ -875,9 +895,7 @@ Channel.prototype = {
 		if( this.isAbleToRestartChan(channel) ){
 			setTimeout(function(){
 				channel.failedCount++;
-				that.backUpGen.getChannelId(channel, function(ID){
-					that.storeChannelItem(channel, ID)
-				}, that);
+				that.backUpGen.getChannelId(channel, chanData => that.storeChannelItem(channel, chanData), that);
 			}, this.genDelay || 3000);
 			return;
 		}
@@ -965,9 +983,7 @@ var TuchkaPlayerPageConfig = {
 		    return;
 		}
 
-		this.getIdFromFrame(chanUrl, channel, function(chanId){
-			callback(chanId);
-		}, _that);
+		this.getIdFromFrame(chanUrl, channel, chanData => callback(chanData), _that);
 	}
 }
 
@@ -1044,12 +1060,12 @@ var SOURCE_CONFIG = {
 		'/constant/sk'
 	],
 	getChannelId: function(channel, callback, _that, source = this.validList, isSkipPageUrl){
-		var that = _that || this,
-			chanId = this.getIdFromSourceString(source, channel),
-			channelPageUrl = this.getChannelPageUrl(channel, that, true);
+		let that = _that || this;
+		const chanData = this.getDataFromSourceString(source, channel);
+		const channelPageUrl = this.getChannelPageUrl(channel, that, true);
 
-		if (chanId) {
-			callback(chanId);
+		if (chanData.id) {
+			callback(chanData);
 		} else if (channelPageUrl && !isSkipPageUrl) {
 			needle.request('GET', channelPageUrl, null, {compressed: true, follow_max: 5}, (err, resp) => {
 				if (err || resp.statusCode !== 200){
@@ -1090,12 +1106,12 @@ const JSON_CONFIG = {
 	},
 	getChannelId: function (channel, callback, _that) {
 		var _that = _that || this,
-			chanId = this.getIdFromJson(this.validList, channel);
+			id = this.getIdFromJson(this.validList, channel);
 
-		if (!chanId) {
+		if (!id) {
 			_that.failed(channel, 'id not found on the page/frame');
 		} else {
-			callback(chanId);
+			callback({id});
 		}
 	}
 }
@@ -1281,10 +1297,8 @@ module.exports = {
 		if(cf.playlistEnabled){
 			const playlists = new Playlists([
 				IpStream,
-				MainPlaylistFromM3u,
 				TorrentAC_SOURCE,
-				MainPlaylist_ACELIVE,
-				MainPlaylistHomepage_tuchka
+				MainPlaylist_ACELIVE
 			], channelChecker);
 		} else {
             channelChecker();
