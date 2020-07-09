@@ -512,7 +512,7 @@ Channel.prototype = {
 			const loopFunction = () => {
 				urlsIndex++
 				//Call callback in case all parts collected
-				if(callback && urlsIndex === urlsCount) {
+				if(callback && urlsIndex === urlsCount && that.validList) {
 					setTimeout(function(){
 						that.cLog('All playlist\'s parts are downloaded. Starting generation.');
 						callback();
