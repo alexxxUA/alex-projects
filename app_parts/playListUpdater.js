@@ -204,7 +204,11 @@ Channel.prototype = {
 	cache: {
 		'/constant/sk': `
 			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
-			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-360.m3u8
+			#EXTINF:-1, JOJ\nhttps://nn.geo.joj.sk/live/hls/joj-540.m3u8
+			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-540.m3u8
+			#EXTINF:-1, JOJ Plus\nhttps://nn.geo.joj.sk/live/hls/jojplus-540.m3u8
+			#EXTINF:-1, Jojko\nhttps://nn.geo.joj.sk/live/hls/rik-540.m3u8
+			#EXTINF:-1, WAU\nhttps://nn.geo.joj.sk/live/hls/wau-540.m3u8
 		`
 	},
 	// Cache lifeTime = 5 minutes
