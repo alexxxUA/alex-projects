@@ -3,7 +3,7 @@ var channelListSk = [
 	{dName: 'Kosice dnes', sName: '', flags: 'm3'},
 	{dName: 'Markíza', sName: 'Markíza|TV Markíza|Markiza|TV Markiza', flags: 'm3'},
 	{dName: 'JOJ Family', sName: '', tvgId: 'JOJ Family', flags: 'm3'},
-	{dName: 'JOJ HD', sName: 'TV JOJ 720p', tvgId: 'JOJ', flags: 'm3'},
+	{dName: 'JOJ HD', sName: 'TV JOJ 720p', tvgId: 'JOJ.sk', flags: 'm3'},
 	{dName: 'JOJ Plus HD', sName: 'JOJ Plus', tvgId: 'JOJ Plus', flags: 'm3'},
 	{dName: 'Dajto', sName: 'Dajto|TV Dajto|Dajto HD', tvgId: 'Dajto', flags: 'm3'},
 	{dName: 'Doma HD', sName: 'Doma', tvgId: 'Doma', flags: 'm3'},
