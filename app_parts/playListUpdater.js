@@ -837,10 +837,9 @@ Channel.prototype = {
 				const attrStr = this.formM3uAttrs(channel);
 				const tvgName = !channel.tvgId ? ` tvg-name="${channel.tvgName || cName}"` : '';
 				const tvgLogo = ` tvg-logo="${this.getLogoUrl(cName)}"`;
-				const lang = channel.lang ? ` lang="${channel.lang}"` : '';
 				const cUrl = this.isStringUrl(id) ? id : this.getProxyUrl(id);
 
-				return '\n#EXTINF:-1 '+ attrStr + lang + tvgName + tvgLogo +','+ cName +
+				return '\n#EXTINF:-1 '+ attrStr + tvgName + tvgLogo +','+ cName +
 						'\n'+ cUrl
 		}
 	},
