@@ -835,7 +835,7 @@ Channel.prototype = {
 				}
 			case 'm3u':
 				const attrStr = this.formM3uAttrs(channel);
-				const tvgName = !channel.tvgId ? ` tvg-name="${channel.pName || cName}"` : '';
+				const tvgName = !channel.tvgId ? ` tvg-name="${channel.tvgName || cName}"` : '';
 				const tvgLogo = ` tvg-logo="${this.getLogoUrl(cName)}"`;
 				const cUrl = this.isStringUrl(id) ? id : this.getProxyUrl(id);
 
