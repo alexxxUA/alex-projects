@@ -166,7 +166,7 @@ function Channel(params){
 	this.logsOutputPath = `${cf.playlistOutputPath}/Logs`
 	this.playListName = 'TV_List';
 	this.playlistExt = 'xspf'
-	this.proxyPlaylistExt = 'm3u'
+	this.proxyPlaylistExt = 'm3u8'
 	this.logName = '';
 	this._report = _.template(
 		'Playlist updated.'+
@@ -815,6 +815,7 @@ Channel.prototype = {
 						'\n\t<trackList>' + channels + '\n\t</trackList>' +
 						'\n</playlist>';
 			case 'm3u':
+			case 'm3u8':
 				return '#EXTM3U'+
 						'\n'+ channels
 		}
@@ -834,6 +835,7 @@ Channel.prototype = {
 							'\n\t\t</track>';
 				}
 			case 'm3u':
+			case 'm3u8':
 				const attrStr = this.formM3uAttrs(channel);
 				const tvgName = !channel.tvgId ? ` tvg-name="${channel.tvgName || cName}"` : '';
 				const tvgLogo = ` tvg-logo="${this.getLogoUrl(cName)}"`;
