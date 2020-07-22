@@ -15,6 +15,7 @@ var mime = require('mime-types'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js'),
 	email = require('./sendMail.js'),
+	extract = require('./extract.js'),
 	aliasesMap = {};
 
 function setAliasMap(){
@@ -219,6 +220,8 @@ function init(app){
 		//Make proxy request
 		proxy.makeProxyRequest(req.query, res);
 	});
+
+	app.get('/extractXz', extract.xz.bind(extract));
 
 	app.get('/offline', function(req, res){
 		res.render('offline.jade');
