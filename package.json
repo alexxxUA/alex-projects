@@ -25,7 +25,6 @@
     "nodemon": "*"
   },
   "dependencies": {
-    "lzma-native": "^6.0.1",
     "cheerio": "^0.22.0",
     "emailjs": "^1.0.4",
     "express": "3.11.x",
@@ -34,6 +33,7 @@
     "jade": "*",
     "jsdom": "^6.0.0",
     "legacy-encoding": "^3.0.0",
+    "lzma-native": "^6.0.1",
     "mime-types": "^2.1.10",
     "mkdirp": "^0.5.0",
     "mongoose": "^4.11.9",
@@ -43,7 +43,8 @@
     "rimraf": "^2.2.8",
     "translit": "0.0.1",
     "underscore": "^1.8.3",
-    "url-parse": "^1.4.4"
+    "url-parse": "^1.4.4",
+    "zlib": "^1.0.5"
   },
   "private": true,
   "engines": {
