@@ -48,8 +48,8 @@ class BorderCams extends ProxyParser {
         this.camsUrl = 'https://dpsu.gov.ua/ua/border/';
         this.textBorderDataUrl = 'https://www.financnasprava.sk/sk/infoservis/hranicne-priechody';
         this.camSel = {
-            countries: '[data-id="country"] option',
-            checkpoints: '[data-id="puncts"] option'
+            countries: '[data-id="select-country"] option',
+            checkpoints: '[data-id="select-town"] option'
         };
         this.textDataSel = {
             borders: '#tblPriechody tbody tr'
