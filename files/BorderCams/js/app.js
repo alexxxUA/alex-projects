@@ -56,11 +56,18 @@ class BorderCams extends ProxyParser {
         };
         this.slugMap = {
             VN: 'нємецьке|німецьке|nemecké|nemecke',
+            VN2: 'нємецьке|німецьке|nemecké|nemecke',
             UBLA: 'убля|ubľa|ubla',
             SLME: 'селменце|slemence',
             ZAH: 'захонь'
         };
-        this.favoriteCountries = ['VN', 'UBLA', 'SLME', 'ZAH'];
+        this.favoritePoints = ['VN', 'VN2', 'UBLA', 'SLME', 'ZAH'];
+
+        this.predefinedPoints = [{
+            slug: 'VN2',
+            name: 'Ужгород-КПП - Вишнє-Немецьке',
+            src: 'https://stream.dpsu.gov.ua:5101/uzhgorod/embed.html?dvr=false&proto=hls&autoplay=true'
+        }];
 
         this.translateMap = {
             'звичайний': 'priebežne|priebezne'
@@ -84,6 +91,7 @@ class BorderCams extends ProxyParser {
             data () {
                 const data = {
                     camsData: {},
+                    favoritePoints: _this.favoritePoints,
                     favoriteItems: [],
                     err: null,
                     streamSrc: null,
@@ -93,7 +101,9 @@ class BorderCams extends ProxyParser {
 
                 if(camsData) {
                     data.camsData = camsData;
-                    data.favoriteItems = _this.getCamsDataBySlug(camsData, _this.favoriteCountries);
+
+                    // Merge existing predefined points data with data from server
+                    data.favoriteItems = _this.predefinedPoints.concat(_this.getCamsDataBySlug(camsData, _this.favoritePoints));
 
                     // Activate first camera
                     if (data.favoriteItems.length) {
@@ -122,10 +132,24 @@ class BorderCams extends ProxyParser {
                     }
 
                     return data;
+                },
+
+                streamSrcFormatted() {
+                    return `javascript:window.location.replace('${this.streamSrc}');`;
                 }
             },
 
             methods: {
+                selectCam(streamSrc) {
+                    this.streamSrc = streamSrc;
+                },
+
+                onCamLoad(e) {
+                    if (e.currentTarget.src != this.streamSrc) {
+                        e.currentTarget.src = this.streamSrc;
+                    }
+                },
+
                 translate(text) {
                     let translated = text;
 
@@ -214,11 +238,11 @@ class BorderCams extends ProxyParser {
                     name: text,
                     src: this.updateStreamSrc(dataset.link)
                 };
-                const slug = this.findSlugByName(text);
+                const slugs = this.findSlugsByName(text);
 
                 // Try to find slug
-                if(slug) {
-                    checkpointData.slug = slug;
+                if(slugs.length) {
+                    checkpointData.slug = slugs[0];
                 }
 
                 countries[value].checkpoints.push(checkpointData);
@@ -248,10 +272,10 @@ class BorderCams extends ProxyParser {
                 obj[key] = borderItem.querySelector(dataMap[key]).innerText.trim();
                 return obj;
             }, {});
-            const slug = this.findSlugByName(data.name2);
+            const slugs = this.findSlugsByName(data.name2);
 
-            if(slug) {
-                bordersObj[slug] = data;
+            if(slugs.length) {
+                slugs.forEach(slug => bordersObj[slug] = data);
             } else {
                 this.error(`Slug not found for text data for: "${data.name2}"`);
             }
@@ -268,20 +292,24 @@ class BorderCams extends ProxyParser {
             srcObj.searchParams.set('autoplay', true);
         }
 
+        if(!srcObj.searchParams.get('mute')) {
+            srcObj.searchParams.set('mute', true);
+        }
+
         return srcObj.href;
     }
 
-    findSlugByName(name) {
-        let slug;
+    findSlugsByName(name) {
+        const slugArray = [];
 
         Object.keys(this.slugMap).forEach(key => {
             const regExp = new RegExp(this.slugMap[key], 'i');
             if(regExp.test(name)) {
-                slug = key;
+                slugArray.push(key);
             }
         });
 
-        return slug;
+        return slugArray;
     }
 
     error(msg) {

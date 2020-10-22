@@ -61,7 +61,7 @@
 						<div v-if="favoriteItems.length" class="btn-group-vertical favorite">
 							<button v-for="item in favoriteItems"
 								v-bind:class="['btn btn-default favorite__item', { 'active' : item.src === streamSrc }]"
-								@click="streamSrc = item.src"
+								@click=selectCam(item.src)
 							>
 								{{ item.name }}
 							</button>
@@ -72,11 +72,13 @@
 						<div class="app__stream-wrap">
 							<iframe v-if="streamSrc"
 								class="app__stream"
+								allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
 								scrolling="no"
 								frameborder="0"
 								referrerpolicy="no-referrer"
-								:src="`javascript:window.location.replace('${streamSrc}')`"
+								:src="streamSrcFormatted"
 								:key="streamSrc"
+								@load=onCamLoad
 							></iframe>
 							<table v-if="activeCamData && activeCamData.textData" class="table table-bordered table-condensed app__stream-data">
 								<thead>

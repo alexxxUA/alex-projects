@@ -175,7 +175,8 @@ body {
     height: 100%;
     position: absolute;
     top: 0px;
-    left: 0px; }
+    left: 0px;
+    background-color: #FFF; }
     .app__stream-data {
       position: absolute; }
       .app__stream-data th, .app__stream-data td {
