@@ -141,6 +141,11 @@ class BorderCams extends ProxyParser {
 
             methods: {
                 selectCam(streamSrc) {
+                    // Return in case same ID was selected
+                    if (this.streamSrc === streamSrc) {
+                        return;
+                    }
+
                     this.streamSrc = streamSrc;
 
                     // Switch animation
