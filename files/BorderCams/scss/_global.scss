@@ -73,6 +73,7 @@ body{
 
 			th, td {
 				text-align: center;
+				vertical-align: center;
 			}
 		}
 
@@ -102,6 +103,10 @@ body{
 	@media (min-width: $mobileWidth) {
 		width: 100%;
 	}
+
+	@media (max-width: $mobileWidth) {
+		font-size: 22px;
+	}
 }
 
 .favorite {
@@ -109,12 +114,14 @@ body{
 	flex-wrap: wrap;
 	max-width: 350px;
 	margin: 0 auto 15px;
+	z-index: 1;
 
 	@media (max-width: $mobileWidth) {
 		position: fixed;
 		bottom: 0;
 		left: 50%;
 		transform: translateX(-50%);
+		margin-bottom: 5px;
 	}
 
 	&__item {
