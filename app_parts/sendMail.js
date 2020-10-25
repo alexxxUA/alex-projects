@@ -12,8 +12,7 @@ module.exports = {
 	server: server,
 	sendMail: function(subj, to, mail, callback){
 		server.send({
-			text: 'Test text',
-			from: 'Test mail engine',
+			from: 'Alex',
 			to: to,
 			subject: subj,
 			attachment: [{data: mail, alternative: true}]
