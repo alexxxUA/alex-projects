@@ -1,12 +1,12 @@
-var email = require("emailjs"),
+const { SMTPClient } = require('emailjs');
 	cf = require('./../config/config.js');
 
-var server = email.server.connect({
-				   user: cf.email,
-				   password: cf.emailPass,
-				   host: "smtp.gmail.com",
-				   ssl: true
-				});
+var server = new SMTPClient({
+	user: cf.email,
+	password: cf.emailPass,
+	host: "smtp.gmail.com",
+	ssl: true
+});
 
 module.exports = {
 	server: server,
