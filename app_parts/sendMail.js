@@ -4,7 +4,7 @@ const { SMTPClient } = require('emailjs');
 var server = new SMTPClient({
 	user: cf.email,
 	password: cf.emailPass,
-	host: "smtp.gmail.com",
+	host: `smtp.${cf.email}`,
 	ssl: true
 });
 
