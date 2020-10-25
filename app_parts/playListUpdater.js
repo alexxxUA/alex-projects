@@ -1302,9 +1302,7 @@ module.exports = {
 
 		if(cf.playlistEnabled){
 			const playlists = new Playlists([
-				IpStream,
-				TorrentAC_SOURCE,
-				MainPlaylist_ACELIVE
+				IpStream
 			], channelChecker);
 		} else {
             channelChecker();

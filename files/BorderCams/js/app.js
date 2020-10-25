@@ -142,6 +142,13 @@ class BorderCams extends ProxyParser {
             methods: {
                 selectCam(streamSrc) {
                     this.streamSrc = streamSrc;
+
+                    // Switch animation
+                    clearTimeout(this.animationTimeout);
+                    this.$refs.streamWrap.classList.add('m-switch');
+                    this.animationTimeout = setTimeout(() => {
+                        this.$refs.streamWrap.classList.remove('m-switch');
+                    }, 700);
                 },
 
                 onCamLoad(e) {

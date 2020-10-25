@@ -1,5 +1,19 @@
 $mobileWidth: 600px;
 
+@keyframes switch {
+	0% {
+		height: 0;
+	}
+
+	50% {
+		height: 50%;
+	}
+
+	100% {
+		height: 0;
+	}
+}
+
 html,
 body{
 	min-height: 100%;
@@ -58,6 +72,34 @@ body{
 		padding-top: 80%;
 		width: 100%;
 		border-bottom: 100px solid transparent;
+
+		@media (max-width: $mobileWidth) {
+			border-bottom-width: 160px;
+		}
+
+		&::before,
+		&::after {
+			content: '';
+			position: absolute;
+			width: 100%;
+			background: #000;
+			height: 0;
+			z-index: 1;
+		}
+
+		&::before {
+			top: 0;
+		}
+		&::after {
+			bottom: 0;
+		}
+
+		&.m-switch {
+			&::before,
+			&::after {
+				animation: switch 0.7s linear;
+			}
+		}
 	}
 
 	&__stream {

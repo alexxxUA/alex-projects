@@ -23,20 +23,6 @@ $loader-size: 120px;
     }
 }
 
-@-webkit-keyframes lds-pacman-1 {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    50% {
-        transform: rotate(-45deg);
-    }
-
-    100% {
-        transform: rotate(0deg);
-    }
-}
-
 @keyframes lds-pacman-2 {
     0% {
         transform: rotate(180deg);
@@ -51,37 +37,7 @@ $loader-size: 120px;
     }
 }
 
-@-webkit-keyframes lds-pacman-2 {
-    0% {
-        transform: rotate(180deg);
-    }
-
-    50% {
-        transform: rotate(225deg);
-    }
-
-    100% {
-        transform: rotate(180deg);
-    }
-}
-
 @keyframes lds-pacman-3 {
-    0% {
-        transform: translate(190px, 0);
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    100% {
-        transform: translate(70px, 0);
-        opacity: 1;
-    }
-}
-
-@-webkit-keyframes lds-pacman-3 {
     0% {
         transform: translate(190px, 0);
         opacity: 0;
