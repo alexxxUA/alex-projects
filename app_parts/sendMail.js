@@ -5,7 +5,8 @@ var server = new SMTPClient({
 	user: cf.email,
 	password: cf.emailPass,
 	host: `smtp.gmail.com`,
-	ssl: true
+	ssl: true,
+	port: '587'
 });
 
 module.exports = {
