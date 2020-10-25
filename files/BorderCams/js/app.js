@@ -20,13 +20,13 @@ class ProxyParser {
         this.domParser = new DOMParser();
     }
 
-    doProxyFetch(url) {
-        return fetch(`${this.proxyUrl}${url}`)
+    doProxyFetch(url, isForceDecode = false) {
+        return fetch(`${this.proxyUrl}${url}${isForceDecode ? '&decode=true' : ''}`)
             .then(resp => resp.text());
     }
 
-    doPageFetch(url) {
-        return this.doProxyFetch(url)
+    doPageFetch(url, isForceDecode = false) {
+        return this.doProxyFetch(url, isForceDecode)
             .then(this.blockResources)
             .then(this.convertHtmlToDom.bind(this));
     }
@@ -186,7 +186,7 @@ class BorderCams extends ProxyParser {
     }
 
     getData() {
-        const camsDataPromise = this.doPageFetch(this.camsUrl).then(this.parseCamsData.bind(this));
+        const camsDataPromise = this.doPageFetch(this.camsUrl, true).then(this.parseCamsData.bind(this));
         const textDataPromise = this.doPageFetch(this.textBorderDataUrl).then(this.parseTextBorderData.bind(this));
         return Promise.all([camsDataPromise, textDataPromise]);
     }

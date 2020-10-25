@@ -132,12 +132,11 @@ var Proxy = {
 			const isHtml = !!contentType && contentType.includes('text/html');
 			const isUtf8 = !!contentType && contentType.includes('utf-8');
 
-			/*
-			if(isHtml && !isUtf8) {
+			if(params.decode === 'true') {
 				resp.body = legacy.decode(resp.raw, 'utf8', {
 					mode: 'html'
 				});
-			} */
+			}
 
 			if(callback){
 				callback(null, resp)
