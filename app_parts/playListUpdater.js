@@ -1180,7 +1180,7 @@ const IpStream = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	playListName: 'TV-Ipstream',
 	playlistUrl: [
 		cf.IpStreamUrl,
-		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
+		// 'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'/constant/sk'
 	],
 	generateCountPer24h: 24
