@@ -1,14 +1,16 @@
-var	express	= require('express'),
-	app	= express(),
-	path = require('path'),
-	mongoose = require("mongoose");
+const fs = require("fs");
+const https = require("https");
+const express	= require('express');
+const app	= express();
+const path = require('path');
+const mongoose = require("mongoose");
 
 //Set globals
 global.filesP = path.join(__dirname, 'files'); 
 
-var cf = require('./config/config.js'),
-	routes = require('./app_parts/routes.js'),
-	playlist = require('./app_parts/playListUpdater.js');
+const cf = require('./config/config.js');
+const routes = require('./app_parts/routes.js');
+const playlist = require('./app_parts/playListUpdater.js');
 
 // Connect to DB
 mongoose.connect(`mongodb://${cf.mongoUrl}`, {
@@ -38,9 +40,20 @@ routes.init(app);
 //Init playlist updater
 playlist.init();
 
-//listen server
-app.listen(cf.port, function(err){
+//Start the server
+let server = app;
+if (cf.isLocal) {
+	// Add certificate for local server
+	const serverOptions = {
+		key: fs.readFileSync('./certificate/cert.key', 'utf-8'),
+		cert: fs.readFileSync('./certificate/cert.crt', 'utf-8')
+	};
+
+	server = https.createServer(serverOptions, app)
+}
+
+server.listen(cf.port, err => {
 	if(err) throw error;
 
-	console.log(`Server started on port: http://${cf.ip}:${cf.port}`);
+	console.log(`Server started on port: https://${cf.ip}:${cf.port}`);
 });

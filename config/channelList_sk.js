@@ -1,5 +1,5 @@
 var channelListSk = [
-	{dName: 'Jojko', sName: '', flags: 'm3', tvgName: 'RiK'},
+	{dName: 'Jojko', sName: '', flags: 'm3'},
 	{dName: 'Kosice dnes', sName: '', flags: 'm3'},
 	{dName: 'Markíza', sName: 'Markíza|TV Markíza|Markiza|TV Markiza', flags: 'm3'},
 	{dName: 'JOJ Family', sName: '', flags: 'm3'},

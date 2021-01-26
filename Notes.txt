@@ -3,32 +3,19 @@ Update Mongo DB:
     Set admin flag:
         mongo
         use explorer  //May be skipped
-        db.users.update({'email': 'aluaex@gmail.com'}, {$set: {isAdmin: true}})
-
-Heroku:
-	Run bash: heroku run bash --app avasin-explorer
-		
-Set env variables:
-	rhc set-env env_vars.txt -a projects
-
-List env variables:
-	rhc env list -a projects
+        db.users.update({'email': '{{email_here}}'}, {$set: {isAdmin: true}})
 	
 	
 Implementation notes
-	Channel.proxyRequest({
-		type: 'GET',
-		url: 'http://smenip.ru/proxi/browse.php?',
-		isCookies: true,
-		data: {
-			u: 'http://gf2hi5ronzsxi.nblz.ru/iframe.php?site=873&channel=6427',
-			b: '5'  
-		}
-	}, function(resp){
-		console.log(resp);
-	});
-	
-
 	Set ENV variables
 		heroku config:set NODE_IS_DEVELOPMENT=false
 		echo 'export NODE_IS_DEVELOPMENT=false' >> ~/.bashrc
+
+Local trusted certificate:
+	npm install -g mkcert
+	mkcert create-ca
+	mkcert create-cert
+
+		Devtools -> Security -> Export certificate
+		chrome://settings -> Manage certificates -> Trusted Root Certificates -> Import certificate
+		Restart Chrome

@@ -1,15 +1,6 @@
-// Load the SDK asynchronously
-(function(d, s, id) {
-	var js, fjs = d.getElementsByTagName(s)[0];
-	if (d.getElementById(id)) return;
-	js = d.createElement(s); js.id = id;
-	js.src = "//connect.facebook.net/en_US/sdk.js";
-	fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-
-
 (function(){
 	if(typeof conf === 'undefined') {
+		console.error('Configuration for FB not found!')
 		return;
 	}
 
@@ -18,23 +9,32 @@
 		FB.init({
 			appId : conf.FBappId,
 			cookie : true,  // enable cookies to allow the server to access the session
-			status: true,
 			xfbml : true,  // parse social plugins on this page
-			version : 'v2.7'  // use version 2.7
+			version : 'v9.0'
 		});
 	};
 
+	// Load the SDK asynchronously
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "//connect.facebook.net/en_US/sdk.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+
 	//Main FB object
-	const fbLogin = {
+	const FbLogin = {
 		scope: 'email',
+		init: function() {
+			this.registerEvents();
+		},
+
 		registerEvents: function(){
 			$(document).on('click', '.js-fb-logIn', this.doLogin.bind(this));
-			$(document).on('click', '.js-fb-logOut', function(){
-				FB.logout(function(){
-					location.reload();
-				});
-			});
+			$(document).on('click', '.js-fb-logOut', this.logOut.bind(this));
 		},
+
 		doLogin: function(){
 			const that = this;
 
@@ -43,6 +43,7 @@
 					that.login(response.authResponse.accessToken);
 			},{ scope: that.scope });
 		},
+
 		login: function(token){
 			$.ajax({
 				url: '/login',
@@ -52,14 +53,19 @@
 				error: console.error
 			});
 		},
-		loggedIn: function(response){
+
+		loggedIn: function(){
 			location.reload();
+		},
+
+		logOut: function(){
+			FB.getLoginStatus(function() {
+				FB.logout(function(){
+					location.reload();
+				});
+			})
 		}
 	}
 	
-	fbLogin.registerEvents();
-
-	window.checkLoginState = function(){
-		fbLogin.checkLoginState.apply(fbLogin);
-	};
+	FbLogin.init();
 })();
