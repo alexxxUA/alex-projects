@@ -59,10 +59,14 @@
 		},
 
 		logOut: function(){
-			FB.getLoginStatus(function() {
-				FB.logout(function(){
+			FB.getLoginStatus(function(resp) {
+				if (resp.status !== 'unknown') {
+					FB.logout(function(){
+						location.reload();
+					});
+				} else {
 					location.reload();
-				});
+				}
 			})
 		}
 	}
