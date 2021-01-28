@@ -25,7 +25,7 @@ class NotificationWatcher {
             year: '.year',
             titleLink: '.post_info_header a'
         }
-        this.schoolPostCheckInterval = 1000 * 60 * 1; // 30min
+        this.schoolPostCheckInterval = 1000 * 60 * 30; // 30min
     }
 
     init(notification) {
