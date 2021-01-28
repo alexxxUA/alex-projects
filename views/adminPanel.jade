@@ -18,7 +18,7 @@ block adminPanel
 			div.panel-heading
 				h3.panel-title New alias URL
 			div.panel-body.visible
-				form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias', autocomplete='off')
+				form.js-ajax-form(action='/addAlias', ajax='true', ajax-success='adminPanel.addAlias', autocomplete='off')
 					.form-group
 						input.form-control.input-sm(type='text', name='alias_url', placeholder='Alias relative url. E.g.: /testUrl', data-validate-type='notEmpty')
 					.form-group
@@ -28,12 +28,22 @@ block adminPanel
 			div.panel-heading
 				h3.panel-title Open URL via proxy
 			div.panel-body.visible
-				form(action='/proxy', autocomplete='off')
+				form.js-ajax-form(action='/proxy', autocomplete='off')
 					.input-group.form-group
 						input.form-control.input-sm(type='text', name='url', placeholder='Type URL here', data-validate-type='notEmpty')
 						.input-group-btn
 							input.btn.btn-success.btn-sm(type='submit', value='Open')
-							
+		div.panel.panel-info
+			div.panel-heading
+				h3.panel-title Subscribe to notifications
+			div.panel-body.visible
+				form.js-push-notification(action='/subscribe-to-notifications', method="POST", autocomplete='off')
+					.checkbox
+						label
+							input(type="checkbox" name="school" checked)
+							span MS Moldavska
+					input.btn.btn-success.btn-sm.col-xs-12(type='submit', value='Subscribe')
+
 	div.col-md-8.reset-padding.aliases-list-container
 		div.panel.panel-info
 			div.panel-heading
@@ -88,7 +98,7 @@ block adminPanel
 										input.js-data-edid.btn.btn-xs.btn-success(type='button', value='Edit')
 										input.js-data-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
 	div#email-dialog
-		form.send-email-form(method='POST', action='/sendMail', ajax='true', ajax-success='adminPanel.emailSended', data-no-reset='true')
+		form.send-email-form.js-ajax-form(method='POST', action='/sendMail', ajax='true', ajax-success='adminPanel.emailSended', data-no-reset='true', novalidate)
 			h3 Send email
 			input.form-control(type='text', name='to', placeholder='Recipient(s)', required)
 			.input-group.js-input-group

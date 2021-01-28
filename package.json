@@ -25,6 +25,7 @@
     "nodemon": "*"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cheerio": "^0.22.0",
     "emailjs": "3.3.0",
     "express": "3.11.x",
@@ -44,6 +45,7 @@
     "translit": "0.0.1",
     "underscore": "^1.8.3",
     "url-parse": "^1.4.4",
+    "web-push": "^3.4.4",
     "zlib": "^1.0.5"
   },
   "private": true,

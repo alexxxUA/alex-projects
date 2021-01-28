@@ -2,6 +2,7 @@ const fs = require("fs");
 const https = require("https");
 const express	= require('express');
 const app	= express();
+const bodyParser = require("body-parser");
 const path = require('path');
 const mongoose = require("mongoose");
 
@@ -11,6 +12,8 @@ global.filesP = path.join(__dirname, 'files');
 const cf = require('./config/config.js');
 const routes = require('./app_parts/routes.js');
 const playlist = require('./app_parts/playListUpdater.js');
+const notification = require('./app_parts/notification.js');
+const notificationWatcher = require('./app_parts/notificationWatcher');
 
 // Connect to DB
 mongoose.connect(`mongodb://${cf.mongoUrl}`, {
@@ -26,7 +29,8 @@ app.use(express.compress());
 app.use(express.cookieParser());
 
 //POST
-app.use(express.bodyParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 //set path to the views (template) directory
 app.set('views', path.join(__dirname, 'views'));
@@ -39,6 +43,16 @@ routes.init(app);
 
 //Init playlist updater
 playlist.init();
+
+//Init notification
+notification.init({
+	publicKey: cf.pushNotificationPublicKey,
+	privateKey: cf.pushNotificationPrivateKey
+});
+
+// Init notification watcher and pass notification class
+// in order to send notifications
+notificationWatcher.init(notification);
 
 //Start the server
 let server = app;

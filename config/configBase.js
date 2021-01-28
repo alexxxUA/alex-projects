@@ -14,7 +14,10 @@ var config = {
 	hiddenPaths: [
 		'/UpdateChanList/LastValidPlaylist'
 	],
-	IpStreamUrl: process.env.IP_STREAM_URL
+	IpStreamUrl: process.env.IP_STREAM_URL,
+	pushNotificationPublicKey: process.env.PUSH_NOTIFICATION_PUBLIC_KEY,
+	pushNotificationPrivateKey: process.env.PUSH_NOTIFICATION_PRIVATE_KEY,
+	watchSchoolPosts: true
 }
 
 module.exports = config;

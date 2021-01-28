@@ -1,3 +1,20 @@
+const Utils = {
+	serializeDataToObject: function($form){
+		return $form.serializeArray().reduce(function(data, x) {
+			data[x.name] = x.value;
+			return data;
+		}, {});
+	},
+
+	post: function(path, data) {
+		return fetch(path, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json;charset=UTF-8' },
+			body: JSON.stringify(data)
+		});
+	}
+}
+
 function Navigation(param){
 	var defaults = {
 		swUrl: '/sw.js',
@@ -506,6 +523,84 @@ FileExplorer.prototype.deleted = function(request, $form){
 	fileExplorer.hideContextMenu();
 }
 
+/* PUSH NOTIFICATIONS */
+
+function PushNotifications(params) {
+	this.formSel = '.js-push-notification';
+	this.pushPublicKey = conf && conf.pushNotificationPublicKey || null;
+
+	if (this.isSupported()) {
+		//Init
+		this.init();
+	}
+}
+
+PushNotifications.prototype.init = function() {
+	this.registerEvents();
+}
+
+PushNotifications.prototype.registerEvents = function() {
+	//Subscribe to notifications
+	$(document).on('submit', this.formSel, $.proxy(this.onSubscribe, this));
+}
+
+PushNotifications.prototype.isSupported = function() {
+	return 'serviceWorker' in navigator && 'PushManager' in window;
+}
+
+PushNotifications.prototype.requestPermission = function(callback) {
+	return Notification.requestPermission(callback);
+}
+
+PushNotifications.prototype.createNotificationSubscription = function() {
+	const that = this;
+	//wait for service worker installation to be ready, and then
+	return navigator.serviceWorker.ready.then(function(serviceWorker) {
+		// subscribe and return the subscription
+		return serviceWorker.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: that.pushPublicKey
+		})
+	});
+}
+
+
+PushNotifications.prototype.onSubscribe = function(e) {
+	e.preventDefault();
+	const that = this;
+
+	this.requestPermission(function(permission) {
+		if (permission === 'granted') {
+			that.createNotificationSubscription()
+				.then(function(subscription) {
+					const $form = $(e.currentTarget);
+					const formAction = $form.attr('action');
+					const formData = Utils.serializeDataToObject($form);
+	
+					// Add subscription data
+					Object.assign(formData, {
+						subscription: subscription
+					});
+
+					Utils.post(formAction, formData)
+						.then(function(resp) {
+							if(resp.status === 200) {
+								navigation.showMsg("You've been successfully subscribed!");
+							} else {
+								throw resp.statusText || 'Failed to subscribe for notifications :(';
+							}
+						})
+						.catch(function(err) {
+							navigation.showMsg(err, true);
+						});
+				});
+		} else {
+			navigation.showMsg("Permission wasn't granted :(", true);
+		}
+	})
+}
+
+
 /* ADMIN CLASS */
 function AdminPanel(params){
 	this.forceGenerSel = '.js-force-generate-playlists';
@@ -557,8 +652,6 @@ AdminPanel.prototype.registerEvents = function(){
 	$(document).on('click', this.dataEditSel, $.proxy(this.editData, this));
 	//Remove alias
 	$(document).on('click', this.dataRemoveSel, $.proxy(this.removeData, this));
-	//Radio group (required input/textarea)
-	$(document).on('change', this.radioReqSel, $.proxy(this.radioReqChanged, this));
 }
 AdminPanel.prototype.dataInputBlur = function(e){
 	var $this = $(e.currentTarget),
@@ -983,14 +1076,14 @@ function executeFunctionByName(functionName, context , args) {
 }
 
 //Ajax form submit
-$(document).delegate('form', 'keydown', function(e){
+$(document).delegate('.js-ajax-form', 'keydown', function(e){
 	if(e.keyCode == 13 && e.ctrlKey){
 		//Click for native html5 validation
 		$(e.currentTarget).find(':submit').click();
 	}
 });
 
-$(document).delegate('form', 'submit', function(e){
+$(document).delegate('.js-ajax-form', 'submit', function(e){
 	const $form = $(this);
 	const isFormValid = Validator.validateForm($form);
 	const isAjaxForm = $form.attr('ajax') === 'true';
@@ -1055,3 +1148,4 @@ var navigation = new Navigation();
 var fileExplorer = new FileExplorer();
 var adminPanel = new AdminPanel();
 var modal = new Modal();
+var pushNotifications = new PushNotifications();

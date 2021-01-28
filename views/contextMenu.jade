@@ -20,7 +20,7 @@
 	ul.js-context-action-list
 		-if(user.accessEdit == true)
 			li.js-context-action(data-action='create')
-				form(action='/create', ajax='true', ajax-success='fileExplorer.created')
+				form.js-ajax-form(action='/create', ajax='true', ajax-success='fileExplorer.created')
 					.form-group
 						span Create folder here "Home
 							span(dyn-obj-prop='oldPath')
@@ -32,7 +32,7 @@
 						button.btn.btn-success(type='submit') Create
 						button.js-action-cancel.btn.btn-danger(type='button') Cancel
 			li.js-context-action(data-action='rename')
-				form(action='/rename', ajax='true', ajax-success='fileExplorer.renamed')
+				form.js-ajax-form(action='/rename', ajax='true', ajax-success='fileExplorer.renamed')
 					.form-group
 						span Rename "
 							span(dyn-obj-prop="oldName")
@@ -45,7 +45,7 @@
 						button.btn.btn-success(type='submit') Rename
 						button.js-action-cancel.btn.btn-danger(type='button') Cancel
 			li.js-context-action(data-action='delete')
-				form(action='/delete', ajax='true', ajax-success='fileExplorer.deleted')
+				form.js-ajax-form(action='/delete', ajax='true', ajax-success='fileExplorer.deleted')
 					.form-group
 						span Delete "
 							span(dyn-obj-prop="oldName")

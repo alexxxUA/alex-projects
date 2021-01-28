@@ -182,6 +182,12 @@ to { color: #92F099; }
 .panel-hide{
     bottom: -700px;
 }
+
+.panel-body {
+    color: #000;
+    font-size: 14px;
+}
+
 .js-file-list{
     margin: 0;
 }
@@ -437,10 +443,6 @@ to { color: #92F099; }
 .user-info {
 	display: inline-block;
 	margin-left: 8px;
-}
-.aliases-list-container {
-	color: #000;
-	font-size: 13px;
 }
 .alias-url-title {
 	width: 30%;

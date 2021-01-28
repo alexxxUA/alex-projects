@@ -12,6 +12,7 @@ var mime = require('mime-types'),
 	getMap = require('./routeAliasesMap.js'),
 	User = require('./user_schema.js'),
 	Aliases = require('./aliases_schema.js'),
+	Device = require('./device_schema.js'),
 	playlist = require('./playListUpdater.js'),
 	proxy = require('./proxy.js'),
 	email = require('./sendMail.js'),
@@ -222,6 +223,24 @@ function init(app){
 	});
 
 	app.get('/extractXz', extract.xz.bind(extract));
+
+	app.post('/subscribe-to-notifications', auth.isLogged, auth.isHaveEditAccess, (req, res) => {
+		const data = req.body;
+		
+		Device.findOne({'subscription.endpoint': data.subscription.endpoint}, (err, device) => {
+			if(err) return res.send(500);
+			
+			if(device && device._doc) {
+				Object.assign(device, data);
+				device.save;
+			} else {
+				const newDevice = new Device(data);
+				newDevice.save();
+			}
+
+			res.send(200);
+		});
+	});
 
 	app.get('/offline', function(req, res){
 		res.render('offline.jade');
