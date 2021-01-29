@@ -1,5 +1,4 @@
 const webpush = require('web-push');
-const cf = require('../config/config.js');
 const Device = require('./device_schema.js');
 
 class Notification {

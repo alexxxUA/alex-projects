@@ -1,6 +1,7 @@
 const needle = require('needle');
 const cheerio = require('cheerio');
 const cf = require('../config/config.js');
+const Device = require('./device_schema.js');
 const SchoolPost = require('./schoolPost_schema');
 
 class NotificationWatcher {
@@ -32,6 +33,24 @@ class NotificationWatcher {
         this.notification = notification;
 
         this.watch();
+    }
+
+    subscribe(req, res) {
+        const data = req.body;
+		
+		Device.findOne({'subscription.endpoint': data.subscription.endpoint}, (err, device) => {
+			if(err) return res.send(500);
+			
+			if(device && device._doc) {
+				Object.assign(device, data);
+				device.save;
+			} else {
+				const newDevice = new Device(data);
+				newDevice.save();
+			}
+
+			res.send(200);
+		});
     }
 
     watch() {

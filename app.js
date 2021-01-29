@@ -38,12 +38,6 @@ app.set('views', path.join(__dirname, 'views'));
 //set path to static files
 app.use(express.static(path.join(__dirname, 'static'), {maxAge: cf.oneDay}));
 
-//Init Explorer app and routes
-routes.init(app);
-
-//Init playlist updater
-playlist.init();
-
 //Init notification
 notification.init({
 	publicKey: cf.pushNotificationPublicKey,
@@ -53,6 +47,12 @@ notification.init({
 // Init notification watcher and pass notification class
 // in order to send notifications
 notificationWatcher.init(notification);
+
+//Init Explorer app and routes
+routes.init({ app, notificationWatcher });
+
+//Init playlist updater
+playlist.init();
 
 //Start the server
 let server = app;

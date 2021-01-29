@@ -15,6 +15,7 @@ var config = {
 		'/UpdateChanList/LastValidPlaylist'
 	],
 	IpStreamUrl: process.env.IP_STREAM_URL,
+	// Configuration from FireBase -> cloud messaging
 	pushNotificationPublicKey: process.env.PUSH_NOTIFICATION_PUBLIC_KEY,
 	pushNotificationPrivateKey: process.env.PUSH_NOTIFICATION_PRIVATE_KEY,
 	watchSchoolPosts: true
