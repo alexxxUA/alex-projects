@@ -44,14 +44,25 @@ class Notification {
         })
     }
 
-    sendSchoolNotification (notifications) {
+    sendSchoolNotification (notification) {
         this.sendToFilteredDevices('school', {
             title: 'MS Moldavska: novy oznam',
             image: 'http://msmoldavska.sk/wp-content/uploads/2016/04/logo-msmoldavska3.png',
             text: 'Nové oznámenie',
             tag: 'Nové oznámenie',
             url: 'https://msmoldavska.sk/oznamy/',
-            ...notifications
+            ...notification
+        });
+    }
+
+    sendAdminNotification (notification) {
+        this.sendToFilteredDevices('admin', {
+            title: 'Admin notification',
+            image: '/img/icon-192x192.png',
+            text: 'Nové oznámenie',
+            tag: 'admin',
+            url: '/',
+            ...notification
         });
     }
 }

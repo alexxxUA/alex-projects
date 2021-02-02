@@ -44,7 +44,7 @@ function init({ app, notificationWatcher }){
 		});
 	});
 
-	app.get('/admin', auth.isLogged, auth.isHaveEditAccess, function(req, res){
+	app.get('/admin', auth.isLogged, auth.isHaveEditAccess, notificationWatcher.getUserSubscriptions, function(req, res){
 		Aliases.find({}, null, {sort: {alias: 1}}, function(err, aliases){
 			if(err) throw err;
 			
@@ -56,7 +56,8 @@ function init({ app, notificationWatcher }){
 						user: res.user,
 						cf: cf,
 						aliases: aliases,
-						users: users
+						users: users,
+						pushNotificationOptions: res.pushNotificationOptions
 				});
 			});
 			

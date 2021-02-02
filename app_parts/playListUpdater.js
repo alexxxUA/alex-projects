@@ -9,6 +9,7 @@ var needle = require('needle'),
 	translit = require('./translitModule'),
 	cf = require('./../config/config.js'),
 	email = require('./sendMail.js'),
+	notification = require('./notification.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList,
 	channelListSk = require('./../config/channelList_sk').channelListSk,
@@ -856,6 +857,13 @@ Channel.prototype = {
 			return attrStr;
 		}, '');
 	},
+	sendPlaylistGenFailedNotification: function() {
+		notification.sendAdminNotification({
+			title: 'Playlist updater',
+			text: `${this.playListName} has been failed`,
+			tag: 'playlist'
+		});
+	},
 	sendPlaylistGenFailedEmail: function(){
 		var sbj = this.emailSubj +' ['+ this.getFormatedDate(new Date, true) +']',
 			msg = '<h2>Generation of playlist "'+ this.playListName +'" has been failed.</h2>';
@@ -953,7 +961,7 @@ Channel.prototype = {
 		}
         //Send email notification about failed generation
 		else{
-			this.sendPlaylistGenFailedEmail();
+			this.sendPlaylistGenFailedNotification();
             this.logErr('Attempts of generating playlist have stopped. You can manually restart generation of playlist later in the admin panel.');
 			this.tempRestartCount = 0;
 		}

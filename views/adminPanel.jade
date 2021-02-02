@@ -33,16 +33,18 @@ block adminPanel
 						input.form-control.input-sm(type='text', name='url', placeholder='Type URL here', data-validate-type='notEmpty')
 						.input-group-btn
 							input.btn.btn-success.btn-sm(type='submit', value='Open')
-		div.panel.panel-info
+		div.panel.panel-info.js-notification-panel
 			div.panel-heading
 				h3.panel-title Subscribe to notifications
 			div.panel-body.visible
-				form.js-push-notification(action='/subscribe-to-notifications', method="POST", autocomplete='off')
-					.checkbox
-						label
-							input(type="checkbox" name="school" checked)
-							span MS Moldavska
-					input.btn.btn-success.btn-sm.col-xs-12(type='submit', value='Subscribe')
+				form.b-push_notification.js-push-notification(action='/subscribe-to-notifications', method="POST", autocomplete='off')
+					- each option in pushNotificationOptions
+						.checkbox
+							label
+								input(type="checkbox" name=option.key checked=option.isActive)
+								span=option.value
+					input.btn.btn-success.btn-sm.col-xs-12.b-push_notification-subscribe(type='submit', value='Subscribe')
+					input.btn.btn-success.btn-sm.col-xs-12.b-push_notification-update(type='submit', value='Update subscription')
 
 	div.col-md-8.reset-padding.aliases-list-container
 		div.panel.panel-info

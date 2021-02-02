@@ -230,7 +230,17 @@ to { color: #92F099; }
     margin: 0;
 }
 
+.b-push_notification .b-push_notification-update {
+    display: none;
+}
 
+.b-push_notification.m-subscribed .b-push_notification-update {
+    display: block;
+}
+
+.b-push_notification.m-subscribed .b-push_notification-subscribe {
+    display: none;
+}
 
 #fileTree .js-dynamicReload.on-drag-over{
     padding-left: 22px;

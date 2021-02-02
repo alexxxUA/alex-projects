@@ -35,6 +35,27 @@ class NotificationWatcher {
         this.watch();
     }
 
+    getUserSubscriptions(req, res, next) {
+        const subscriptionEndpoint = req.cookies.subscription;
+
+        // Add to the response subscription options
+        Object.assign(res, { pushNotificationOptions: cf.pushNotificationOptions });
+
+        Device.findOne({'subscription.endpoint': subscriptionEndpoint}, (err, device) => {
+			if(err) console.error(`Error during getting user's subscription options: ${err}`);
+
+			if(device && device._doc) {
+                // Update subscription options per database
+                res.pushNotificationOptions.forEach(({ key }, i) => {
+                    res.pushNotificationOptions[i].isActive = device[key] === 'on';
+                });
+            }
+
+			if(typeof next != 'undefined')
+				next();
+		});
+	}
+
     subscribe(req, res) {
         const data = req.body;
 		
@@ -42,8 +63,11 @@ class NotificationWatcher {
 			if(err) return res.send(500);
 			
 			if(device && device._doc) {
-				Object.assign(device, data);
-				device.save;
+                device.subscription = data.subscription;
+                cf.pushNotificationOptions.forEach(({ key }) => {
+                    device[key] = data[key];
+                });
+                device.save();
 			} else {
 				const newDevice = new Device(data);
 				newDevice.save();

@@ -12,6 +12,27 @@ const Utils = {
 			headers: { 'content-type': 'application/json;charset=UTF-8' },
 			body: JSON.stringify(data)
 		});
+	},
+
+	setCookie : function (name, value, days) {
+		if (days) {
+			var date = new Date();
+			date.setTime(date.getTime()+(days*24*60*60*1000));
+			var expires = '; expires='+date.toGMTString();
+		}
+		else var expires = '';
+		document.cookie = name+'='+value+expires+'; path=/';
+	},
+
+	getCookie : function (name) {
+		var nameEQ = name + '=';
+		var ca = document.cookie.split(';');
+		for (var i=0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+		}
+		return null;
 	}
 }
 
@@ -526,18 +547,44 @@ FileExplorer.prototype.deleted = function(request, $form){
 /* PUSH NOTIFICATIONS */
 
 function PushNotifications(params) {
+	this.panelSel = '.js-notification-panel';
 	this.formSel = '.js-push-notification';
-	this.pushPublicKey = conf && conf.pushNotificationPublicKey || null;
+	this.subscribedClass = 'm-subscribed';
+	this.pushPublicKey = typeof conf !== 'undefined' && conf.pushNotificationPublicKey || null;
+	this.subscription = null;
+
+	if (!this.pushPublicKey) {
+		console.error('Public key is not configured for push messaging!');
+	}
 
 	if (this.isSupported()) {
 		//Init
 		this.init();
+	} else {
+		$(this.panelSel).hide();
+		console.error('Push messaging is not supported!');
 	}
 }
 
 PushNotifications.prototype.init = function() {
+	const that = this;
+
 	this.registerEvents();
+
+	this.getSubscription().then(this.saveSubscription.bind(this));
 }
+
+PushNotifications.prototype.saveSubscription = function(subscription) {
+	const $form = $(this.formSel);
+
+	this.subscription = subscription;
+	$form.toggleClass(this.subscribedClass, !!subscription);
+
+	// Save subscription to cookies, so server could understand whether user subscribed or not
+	Utils.setCookie('subscription', subscription && subscription.endpoint, 730);
+
+	return subscription;
+};
 
 PushNotifications.prototype.registerEvents = function() {
 	//Subscribe to notifications
@@ -548,22 +595,12 @@ PushNotifications.prototype.isSupported = function() {
 	return 'serviceWorker' in navigator && 'PushManager' in window;
 }
 
-PushNotifications.prototype.requestPermission = function(callback) {
-	return Notification.requestPermission(callback);
-}
-
-PushNotifications.prototype.createNotificationSubscription = function() {
-	const that = this;
-	//wait for service worker installation to be ready, and then
+PushNotifications.prototype.getSubscription = function() {
 	return navigator.serviceWorker.ready.then(function(serviceWorker) {
 		// subscribe and return the subscription
-		return serviceWorker.pushManager.subscribe({
-			userVisibleOnly: true,
-			applicationServerKey: that.pushPublicKey
-		})
+		return serviceWorker.pushManager.getSubscription();
 	});
 }
-
 
 PushNotifications.prototype.onSubscribe = function(e) {
 	e.preventDefault();
@@ -572,12 +609,13 @@ PushNotifications.prototype.onSubscribe = function(e) {
 	this.requestPermission(function(permission) {
 		if (permission === 'granted') {
 			that.createNotificationSubscription()
+				.then(that.saveSubscription.bind(that))
 				.then(function(subscription) {
 					const $form = $(e.currentTarget);
 					const formAction = $form.attr('action');
 					const formData = Utils.serializeDataToObject($form);
 	
-					// Add subscription data
+					// Add subscription data to the request
 					Object.assign(formData, {
 						subscription: subscription
 					});
@@ -598,6 +636,22 @@ PushNotifications.prototype.onSubscribe = function(e) {
 			navigation.showMsg("Permission wasn't granted :(", true);
 		}
 	})
+}
+
+PushNotifications.prototype.requestPermission = function(callback) {
+	return Notification.requestPermission(callback);
+}
+
+PushNotifications.prototype.createNotificationSubscription = function() {
+	const that = this;
+	//wait for service worker installation to be ready, and then
+	return navigator.serviceWorker.ready.then(function(serviceWorker) {
+		// subscribe and return the subscription
+		return serviceWorker.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: that.pushPublicKey
+		})
+	});
 }
 
 

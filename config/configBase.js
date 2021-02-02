@@ -18,7 +18,16 @@ var config = {
 	// Configuration from FireBase -> cloud messaging
 	pushNotificationPublicKey: process.env.PUSH_NOTIFICATION_PUBLIC_KEY,
 	pushNotificationPrivateKey: process.env.PUSH_NOTIFICATION_PRIVATE_KEY,
-	watchSchoolPosts: true
+	watchSchoolPosts: true,
+	pushNotificationOptions: [
+		{
+			key: 'school',
+			value: 'MS Moldavska'
+		}, {
+			key: 'admin',
+			value: 'Admin notifications'
+		}
+	]
 }
 
 module.exports = config;
