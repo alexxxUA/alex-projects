@@ -66,9 +66,9 @@ block adminPanel
 									td
 										input.js-input-change.alias-actual-url(type='text' autocomplete='off' name='alias_real_url' value='#{aliases[i].path}' data-before-edit='#{aliases[i].path}')
 									td.alias-action-cont.table-action-cell
+										a.btn.btn-xs.btn-info(href='#{aliases[i].alias}') Open
 										input.js-data-edid.btn.btn-xs.btn-success(type='button', value='Save')
 										input.js-data-remove.btn.btn-xs.btn-danger(type='button', value='Remove')
-										a.btn.btn-xs.btn-info(href='#{aliases[i].alias}') Open
 		div.panel.panel-info
 			div.panel-heading
 				h3.panel-title Users
