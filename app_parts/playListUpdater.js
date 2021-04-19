@@ -15,6 +15,7 @@ var needle = require('needle'),
 	channelListSk = require('./../config/channelList_sk').channelListSk,
     generationInProgress = false;
 
+const LOGO_RELATIVE_URL = 'http://avasin.herokuapp.com/UpdateChanList/App/Sources/Channel_icons/';
 
 Date.prototype.stdTimezoneOffset = function() {
     var jan = new Date(this.getFullYear(), 0, 1);
@@ -63,7 +64,7 @@ function Channel(params){
     this.isGenOnStart = cf.playlistGenOnStart;
 	this.isCheckIdForUrl = false;
 
-	this.saveProxyList = true;
+	this.saveAdditionalList = true;
 	this.proxyListPrefix = 'http://localhost:6878/ace/getstream?';
 	this.aceliveGetter = 'http://91.92.66.82/trash/ttv-list/acelive/';
 
@@ -71,7 +72,7 @@ function Channel(params){
 	 * Relative URL for icons in m3u format playlist. In attribute tvg-logo="..."
 	 * @Value relative URL where icons located
 	 */
-	this.logoRelativeUrl = 'http://avasin.herokuapp.com/UpdateChanList/App/Sources/Channel_icons/';
+	this.logoRelativeUrl = LOGO_RELATIVE_URL;
 	/**
 	 * Used for using delay when getting channel's html per schedule update
 	 * @Value in seconds
@@ -94,6 +95,11 @@ function Channel(params){
 	this.maxRestartCount = 5;
 
 	this.maxRestartCountPerChannel = 1;
+
+	/**
+	 * Delay between fetching playlist parts
+	 */
+	this.minReqDelay = 0;
 	/**
 	 * Delay in restarting generation of playlist
 	 * @Value in minutes
@@ -167,7 +173,7 @@ function Channel(params){
 	this.logsOutputPath = `${cf.playlistOutputPath}/Logs`
 	this.playListName = 'TV_List';
 	this.playlistExt = 'xspf'
-	this.proxyPlaylistExt = 'm3u8'
+	this.additionalPlaylistExt = 'm3u8'
 	this.logName = '';
 	this._report = _.template(
 		'Playlist updated.'+
@@ -204,12 +210,13 @@ Channel.prototype = {
 	playlistGeneratorInstances: [],
 	cache: {
 		'/constant/sk': `
-			#EXTINF:-1, Kosice dnes\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
-			#EXTINF:-1, JOJ\nhttps://nn.geo.joj.sk/live/hls/joj-720.m3u8
-			#EXTINF:-1, JOJ Family\nhttp://nn.geo.joj.sk/hls/family-540.m3u8
-			#EXTINF:-1, JOJ Plus\nhttps://nn.geo.joj.sk/live/hls/jojplus-540.m3u8
-			#EXTINF:-1, Jojko\nhttps://nn.geo.joj.sk/live/hls/rik-540.m3u8
-			#EXTINF:-1, WAU\nhttps://nn.geo.joj.sk/live/hls/wau-540.m3u8
+			#EXTINF:-1 tvg-logo="${LOGO_RELATIVE_URL}Jojko.png" group-title="Slovak",Jojko\n#EXTGRP:Slovak\nhttps://nn.geo.joj.sk/live/hls/rik-540.m3u8
+			#EXTINF:-1 tvg-id="JOJ.sk" tvg-logo="${LOGO_RELATIVE_URL}JOJ.png" group-title="Slovak",JOJ\n#EXTGRP:Slovak\nhttps://nn.geo.joj.sk/live/hls/joj-720.m3u8
+			#EXTINF:-1 tvg-id="JOJPlus.sk" tvg-logo="${LOGO_RELATIVE_URL}JOJ_Plus_HD.png" group-title="Slovak",JOJ Plus\n#EXTGRP:Slovak\nhttps://nn.geo.joj.sk/live/hls/jojplus-540.m3u8
+			#EXTINF:-1 tvg-id="Wau.sk" tvg-logo="${LOGO_RELATIVE_URL}WAU_HD.png" group-title="Slovak",WAU\n#EXTGRP:Slovak\nhttps://nn.geo.joj.sk/live/hls/wau-540.m3u8
+			#EXTINF:-1 tvg-id="Markiza.sk" tvg-logo="${LOGO_RELATIVE_URL}Markíza.png" group-title="Slovak",Markiza\n#EXTGRP:Slovak\nhttp://213.151.233.20:8000/dna-5106-tv-pc/hls/4001v102.m3u8
+			#EXTINF:-1 tvg-id="JOJFamily.sk" tvg-logo="${LOGO_RELATIVE_URL}JOJ_Family.png" group-title="Slovak",JOJ Family\n#EXTGRP:Slovak\nhttp://nn.geo.joj.sk/hls/family-540.m3u8
+			#EXTINF:-1 tvg-logo="${LOGO_RELATIVE_URL}Kosice_dnes.png" group-title="Slovak",Kosice dnes\n#EXTGRP:Slovak\nhttp://lb.streaming.sk/tvnasa/stream/playlist.m3u8
 		`
 	},
 	// Cache lifeTime = 5 minutes
@@ -265,7 +272,7 @@ Channel.prototype = {
 	init: function() {
 		this.generateInterval = 60 * (24/this.generateCountPer24h) * 60000; //Value in minutes
 		this.playlistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.playlistExt}`);
-		this.proxyPlaylistPath = path.join(filesP, `${this.outputPath}/Proxy-${this.playListName}.${this.proxyPlaylistExt}`);
+		this.additionalPlaylistPath = path.join(filesP, `${this.outputPath}/${this.playListName}.${this.additionalPlaylistExt}`);
 		this.logPath = path.join(filesP, `${this.logsOutputPath}/${this.logName || this.playListName}.log`);
 
 		if(typeof this.initParams == 'function') this.initParams();
@@ -479,8 +486,6 @@ Channel.prototype = {
 		return now.getDate() +'.'+ (now.getMonth()+1) +'.'+ now.getFullYear() +' '+ now.getHours() +':'+ ((now.getMinutes() < 10 ? '0' : '') + now.getMinutes());
 	},
 	genValidPlaylist: function(isForce){
-		var that = this;
-
 		this.prepareData(isForce);
         this.logStartGeneration();
 
@@ -513,36 +518,42 @@ Channel.prototype = {
 
 		that.getPlaylistParts(that.playlistUrl, isGenInProgress, function(urls) {
 			const urlsCount = urls.length;
-			let urlsIndex = 0;
+			let urlIndex = 0;
+
 			const loopFunction = () => {
-				urlsIndex++
+				urlIndex++
+
 				//Call callback in case all parts collected
-				if(callback && urlsIndex === urlsCount && that.validList) {
-					setTimeout(function(){
-						that.cLog('All playlist\'s parts are downloaded. Starting generation.');
-						callback();
-					}, that.minReqDelay);
+				if(urlIndex === urlsCount) {
+					that.cLog('All playlist\'s parts are downloaded. Starting generation.');
+
+					if (callback && that.validList) {
+						setTimeout(function(){
+							callback();
+						}, that.minReqDelay);
+					}
+				} else {
+					getChunkFunction();
 				}
 			}
 
-            for(var i = 0; i < urlsCount; i++){
-				var pageUrl = urls[i];
-				
-				(function(j, url){
-					if(url) {
-						setTimeout(function(){
-							that.getValidPlaylistPart(url, isGenInProgress, function(resp, isFromCache) {
-								that.storeValidList(resp);
-								that.cLog(`Page: ${(j+1)};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
-								loopFunction();
-							});
-						}, j * that.minReqDelay);
-					} else {
-						that.logErr(`Page with index: ${(j+1)} NOT FOUND!`);
-						loopFunction();
-					}
-				})(i, pageUrl);
-            }
+			const getChunkFunction = () => {
+				const url = urls[urlIndex];
+				if(url) {
+					setTimeout(function(){
+						that.getValidPlaylistPart(url, isGenInProgress, function(resp, isFromCache) {
+							that.storeValidList(resp);
+							that.cLog(`Page: ${urlIndex};  ${url}. ${isFromCache ? 'Taken from CACHE' : 'Downloaded'}.`);
+							loopFunction();
+						});
+					}, that.minReqDelay);
+				} else {
+					that.logErr(`Page with index: ${urlIndex} NOT FOUND!`);
+					loopFunction();
+				}
+			}
+
+			getChunkFunction();
         });
 	},
 	resetValidList: function() {
@@ -894,10 +905,8 @@ Channel.prototype = {
 		if(this.channelCounter >= this.channels.length)
 			this.finishPlaylist();
 	},
-	savePlaylist: function(playlist, isProxyList){
-		var playListPath = isProxyList ? this.proxyPlaylistPath : this.playlistPath;
-
-		fs.writeFile(playListPath, playlist, this.writeFileCallback);
+	savePlaylist: function(playlist, path = this.playlistPath){
+		fs.writeFile(path, playlist, this.writeFileCallback);
 	},
 	failed: function(channel, errMsg){
 		var that = this;
@@ -932,8 +941,8 @@ Channel.prototype = {
 		this.savePlaylist(this.formFullChannList(this.playlistExt));
 
 		// save same playlist for proxy
-		if (this.saveProxyList) {
-			this.savePlaylist(this.formFullChannList(this.proxyPlaylistExt), true);
+		if (this.saveAdditionalList) {
+			this.savePlaylist(this.formFullChannList(this.additionalPlaylistExt), this.additionalPlaylistPath);
 		}
 		this.printReport();
 		this.playlistFinished();
@@ -1067,7 +1076,6 @@ var SOURCE_CONFIG = {
 	generateCountPer24h: 48,
 	forceGenDelay: 0,
 	scheduleGenDelay: 0,
-	minReqDelay: 0,
     playlistUrl: [
 		'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
 		'http://91.92.66.82/trash/ttv-list/as.json',
@@ -1101,7 +1109,6 @@ const JSON_CONFIG = {
 	generateCountPer24h: 48,
 	forceGenDelay: 0,
 	scheduleGenDelay: 0,
-	minReqDelay: 0,
 	playlistUrl: 'http://91.92.66.82/trash/ttv-list/acelive.json',
 	storeValidList: function (resp) {
 		try {
@@ -1130,9 +1137,60 @@ const JSON_CONFIG = {
 	}
 }
 
+
+/**
+ * Combine playlists
+**/
+var COMBINE_PLAYLISTS = {
+	generateCountPer24h: 1,
+	forceGenDelay: 0,
+	scheduleGenDelay: 0,
+	playlistExt: 'm3u8',
+	saveAdditionalList: false,
+    playlistUrl: [
+		cf.IpStreamUrl,
+		'/constant/sk'
+	],
+	storeValidList(respString) {
+		this.validList += respString;
+	},
+	getList() {
+		this.finishPlaylist();
+	},
+	formFullChannList() {
+		return this.validList;
+	},
+	finishPlaylist: function(){
+		this.isPlaylistFailed = !this.validList.includes('#EXTM3U');
+		this.savePlaylist(this.formFullChannList(this.playlistExt));
+
+		this.printReport();
+		this.playlistFinished();
+	},
+}
+
 /*
     INIT Generator instances
 */
+
+const IpStream_FULL = new Channel(Object.assign({}, COMBINE_PLAYLISTS, {
+	playListName: 'TV-Ipstream',
+	playlistUrl: [
+		cf.IpStreamUrl,
+		'/constant/sk'
+	]
+}));
+
+const IpStream_PARSED = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	channelsArray: [channels1, channelListSk],
+	playListName: 'TV-Ipstream',
+	playlistUrl: [
+		cf.IpStreamUrl,
+		// 'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
+		'/constant/sk'
+	],
+	generateCountPer24h: 24
+}));
 
 const TorrentAC_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
 	channelsArray: [channels1, channelListSk],
@@ -1181,17 +1239,6 @@ const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
 			this.m3uRegExp
 		]
 	}
-}));
-
-const IpStream = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-Ipstream',
-	playlistUrl: [
-		cf.IpStreamUrl,
-		// 'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
-		'/constant/sk'
-	],
-	generateCountPer24h: 24
 }));
 
 const PlusPlaylist_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
@@ -1310,7 +1357,7 @@ module.exports = {
 
 		if(cf.playlistEnabled){
 			const playlists = new Playlists([
-				IpStream
+				IpStream_FULL
 			], channelChecker);
 		} else {
             channelChecker();
