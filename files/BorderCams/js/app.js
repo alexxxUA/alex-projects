@@ -54,20 +54,22 @@ class BorderCams extends ProxyParser {
         this.textDataSel = {
             borders: '#tblPriechody tbody tr'
         };
-        this.slugMap = {
-            VN: 'нємецьке|німецьке|nemecké|nemecke',
-            VN2: 'нємецьке|німецьке|nemecké|nemecke',
-            UBLA: 'убля|ubľa|ubla',
-            SLME: 'селменце|slemence',
-            ZAH: 'захонь'
+        this.textDataIdMap = {
+            'UZHGOROD1': 'нємецьке|німецьке|nemecké|nemecke',
+            'uzhgorod': 'нємецьке|німецьке|nemecké|nemecke',
+            'm_berezny': 'убля|ubľa|m_berezny'
         };
-        this.favoritePoints = ['VN', 'VN2', 'UBLA', 'SLME', 'ZAH'];
+        this.favoritePoints = ['UZHGOROD1', 'uzhgorod', 'm_berezny', '007_Tisa_rear'];
 
-        this.predefinedPoints = [{
-            slug: 'VN2',
-            name: 'Ужгород-КПП - Вишнє-Немецьке',
-            src: 'https://stream.dpsu.gov.ua:5101/uzhgorod/embed.html?dvr=false&proto=hls&autoplay=true'
-        }];
+        this.predefinedPoints = {
+            slovakia: [
+                {
+                    id: 'uzhgorod',
+                    name: 'Ужгород-КПП - Вишнє-Немецьке',
+                    src: 'https://stream.dpsu.gov.ua:5101/uzhgorod/embed.html?dvr=false&proto=hls&autoplay=true'
+                }
+            ]
+        };
 
         this.translateMap = {
             'звичайний': 'priebežne|priebezne'
@@ -102,8 +104,7 @@ class BorderCams extends ProxyParser {
                 if(camsData) {
                     data.camsData = camsData;
 
-                    // Merge existing predefined points data with data from server
-                    data.favoriteItems = _this.predefinedPoints.concat(_this.getCamsDataBySlug(camsData, _this.favoritePoints));
+                    data.favoriteItems = _this.getCamsDataById(camsData, _this.favoritePoints);
 
                     // Activate first camera
                     if (data.favoriteItems.length) {
@@ -122,7 +123,7 @@ class BorderCams extends ProxyParser {
 
                     if(this.streamSrc) {
                         data = this.favoriteItems.find(item => item.src === this.streamSrc);
-                        const textData = this.textData[data.slug];
+                        const textData = this.textData[data.id];
 
                         if(textData && Object.keys(textData).length) {
                             Object.assign(data, textData, {
@@ -198,22 +199,40 @@ class BorderCams extends ProxyParser {
     }
 
     getData() {
-        const camsDataPromise = this.doPageFetch(this.camsUrl, true).then(this.parseCamsData.bind(this));
-        const textDataPromise = this.doPageFetch(this.textBorderDataUrl).then(this.parseTextBorderData.bind(this));
+        const camsDataPromise = this.doPageFetch(this.camsUrl, true)
+            .then(this.parseCamsData.bind(this))
+            .then(this.mergeCamsData.bind(this));
+        const textDataPromise = this.doPageFetch(this.textBorderDataUrl)
+            .then(this.parseTextBorderData.bind(this));
         return Promise.all([camsDataPromise, textDataPromise]);
     }
 
-    getCamsDataBySlug(camGroups, slugArr) {
+    mergeCamsData(camsData) {
+        const mergedCamsData = camsData;
+
+        Object.keys(this.predefinedPoints).forEach(key => {
+            if(!mergedCamsData[key]){
+                mergedCamsData[key] = {checkpoints: []};
+            }
+
+            mergedCamsData[key].checkpoints = mergedCamsData[key].checkpoints.concat(this.predefinedPoints[key]);
+        });
+
+        return mergedCamsData;
+    }
+
+    getCamsDataById(camGroups, id) {
+        const idArr = typeof id === 'string' ? [ id ] : id;
         const camsList = [];
 
-        slugArr.forEach(slug => {
+        idArr.forEach(id => {
             let cam;
             const camGroupsKeys = Object.keys(camGroups);
             for(let i = 0; i < camGroupsKeys.length; i++) {
                 const camCheckpoints = camGroups[camGroupsKeys[i]].checkpoints;
                 for(let j = 0; j < camCheckpoints.length; j++) {
                     const currentCam = camCheckpoints[j];
-                    if(currentCam.slug === slug) {
+                    if(currentCam.id === id) {
                         camsList.push(currentCam);
                         cam = currentCam;
                         break;
@@ -227,15 +246,16 @@ class BorderCams extends ProxyParser {
     }
 
     parseCamsData(dom) {
+        let countries = {};
         const countriesEl = dom.querySelectorAll(this.camSel.countries);
         const checkpointsEl = dom.querySelectorAll(this.camSel.checkpoints);
 
         if(!countriesEl.length || !checkpointsEl.length) {
             this.error(`${this.camSel.countries} or ${this.camSel.checkpoints} not found on source page!`);
-            return null;
+            return countries;
         }
 
-        const countries = Array.prototype.reduce.call(countriesEl, (obj, {value, text}) => {
+        countries = Array.prototype.reduce.call(countriesEl, (obj, {value, text}) => {
             obj[value] = {
                 name: text.trim(),
                 checkpoints: []
@@ -244,24 +264,30 @@ class BorderCams extends ProxyParser {
         }, {});
 
         // Add checkpoints to the countries
-        checkpointsEl.forEach(({value, text, dataset}) => {
+        checkpointsEl.forEach(({value, text, dataset : { link }}) => {
             if(countries[value]) {
                 const checkpointData = {
+                    id: this.getIdFromUrl(link) || text,
                     name: text,
-                    src: this.updateStreamSrc(dataset.link)
+                    src: this.updateStreamSrc(link)
                 };
-                const slugs = this.findSlugsByName(text);
-
-                // Try to find slug
-                if(slugs.length) {
-                    checkpointData.slug = slugs[0];
-                }
 
                 countries[value].checkpoints.push(checkpointData);
             }
         });
 
         return countries;
+    }
+
+    getIdFromUrl(url) {
+        let id;
+        const regExpResult = /\/([^\/:]+)\//.exec(url);
+
+        if(regExpResult && regExpResult.length > 1) {
+            id = regExpResult[1];
+        }
+
+        return id;
     }
 
     parseTextBorderData(dom) {
@@ -284,12 +310,12 @@ class BorderCams extends ProxyParser {
                 obj[key] = borderItem.querySelector(dataMap[key]).innerText.trim();
                 return obj;
             }, {});
-            const slugs = this.findSlugsByName(data.name2);
+            const ids = this.findIdsByNameFromMap(data.name2);
 
-            if(slugs.length) {
-                slugs.forEach(slug => bordersObj[slug] = data);
+            if(ids.length) {
+                ids.forEach(id => bordersObj[id] = data);
             } else {
-                this.error(`Slug not found for text data for: "${data.name2}"`);
+                this.error(`Id not found for text data for: "${data.name2}"`);
             }
 
             return bordersObj;
@@ -311,17 +337,17 @@ class BorderCams extends ProxyParser {
         return srcObj.href;
     }
 
-    findSlugsByName(name) {
-        const slugArray = [];
+    findIdsByNameFromMap(name) {
+        const idArray = [];
 
-        Object.keys(this.slugMap).forEach(key => {
-            const regExp = new RegExp(this.slugMap[key], 'i');
+        Object.keys(this.textDataIdMap).forEach(key => {
+            const regExp = new RegExp(this.textDataIdMap[key], 'i');
             if(regExp.test(name)) {
-                slugArray.push(key);
+                idArray.push(key);
             }
         });
 
-        return slugArray;
+        return idArray;
     }
 
     error(msg) {

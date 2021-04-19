@@ -56,7 +56,7 @@ playlist.init();
 
 //Start the server
 let server = app;
-if (cf.isLocal) {
+if (cf.isLocalHttps) {
 	// Add certificate for local server
 	const serverOptions = {
 		key: fs.readFileSync('./certificate/cert.key', 'utf-8'),
@@ -69,5 +69,5 @@ if (cf.isLocal) {
 server.listen(cf.port, err => {
 	if(err) throw error;
 
-	console.log(`Server started on port: https://${cf.ip}:${cf.port}`);
+	console.log(`Server started on port: http${cf.isLocalHttps ? 's' : ''}://${cf.ip}:${cf.port}`);
 });

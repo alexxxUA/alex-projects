@@ -96,23 +96,12 @@ gulp.task('js-min', function() {
 
 gulp.task('watch', function () {
 	browserSync.init({
-        server: {
-            baseDir: "./"
-        }
+        files: P.liveReload
     });
 
 	gulp.watch(P.scss.src, gulp.series('sass'));
 	gulp.watch(P.cssMin.src, gulp.series('css-min'));
 	gulp.watch(P.jsMin.src, gulp.series('js-min'));
-	
-	/* gulp.watch(P.liveReload, function(e){
-		gulp.src(e.path)
-			.pipe(plumber(plumberErrorHandler))
-			.pipe(browserSync.stream())
-			.pipe(notify(
-				e.path.replace(__dirname, '').replace(/\\/g, '/') + ' changed/reloaded'
-			));
-	}); */
 });
 
 //Default task with postCss
