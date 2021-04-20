@@ -8,7 +8,8 @@
 
 var channelList = [
 	//Украинские
-	{dName: '1+1', sName: '1\\+1', tvgName: 'Канал 1+1', flags: 'req hd', group: 'UA'},
+	{dName: '1+1', sName: '1\\+1', flags: 'req hd', group: 'UA'},
+	{dName: '1+1 International', sName: '1\\+1 International', group: 'UA'},
 	{dName: 'СТБ', sName: 'СТБ|СТБ Украина|СТБ \\(UA\\)', flags: 'req', group: 'UA'},
 	{dName: 'Новый канал', sName: 'Новый канал|Новий канал', tvgName: 'Новый канал',flags: 'req', group: 'UA'},
 	{dName: 'ICTV', sName: 'ICTV', tvgName: 'ICTV (Украина)', flags: 'req', group: 'UA'},
@@ -125,6 +126,7 @@ var channelList = [
 	{dName: 'Eurosport 4K', group: 'Пізнавальні'},
 	{dName: 'Eurosport 2', flags: 'hd', group: 'Пізнавальні'},
 	//Охота и рыбалка
+	{dName: 'Трофей', group: 'Пізнавальні'},
 	{dName: 'Охота и рыбалка', group: 'Пізнавальні'},
 	{dName: 'Дикая рыбалка', flags: 'hd', group: 'Пізнавальні'},
 	{dName: 'Охотник и рыболов', tvgName: 'Охотник и рыболов HD', flags: 'hd', group: 'Пізнавальні'},
@@ -135,6 +137,8 @@ var channelList = [
 	{dName: 'СТС', group: 'Розважальні'},
 	{dName: 'ТНТ', flags: 'req', group: 'Розважальні'},
 	{dName: 'Че', group: 'Розважальні'},
+	{dName: 'КВН ТВ', group: 'Розважальні'},
+	{dName: 'Суббота!', group: 'Розважальні'},
 
 	// SK
 	{dName: 'JOJ', sName: 'JOJ|TV JOJ 720p', flags: 'm3', tvgName: 'JOJ.sk', group: 'SK'},
@@ -170,7 +174,8 @@ var channelList = [
 	{dName: 'Перший незалежний', flags: 'hd', group: 'Новини'},
 	{dName: '5 канал (Украина)', sName: '5 канал \\(Украина\\)|5 канал', tvgName: '5 канал', group: 'Новини'},
 	{dName: '24 канал', group: 'Новини'},
-	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV|Эспресо ТВ HD', tvgName: 'Eспресо TV', group: 'Новини'}
+	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV|Эспресо ТВ HD', tvgName: 'Eспресо TV', group: 'Новини'},
+	{dName: 'Прямий', flags: 'hd', group: 'Новини'}
 
 ];
 
