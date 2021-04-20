@@ -12,7 +12,6 @@ var needle = require('needle'),
 	notification = require('./notification.js'),
 	channels1 = require('./../files/UpdateChanList/js/channelList.js').channelList,
 	channels2 = require('./../config/channelList2.js').channelList,
-	channelListSk = require('./../config/channelList_sk').channelListSk,
     generationInProgress = false;
 
 const LOGO_RELATIVE_URL = 'http://avasin.herokuapp.com/UpdateChanList/App/Sources/Channel_icons/';
@@ -129,7 +128,7 @@ function Channel(params){
 	
 	// Additional channel attributes to be found / included into playlist output
 	this.channelDataAttrs = [
-		'catchup', 'catchup-days', 'timeshift', 'tvg-id'
+		'catchup', 'catchup-days', 'timeshift', 'tvg-id', 'tvg-logo'
 	];
 
 	//--- RegExps array for search channel id or url
@@ -850,10 +849,11 @@ Channel.prototype = {
 			case 'm3u8':
 				const attrStr = this.formM3uAttrs(channel);
 				const tvgName = !channel.tvgId ? ` tvg-name="${channel.tvgName || cName}"` : '';
-				const tvgLogo = ` tvg-logo="${this.getLogoUrl(cName)}"`;
+				const tvgLogo = !channel.tvgLogo ? ` tvg-logo="${this.getLogoUrl(cName)}"` : '';
 				const cUrl = this.isStringUrl(id) ? id : this.getProxyUrl(id);
+				const group = channel.group ? ` group-title="${channel.group}"` : '';
 
-				return '\n#EXTINF:-1 '+ attrStr + tvgName + tvgLogo +','+ cName +
+				return '\n#EXTINF:-1 '+ attrStr + tvgName + tvgLogo + group +','+ cName +
 						'\n'+ cUrl
 		}
 	},
@@ -1173,6 +1173,16 @@ var COMBINE_PLAYLISTS = {
     INIT Generator instances
 */
 
+const IpStream_PARSED = new Channel(Object.assign({}, SOURCE_CONFIG, {
+	channelsArray: [channels1],
+	playListName: 'TV-Ipstream',
+	playlistUrl: [
+		cf.IpStreamUrl,
+		'/constant/sk'
+	],
+	generateCountPer24h: 1
+}));
+
 const IpStream_FULL = new Channel(Object.assign({}, COMBINE_PLAYLISTS, {
 	playListName: 'TV-Ipstream',
 	playlistUrl: [
@@ -1181,30 +1191,19 @@ const IpStream_FULL = new Channel(Object.assign({}, COMBINE_PLAYLISTS, {
 	]
 }));
 
-const IpStream_PARSED = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	channelsArray: [channels1, channelListSk],
-	playListName: 'TV-Ipstream',
-	playlistUrl: [
-		cf.IpStreamUrl,
-		// 'http://database.freetuxtv.net/WebStreamExport/index?format=m3u&type=1&status=2&lng=sk&country=sk&isp=all',
-		'/constant/sk'
-	],
-	generateCountPer24h: 24
-}));
-
 const TorrentAC_SOURCE = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	channelsArray: [channels1, channelListSk],
+	channelsArray: [channels1],
 	playListName: 'TV-List-AS'
 }));
 
 const MainPlaylist_ACELIVE = new Channel(Object.assign({}, JSON_CONFIG, {
-	channelsArray: [channels1, channelListSk],
+	channelsArray: [channels1],
 	playListName: 'TV-acelive',
 	backUpGen: TorrentAC_SOURCE
 }));
 
 const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	channelsArray: [channels1, channelListSk],
+	channelsArray: [channels1],
 	playListName: 'TV-List-VK+Voron',
 	playlistUrl: [
 		// 'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
@@ -1217,14 +1216,14 @@ const MainPlaylistFromM3u = new Channel(Object.assign({}, SOURCE_CONFIG, {
 }));
 
 const MainPlaylistHomepage_tuchka = new Channel(Object.assign({}, HomepageParserConfig, {
-	channelsArray: [channels1, channelListSk],
+	channelsArray: [channels1],
 	playListName: 'TV-List-tuchka',
 	generateCountPer24h: 24,
 	backUpGen: TorrentAC_SOURCE
 }));
 
 const EdemList = new Channel(Object.assign({}, SOURCE_CONFIG, {
-	channelsArray: [channels1, channelListSk],
+	channelsArray: [channels1],
 	playListName: 'TV-List-E',
 	playlistUrl: [
 		// 'http://voron.info/media/download/8e4febeaa69785bf1c6ee5f6ba0117a6/playlist.m3u8',
@@ -1357,7 +1356,7 @@ module.exports = {
 
 		if(cf.playlistEnabled){
 			const playlists = new Playlists([
-				IpStream_FULL
+				IpStream_PARSED
 			], channelChecker);
 		} else {
             channelChecker();
