@@ -50,13 +50,6 @@ var channelList = [
 	// {dName: '2X2', tvgName: 'Канал 2x2', flags: 'req', group: 'Дитячі'},
 
 	//Фильмы
-	{dName: 'ID Xtra', tvgName: 'ID Xtra', flags: 'req', group: 'Фільми'},
-	{dName: 'ID Xtra', tvgName: 'ID Xtra HD', flags: 'hd req', group: 'Фільми'},
-	{dName: 'Fox', sName: 'Fox\\.|Fox|Fox Russia', flags: 'req', group: 'Фільми'},
-	{dName: 'Fox', sName: 'Fox\\.|Fox|Fox Russia', tvgName: 'Fox HD', flags: 'hd req', group: 'Фільми'},
-	{dName: 'Fox Life', tvgName: 'Fox Life', flags: 'req', group: 'Фільми'},
-	{dName: 'Fox Life', tvgName: 'Fox Life HD', flags: 'hd req', group: 'Фільми'},
-	{dName: 'Paramount Comedy', sName: 'Paramount Comedy|Paramount Comedy HD \\(Россия\\)|Paramount Comedy Russia', tvgName: 'Paramount Comedy Russia', group: 'Фільми'},
 	{dName: 'TV 1000', sName: 'TV 1000', tvgName: 'TV 1000', flags: 'req', group: 'Фільми'},
 	{dName: 'TV 1000', sName: 'TV 1000', tvgName: 'TV 1000', flags: 'req hd', group: 'Фільми'},
 	{dName: 'TV 1000 World Kino', tvgName: 'TV1000 World Kino', flags: 'req', group: 'Фільми'},
@@ -82,6 +75,7 @@ var channelList = [
 	{dName: 'Sony Sci-Fi', group: 'Фільми'},
 	{dName: 'Sony Turbo', group: 'Фільми'},
 	{dName: 'Премиальное', flags: 'hd', group: 'Фільми'},
+	{dName: 'Hollywood', group: 'Фільми'},
 	{dName: 'Amedia Premium', tvgName: 'Amedia Premium HD', flags: 'hd req', group: 'Фільми'},
 	{dName: 'Amedia Hit', tvgName: 'AMEDIA HIT', group: 'Фільми'},
 	{dName: 'Amedia Hit', tvgName: 'AMEDIA HIT', flags: 'hd', group: 'Фільми'},
@@ -91,7 +85,12 @@ var channelList = [
 	{dName: 'Star Cinema', flags: 'hd', group: 'Фільми'},
 	{dName: 'Star Family', flags: 'hd', group: 'Фільми'},
 	{dName: 'Кино ТВ', tvgName: 'Кино ТВ', flags: 'hd', group: 'Фільми'},
-	{dName: 'Hollywood', group: 'Фільми'},
+	{dName: 'ID Xtra', tvgName: 'ID Xtra', flags: 'req', group: 'Фільми'},
+	{dName: 'ID Xtra', tvgName: 'ID Xtra HD', flags: 'hd req', group: 'Фільми'},
+	{dName: 'Fox', sName: 'Fox\\.|Fox|Fox Russia', flags: 'req', group: 'Фільми'},
+	{dName: 'Fox', sName: 'Fox\\.|Fox|Fox Russia', tvgName: 'Fox HD', flags: 'hd req', group: 'Фільми'},
+	{dName: 'Fox Life', tvgName: 'Fox Life', flags: 'req', group: 'Фільми'},
+	{dName: 'Fox Life', tvgName: 'Fox Life HD', flags: 'hd req', group: 'Фільми'},
 	
 	//Познавательные
 	{dName: 'TLC', tvgName: 'TLC HD', flags: 'hd', group: 'Пізнавальні'},
