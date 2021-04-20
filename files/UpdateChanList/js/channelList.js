@@ -87,8 +87,8 @@ var channelList = [
 	{dName: 'Amedia 1', group: 'Фільми'},
 	{dName: 'Amedia 2', group: 'Фільми'},
 	{dName: 'Enter Film', sName: 'Enter Film|Enter-фильм|Enter-фільм', tvgName: 'Enter-фільм', group: 'Фільми'},
-	{dName: 'Star Cinema', flags: 'hd', group: 'UA'},
-	{dName: 'Star Family', flags: 'hd', group: 'UA'},
+	{dName: 'Star Cinema', flags: 'hd', group: 'Фільми'},
+	{dName: 'Star Family', flags: 'hd', group: 'Фільми'},
 	{dName: 'Кино ТВ', tvgName: 'Кино ТВ', flags: 'hd', group: 'Фільми'},
 	{dName: 'Hollywood', group: 'Фільми'},
 	
