@@ -95,7 +95,7 @@ var channelList = [
 	{dName: 'Hollywood', group: 'Фільми'},
 	
 	//Познавательные
-	{dName: 'TLC', tvgName: 'TLC HD', flags: 'hd', group: 'Фільми'},
+	{dName: 'TLC', tvgName: 'TLC HD', flags: 'hd', group: 'Пізнавальні'},
 	{dName: 'English Club TV', sName: 'English Club TV|English Club|English club HD|English club TV HD', tvgName: 'English Club TV', group: 'Пізнавальні'},
 	{dName: 'Viasat Nature', flags: 'req', group: 'Пізнавальні'},
 	{dName: 'Viasat History', tvgName: 'Viasat History', flags: 'req', group: 'Пізнавальні'},
