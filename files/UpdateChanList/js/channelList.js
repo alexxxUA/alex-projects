@@ -4,6 +4,9 @@
 		dName - used for display name (text representative of channel)
 		sName - used like regExp for search channel in playlist
 		flags - 'req', 'hd'
+		group - channel group
+		tvgName - name of channel for EPG
+		tvgId - id of the channel for EPG
 ***/
 
 var channelList = [
@@ -91,7 +94,7 @@ var channelList = [
 	{dName: 'Fox', sName: 'Fox\\.|Fox|Fox Russia', tvgName: 'Fox HD', flags: 'hd req', group: 'Фільми'},
 	{dName: 'Fox Life', tvgName: 'Fox Life', flags: 'req', group: 'Фільми'},
 	{dName: 'Fox Life', tvgName: 'Fox Life HD', flags: 'hd req', group: 'Фільми'},
-	
+
 	//Познавательные
 	{dName: 'TLC', tvgName: 'TLC HD', flags: 'hd', group: 'Пізнавальні'},
 	{dName: 'English Club TV', sName: 'English Club TV|English Club|English club HD|English club TV HD', tvgName: 'English Club TV', group: 'Пізнавальні'},
@@ -152,7 +155,7 @@ var channelList = [
 	{dName: 'Kosice dnes', flags: 'm3', group: 'SK'},
 	{dName: 'CE TV', flags: 'm3', group: 'SK'},
 	{dName: 'TA3', flags: 'm3', group: 'SK'},
-	
+
 	//Музыка
 	{dName: 'Music Box UA', sName: 'Music Box UA|Music Box UA HD', tvgName: 'Music Box UA HD', group: 'Музика'},
 	{dName: 'М1', sName: 'М1|M1', tvgName: 'M1', flags: 'req', group: 'Музика'},
@@ -167,7 +170,6 @@ var channelList = [
 	{dName: 'Кухня ТВ', tvgName: 'Кухня ТВ', flags: 'req', group: 'Кухня'},
 	{dName: 'Food Network', sName: 'Food Netwоrk|Food Network', tvgName: 'Food Network HD', flags: 'hd', group: 'Кухня'},
 
-
 	// Новостные
 	{dName: 'Украина 24', group: 'Новини'},
 	{dName: 'Перший незалежний', flags: 'hd', group: 'Новини'},
@@ -175,7 +177,6 @@ var channelList = [
 	{dName: '24 канал', group: 'Новини'},
 	{dName: 'Еспресо ТВ', sName: 'Еспресо ТВ|Еспресо\\.tv|Еспресо|Eспресо TV|Эспресо ТВ HD', tvgName: 'Eспресо TV', group: 'Новини'},
 	{dName: 'Прямий', flags: 'hd', group: 'Новини'}
-
 ];
 
 var channelRegExps = function(channel, isReserve){
