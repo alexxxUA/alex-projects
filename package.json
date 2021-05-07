@@ -44,7 +44,7 @@
     "rimraf": "^2.2.8",
     "translit": "0.0.1",
     "underscore": "^1.8.3",
-    "url-parse": "^1.4.4",
+    "url-parse": "^1.5.0",
     "web-push": "^3.4.4",
     "zlib": "^1.0.5"
   },
